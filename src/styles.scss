@@ -1,0 +1,31 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "fonts/segoe-ui/style.css";
+@import "fonts/google/style.css";
+
+.orbitron {
+  font-family: "Orbitron", sans-serif;
+}
+
+.black-ops-one {
+  font-family: "Black Ops One", sans-serif;
+}
+
+.segoe-ui {
+  font-family: "Segoe UI Regular", sans-serif;
+}
+
+.segoe-ui-bold {
+  font-family: "Segoe UI Bold", sans-serif;
+}
+
+.segoe-ui-italic {
+  font-family: "Segoe UI Italic", sans-serif;
+}
+
+.segoe-ui-bold-italic {
+  font-family: "Segoe UI Bold Italic", sans-serif;
+}
