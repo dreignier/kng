@@ -1,0 +1,221 @@
+<div
+  [style.background-color]="npc.color"
+  class="w-[793px] text-xs segoe-ui pb-[2px]"
+>
+  <div class="bg-[#2e2a31]">
+    <div
+      class="uppercase text-xl h-[30px] flex flex-col justify-center text-center tracking-[2px] segoe-ui-bold"
+    >
+      {{ npc.label }}
+    </div>
+    <div
+      class="capitalize text-[15px] h-[30px] flex flex-col justify-center text-center"
+    >
+      {{ npc.type }} ({{ npc.level }})
+    </div>
+  </div>
+
+  <div class="flex flex-row mt-[2px]">
+    <div
+      class="uppercase w-[123px] segoe-ui-bold font-bold text-center flex flex-col content-center justify-center px-[7px] h-[57px]"
+    >
+      Aspects
+    </div>
+
+    <div class="flex flex-row w-[670px] flex-wrap">
+      @for (aspect of npc.aspects; track aspect; let index = $index) {
+        <div class="text-center pr-[2px] w-[134px] flex flex-col h-[57px]">
+          <div
+            class="uppercase segoe-ui-bold-italic font-bold flex flex-col justify-center content-center h-[29px]"
+          >
+            {{ aspects[index] }}
+          </div>
+          <div
+            class="bg-[#42505a] text-base segoe-ui-bold flex flex-col flex-grow justify-center content-center h-[26px]"
+          >
+            {{ aspect.score || "-" }}
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="flex flex-row mt-[2px]">
+    <div
+      class="uppercase w-[123px] segoe-ui-bold font-bold text-center flex flex-col content-center justify-center px-[7px] h-[44px]"
+    >
+      Aspects exceptionnels
+    </div>
+
+    <div class="flex flex-row w-[670px] flex-wrap">
+      @for (aspect of npc.aspects; track aspect) {
+        <div class="text-center pr-[2px] w-[134px] flex flex-col h-[44px]">
+          <div
+            class="bg-[#42505a] text-base segoe-ui-bold flex flex-col flex-grow justify-center content-center h-[44px]"
+          >
+            {{
+              aspect.exceptional
+                ? (aspect.major ? "Majeur" : "Mineur") +
+                  " (" +
+                  aspect.exceptional +
+                  ")"
+                : "-"
+            }}
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="flex flex-row mt-[2px]">
+    <div
+      class="uppercase w-[123px] segoe-ui-bold font-bold text-center flex flex-col content-center justify-center px-[7px]"
+    >
+      Valeurs dérivées
+    </div>
+
+    <div class="flex flex-row w-[670px] flex-wrap">
+      @for (property of npc.properties(); track property.label) {
+        <div class="text-center pr-[2px] w-[134px] flex flex-col">
+          <div
+            class="uppercase segoe-ui-bold-italic font-bold flex flex-col justify-center content-center h-[30px]"
+          >
+            {{ property.label }}
+          </div>
+          <div
+            class="bg-[#42505a] text-base segoe-ui-bold flex flex-col flex-grow justify-center content-center h-[39px]"
+          >
+            {{ property.value }}
+          </div>
+        </div>
+      }
+
+      @if (npc.weakness) {
+        <div class="text-center pr-[2px] min-w-[134px] flex flex-col">
+          <div
+            class="uppercase segoe-ui-bold-italic font-bold flex flex-col justify-center content-center h-[30px]"
+          >
+            Point faible
+          </div>
+          <div
+            class="bg-[#42505a] text-base segoe-ui-bold-italic flex flex-col flex-grow justify-center content-center h-[39px] px-[5px]"
+          >
+            {{ npc.weakness }}
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (npc.capacities.length) {
+    <div class="flex flex-row mt-[2px]">
+      <div
+        class="uppercase w-[123px] segoe-ui-bold font-bold text-center flex flex-col content-center justify-center px-[7px]"
+      >
+        Capacités
+      </div>
+
+      <div class="bg-[#42505a] w-[668px] p-[5px] pt-0 text-base">
+        @for (capacity of npc.capacities; track capacity) {
+          <div class="text-justify mt-[5px]">
+            <span class="segoe-ui-bold">
+              {{ capacity.label ? capacity.label + " : " : "" }}
+            </span>
+            <span>{{ capacity.description }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @for (weapon of npc.weapons; track weapon) {
+    <div class="flex flex-row mt-[2px]">
+      <div
+        class="uppercase w-[123px] segoe-ui-bold font-bold text-center flex flex-col content-center justify-center px-[7px]"
+      >
+        {{ weapon.contact ? "Arme de contact" : "Arme à distance" }}
+      </div>
+
+      <div>
+        <div
+          class="w-[668px] bg-[#42505a] pl-[5px] h-[29px] uppercase segoe-ui-bold text-base flex flex-col justify-center content-center"
+        >
+          {{ weapon.label }}
+        </div>
+
+        <div class="flex flex-row w-[670px] flex-wrap">
+          <div class="text-center pr-[2px] w-[134px] flex flex-col">
+            <div
+              class="uppercase segoe-ui-bold-italic font-bold flex flex-col justify-center content-center h-[30px]"
+            >
+              Dégâts
+            </div>
+            <div
+              class="bg-[#42505a] text-base segoe-ui-bold flex flex-col flex-grow justify-center content-center h-[29px]"
+            >
+              {{ weapon.dices ? weapon.dices + "D6" : "" }}
+              {{ weapon.dices && weapon.raw ? " + " : "" }}
+              {{ weapon.raw ? weapon.raw : "" }}
+            </div>
+          </div>
+
+          @if (weapon.violenceDices || weapon.violenceRaw) {
+            <div class="text-center pr-[2px] w-[134px] flex flex-col">
+              <div
+                class="uppercase segoe-ui-bold-italic font-bold flex flex-col justify-center content-center h-[30px]"
+              >
+                Violence
+              </div>
+              <div
+                class="bg-[#42505a] text-base segoe-ui-bold flex flex-col flex-grow justify-center content-center h-[29px]"
+              >
+                {{ weapon.violenceDices ? weapon.violenceDices + "D6" : "" }}
+                {{ weapon.violenceDices && weapon.violenceRaw ? " + " : "" }}
+                {{ weapon.violenceRaw ? weapon.violenceRaw : "" }}
+              </div>
+            </div>
+          }
+
+          <div class="text-center pr-[2px] w-[134px] flex flex-col">
+            <div
+              class="uppercase segoe-ui-bold-italic font-bold flex flex-col justify-center content-center h-[30px]"
+            >
+              Portée
+            </div>
+            <div
+              class="bg-[#42505a] text-base segoe-ui-bold flex flex-col flex-grow justify-center content-center h-[29px] capitalize"
+            >
+              {{ weapon.range }}
+            </div>
+          </div>
+
+          <div class="text-center pr-[2px] flex flex-col flex-grow">
+            <div
+              class="uppercase segoe-ui-bold-italic font-bold flex flex-col justify-center content-center h-[30px]"
+            >
+              {{ weapon.effects.length > 1 ? "Effets" : "Effet" }}
+            </div>
+            <div
+              class="bg-[#42505a] text-base segoe-ui-bold flex-grow h-[29px] p-[5px] flex flex-col justify-center content-center"
+            >
+              <span>
+                @for (
+                  effect of weapon.effects;
+                  track effect;
+                  let first = $first
+                ) {
+                  <span>
+                    @if (!first) {
+                      <span>/</span>
+                    }
+                    {{ effect.label }}
+                  </span>
+                }
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

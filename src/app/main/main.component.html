@@ -1,1 +1,19 @@
-<header></header>
+<header
+  class="pl-12 pr-2 py-2 border-b border-b-white flex flex-row items-center justify-between bg-[#556abc]"
+>
+  <a routerLink="/">
+    <h1 class="black-ops-one text-5xl mb-0">Knight NPC Generator</h1>
+  </a>
+
+  <a
+    routerLink="/about"
+    class="rounded-full inline-block size-6 hover:bg-white hover:text-[#556abc]"
+    title="À propos"
+  >
+    <app-icon class="inline-block size-6" icon="information-circle"></app-icon>
+  </a>
+</header>
+
+<main>
+  <router-outlet></router-outlet>
+</main>
