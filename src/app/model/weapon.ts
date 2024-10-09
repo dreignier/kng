@@ -2,7 +2,7 @@ import { CONTACT } from '../constants'
 import Effect from './effect'
 
 export default class Weapon {
-  label: string = '';
+  name: string = '';
   contact: boolean = true;
   dices: number = 0;
   raw: number = 0;
@@ -10,4 +10,8 @@ export default class Weapon {
   violenceRaw: number = 0;
   range: string = CONTACT;
   effects: Effect[] = [];
+
+	newEffect() {
+		this.effects.push(new Effect());
+	}
 }

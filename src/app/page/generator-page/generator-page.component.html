@@ -1,1 +1,9 @@
-<app-npc-form [npc]="npc"></app-npc-form> <app-npc [npc]="npc"></app-npc>
+<div class="2xl:flex 2xl:flex-row 2xl:justify-between">
+  <div class="m-3">
+    <app-npc-form [npc]="npc"></app-npc-form>
+  </div>
+
+  <div class="m-3 sm:flex sm:flex-col sm:items-center 2xl:block 2xl:flex-none">
+    <app-npc [npc]="npc"></app-npc>
+  </div>
+</div>

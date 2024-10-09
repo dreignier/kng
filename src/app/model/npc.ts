@@ -5,7 +5,6 @@ import Entity from './entity'
 import Weapon from './weapon'
 
 export default class Npc extends Entity {
-	name: string = ''
   type: string = HOSTILE
   level: string = RECRUE
   aspects: Aspect[] = [new Aspect(), new Aspect(), new Aspect(), new Aspect(), new Aspect()]
@@ -35,7 +34,7 @@ export default class Npc extends Entity {
 				label = DERIVED_VALUES_LABELS['cohesion']
 			}
 
-			if (['defense', 'reaction'].includes(key)) {
+			if (!value && ['defense', 'reaction'].includes(key)) {
 				value = '-'
 			}
 
@@ -45,5 +44,13 @@ export default class Npc extends Entity {
 		}
 
 		return properties
+	}
+
+	newCapacity() {
+		this.capacities.push(new Capacity())
+	}
+
+	newWeapon() {
+		this.weapons.push(new Weapon())
 	}
 }

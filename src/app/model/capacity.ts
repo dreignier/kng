@@ -1,4 +1,4 @@
 export default class Capacity {
-	label: string = '';
+	name: string = '';
 	description: string = '';
 }
