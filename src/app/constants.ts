@@ -23,6 +23,21 @@ export const ORGANIC = 'organique';
 export const ROBOT = 'robot';
 export const ARMORED = 'armuré';
 
+export const COLORS = [
+	'#f25a1e', // Bête
+	'#9b1a25', // Chair
+	'#556abc', // Machine
+	'#69bfdc', // Dame
+	'#70aa6c', // Masque
+	'#d3181f', // Ennemi
+	'#364379', // Homme en noir
+	'#cacd40', // Arbitre
+	'#321619', // Horreur
+	'#363d42', // Ophidien
+	'#ab1d94', // Autre
+	'#40bd97', // Allié
+]
+
 export const DERIVED_VALUES_LABELS: Record<string, string> = {
 	'defense': 'Défense',
 	'reaction': 'Réaction',
@@ -36,6 +51,7 @@ export const DERIVED_VALUES_LABELS: Record<string, string> = {
 	'forcefield': 'CdF',
 	'energy': 'PE'
 }
+
 export const CAPACITIES = [
   "Abysse | héros - salopard - colosse - patron | Tous les dégâts infligés par le PNJ à un PJ sont retirés aux points d’espoir et non aux points de santé ou points d’armure.",
   "Abyssal | héros - salopard - colosse - patron | Le PNJ est insensible à tous les types de dégâts sauf ceux avec l’effet anti-Anathème et lumière X.",

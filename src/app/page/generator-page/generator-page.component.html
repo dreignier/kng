@@ -5,5 +5,58 @@
 
   <div class="m-3 sm:flex sm:flex-col sm:items-center 2xl:block 2xl:flex-none">
     <app-npc [npc]="npc"></app-npc>
+    <div class="flex flex-row mt-1">
+      <button
+        class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+        (click)="saveNpc(npc)"
+        tabindex="-1"
+      >
+        <app-icon class="size-5 block" icon="save"></app-icon>
+      </button>
+    </div>
   </div>
+</div>
+
+<hr
+  class="mx-20 my-10 border border-white [box-shadow:_-0_-0_10px_5px_white]"
+/>
+
+<h2
+  class="orbitron text-4xl ml-4 mb-2 tracking-widest [text-shadow:_0_0_4px_white]"
+>
+  PNJ sauvegardés
+</h2>
+
+<div class="ml-4 mb-3 flex items-center">
+  <app-icon class="inline-block size-5 mr-1" icon="warning"></app-icon>
+  <span class="text-sm">
+    Les PNJ sauvegardés sont stockés dans les données locales de votre
+    navigateur.
+  </span>
+</div>
+
+<div class="flex flex-row flex-wrap justify-center">
+  @for (npc of db.npcs; track npc) {
+    <div class="mx-3 mb-10">
+      <app-npc [npc]="npc"></app-npc>
+      <div class="flex flex-row justify-between mt-1">
+        <div class="flex flex-row">
+          <button
+            class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+            (click)="editNpc(npc)"
+            tabindex="-1"
+          >
+            <app-icon class="size-5 block" icon="pencil"></app-icon>
+          </button>
+        </div>
+        <button
+          class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+          (click)="deleteNpc(npc)"
+          tabindex="-1"
+        >
+          <app-icon class="size-5 block" icon="X"></app-icon>
+        </button>
+      </div>
+    </div>
+  }
 </div>

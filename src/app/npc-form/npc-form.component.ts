@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ColorPickerModule } from 'ngx-color-picker'
-import { ASPECTS_LABELS, DERIVED_VALUES_LABELS } from '../constants'
+import { ASPECTS_LABELS, COLORS, DERIVED_VALUES_LABELS } from '../constants'
 import { IconComponent } from '../icon/icon.component'
 import Capacity from '../model/capacity'
 import Effect from '../model/effect'
@@ -22,20 +22,13 @@ export class NpcFormComponent {
 	properties: (keyof Npc)[] = ['defense', 'reaction', 'initiative', 'health', 'resilience', 'armor', 'outbreak', 'shield', 'forcefield', 'energy']
 	propertiesLabel = DERIVED_VALUES_LABELS
 
-	 colors = [
-		'#f25a1e', // Bête
-		'#9b1a25', // Chair
-		'#556abc', // Machine
-		'#69bfdc', // Dame
-		'#70aa6c', // Masque
-		'#d3181f', // Ennemi
-		'#364379', // Homme en noir
-		'#cacd40', // Arbitre
-		'#321619', // Horreur
-		'#363d42', // Ophidien
-		'#ab1d94', // Autre
-		'#40bd97', // Allié
-	]
+	colors = COLORS
+
+	computeProperty: { [key: string]: () => void } = {
+		defense: () => this.npc.computeDefense(),
+		reaction: () => this.npc.computeReaction(),
+		initiative: () => this.npc.computeInitiative()
+	}
 
 	upCapacity(capacity: Capacity) {
 		arrayUp(this.npc.capacities, capacity)

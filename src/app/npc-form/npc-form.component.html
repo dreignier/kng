@@ -55,12 +55,14 @@
     >
       Couleur
     </label>
-    <div>
+    <div class="flex flex-row flex-wrap">
       <button
-        class="w-[100px] h-[30px] border border-white"
+        class="w-[100px] h-[30px] border border-white flex items-center justify-center"
         [(colorPicker)]="npc.color"
         [style.background-color]="npc.color"
-      ></button>
+      >
+        <app-icon class="size-5 inline-block" icon="brush"></app-icon>
+      </button>
 
       @for (color of colors; track color) {
         <button
@@ -115,12 +117,22 @@
         >
           {{ propertiesLabel[property] }}
         </label>
-        <input
-          class="text-[#2e2a31] h-[28px] pl-1 min-w-0"
-          [(ngModel)]="npc[property]"
-          type="number"
-          title="{{ propertiesLabel[property] }}"
-        />
+        <div class="flex flex-row">
+          @if (computeProperty[property]) {
+            <button
+              class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
+              (click)="computeProperty[property]()"
+            >
+              <app-icon class="size-5 block" icon="calculator"></app-icon>
+            </button>
+          }
+          <input
+            class="text-[#2e2a31] h-[28px] pl-1 min-w-0 flex-grow"
+            [(ngModel)]="npc[property]"
+            type="number"
+            title="{{ propertiesLabel[property] }}"
+          />
+        </div>
       </div>
     }
 
@@ -146,38 +158,40 @@
   </div>
   <div class="col-span-12 flex flex-col">
     @for (capacity of npc.capacities; track capacity) {
-      <div class="flex flex-row">
-        <button
-          class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
-          (click)="upCapacity(capacity)"
-        >
-          <app-icon class="size-5 block" icon="arrow-up"></app-icon>
-        </button>
-        <button
-          class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
-          (click)="downCapacity(capacity)"
-        >
-          <app-icon class="size-5 block" icon="arrow-down"></app-icon>
-        </button>
-        <input
-          class="text-[#2e2a31] h-[28px] pl-1 min-w-0 flex-grow"
-          type="text"
-          [(ngModel)]="capacity.name"
-          placeholder="Nom"
-        />
-        <button
-          class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
-          (click)="removeCapacity(capacity)"
-          tabindex="-1"
-        >
-          <app-icon class="size-5 block" icon="X"></app-icon>
-        </button>
+      <div class="p-1 mb-2 bg-[#42505a] flex flex-col">
+        <div class="flex flex-row">
+          <button
+            class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
+            (click)="upCapacity(capacity)"
+          >
+            <app-icon class="size-5 block" icon="arrow-up"></app-icon>
+          </button>
+          <button
+            class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
+            (click)="downCapacity(capacity)"
+          >
+            <app-icon class="size-5 block" icon="arrow-down"></app-icon>
+          </button>
+          <input
+            class="text-[#2e2a31] h-[28px] pl-1 min-w-0 flex-grow"
+            type="text"
+            [(ngModel)]="capacity.name"
+            placeholder="Nom"
+          />
+          <button
+            class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
+            (click)="removeCapacity(capacity)"
+            tabindex="-1"
+          >
+            <app-icon class="size-5 block" icon="X"></app-icon>
+          </button>
+        </div>
+        <textarea
+          class="text-[#2e2a31] h-[85px] pl-1 mt-0.5"
+          [(ngModel)]="capacity.description"
+          placeholder="Description"
+        ></textarea>
       </div>
-      <textarea
-        class="text-[#2e2a31] h-[80px] pl-1 mt-0.5 mb-1"
-        [(ngModel)]="capacity.description"
-        placeholder="Description"
-      ></textarea>
     }
 
     <button
@@ -196,146 +210,157 @@
   </div>
   <div class="col-span-12 flex flex-col">
     @for (weapon of npc.weapons; track weapon) {
-      <div class="flex flex-row">
-        <button
-          class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
-          (click)="upWeapon(weapon)"
-        >
-          <app-icon class="size-5 block" icon="arrow-up"></app-icon>
-        </button>
-        <button
-          class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
-          (click)="downWeapon(weapon)"
-        >
-          <app-icon class="size-5 block" icon="arrow-down"></app-icon>
-        </button>
-        <input
-          class="text-[#2e2a31] h-[28px] pl-1 min-w-0 flex-grow"
-          type="text"
-          [(ngModel)]="weapon.name"
-          placeholder="Nom"
-        />
-        <button
-          class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
-          (click)="removeWeapon(weapon)"
-          tabindex="-1"
-        >
-          <app-icon class="size-5 block" icon="X"></app-icon>
-        </button>
-      </div>
-
-      <div class="grid grid-cols-12 gap-1 mt-0.5">
-        <div class="col-span-3 flex flex-col">
-          <span
-            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-          >
-            Dégâts
-          </span>
-          <div class="flex flex-row items-center">
-            <input
-              class="text-[#2e2a31] h-[28px] pl-1 min-w-0 flex-grow"
-              type="number"
-              [(ngModel)]="weapon.dices"
-            />
-            <span class="segoe-ui-bold mr-1">D6&nbsp;+</span>
-            <input
-              class="text-[#2e2a31] h-[28px] pl-1 min-w-0 flex-grow"
-              type="number"
-              [(ngModel)]="weapon.raw"
-            />
-          </div>
-        </div>
-
-        <div class="col-span-3 flex flex-col">
-          <span
-            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-          >
-            Violence
-          </span>
-          <div class="flex flex-row items-center">
-            <input
-              class="text-[#2e2a31] h-[28px] pl-1 min-w-0 flex-grow"
-              type="number"
-              [(ngModel)]="weapon.violenceDices"
-            />
-            <span class="segoe-ui-bold mr-1">D6&nbsp;+</span>
-            <input
-              class="text-[#2e2a31] h-[28px] pl-1 min-w-0 flex-grow"
-              type="number"
-              [(ngModel)]="weapon.violenceRaw"
-            />
-          </div>
-        </div>
-
-        <div class="col-span-6 flex flex-col">
-          <span
-            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-          >
-            Portée
-          </span>
-          <div class="flex flex-row">
-            <button
-              class="group size-7 min-w-7 mr-0.5 border border-white flex items-center justify-center bg-white hover:bg-[#2e2a31]"
-              (click)="weapon.contact = !weapon.contact"
-            >
-              <img
-                class="size-5 group-hover:invert"
-                src="/assets/icon-knife.png"
-                alt="Arme de contact"
-                [hidden]="!weapon.contact"
-              />
-              <img
-                class="size-5 group-hover:invert"
-                src="/assets/icon-gun.png"
-                alt="Arme à distance"
-                [hidden]="weapon.contact"
-              />
-            </button>
-            <select
-              [(ngModel)]="weapon.range"
-              class="bg-white text-[#2e2a31] h-[28px] pl-1 flex-grow"
-            >
-              <option value="contact">Contact</option>
-              <option value="courte">Courte</option>
-              <option value="moyenne">Moyenne</option>
-              <option value="longue">Longue</option>
-              <option value="lointaine">Lointaine</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="col-span-3 flex flex-col">
-          <span
-            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-          >
-            Effets
-          </span>
-        </div>
-        <div class="col-span-12 grid grid-cols-5 gap-1 mb-1">
-          @for (effect of weapon.effects; track effect) {
-            <div class="flex flex-row">
-              <input
-                type="text"
-                class="text-[#2e2a31] h-[28px] pl-1 min-w-0"
-                [(ngModel)]="effect.name"
-              />
-              <button
-                class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
-                (click)="removeEffect(weapon, effect)"
-                tabindex="-1"
-              >
-                <app-icon class="size-5 block" icon="X"></app-icon>
-              </button>
-            </div>
-          }
-
+      <div class="p-1 mb-2 bg-[#42505a] flex flex-col">
+        <div class="flex flex-row">
           <button
-            class="h-[28px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
-            (click)="weapon.newEffect()"
+            class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
+            (click)="upWeapon(weapon)"
           >
-            <app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
-            <span>Effet</span>
+            <app-icon class="size-5 block" icon="arrow-up"></app-icon>
           </button>
+          <button
+            class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
+            (click)="downWeapon(weapon)"
+          >
+            <app-icon class="size-5 block" icon="arrow-down"></app-icon>
+          </button>
+          <input
+            class="text-[#2e2a31] h-[28px] pl-1 min-w-0 flex-grow"
+            type="text"
+            [(ngModel)]="weapon.name"
+            placeholder="Nom"
+          />
+          <button
+            class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
+            (click)="removeWeapon(weapon)"
+            tabindex="-1"
+          >
+            <app-icon class="size-5 block" icon="X"></app-icon>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-12 gap-1 mt-0.5">
+          <div class="col-span-3 flex flex-col">
+            <span
+              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+            >
+              Dégâts
+            </span>
+            <div class="flex flex-row items-center">
+              <input
+                class="text-[#2e2a31] h-[28px] pl-1 min-w-0 flex-grow"
+                type="number"
+                [(ngModel)]="weapon.dices"
+              />
+              <span class="segoe-ui-bold mr-1">D6&nbsp;+</span>
+              <button
+                class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
+                (click)="npc.computeWeaponRawDamage(weapon)"
+              >
+                <app-icon class="size-5 block" icon="calculator"></app-icon>
+              </button>
+              <input
+                class="text-[#2e2a31] h-[28px] pl-1 min-w-0 flex-grow"
+                type="number"
+                [(ngModel)]="weapon.raw"
+              />
+            </div>
+          </div>
+
+          <div class="col-span-3 flex flex-col">
+            <span
+              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+            >
+              Violence
+            </span>
+            <div class="flex flex-row items-center">
+              <input
+                class="text-[#2e2a31] h-[28px] pl-1 min-w-0 flex-grow"
+                type="number"
+                [(ngModel)]="weapon.violenceDices"
+              />
+              <span class="segoe-ui-bold mr-1">D6&nbsp;+</span>
+              <input
+                class="text-[#2e2a31] h-[28px] pl-1 min-w-0 flex-grow"
+                type="number"
+                [(ngModel)]="weapon.violenceRaw"
+              />
+            </div>
+          </div>
+
+          <div class="col-span-6 flex flex-col">
+            <span
+              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+            >
+              Portée
+            </span>
+            <div class="flex flex-row">
+              <button
+                class="group size-7 min-w-7 mr-0.5 border border-white flex items-center justify-center bg-white hover:bg-[#2e2a31]"
+                (click)="weapon.contact = !weapon.contact"
+              >
+                <img
+                  class="size-5 group-hover:invert"
+                  src="/assets/icon-knife.png"
+                  alt="Arme de contact"
+                  [hidden]="!weapon.contact"
+                />
+                <img
+                  class="size-5 group-hover:invert"
+                  src="/assets/icon-gun.png"
+                  alt="Arme à distance"
+                  [hidden]="weapon.contact"
+                />
+              </button>
+              <select
+                [(ngModel)]="weapon.range"
+                class="bg-white text-[#2e2a31] h-[28px] pl-1 flex-grow"
+              >
+                <option value="contact">Contact</option>
+                <option value="courte">Courte</option>
+                <option value="moyenne">Moyenne</option>
+                <option value="longue">Longue</option>
+                <option value="lointaine">Lointaine</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-span-3 flex flex-col">
+            <span
+              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+            >
+              Effets
+            </span>
+          </div>
+          <div class="col-span-12 grid grid-cols-4 gap-1 mb-1">
+            @for (effect of weapon.effects; track effect) {
+              <div class="flex flex-row">
+                <input
+                  type="text"
+                  class="text-[#2e2a31] h-[28px] pl-1 min-w-0"
+                  [(ngModel)]="effect.name"
+                />
+                <button
+                  class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
+                  (click)="removeEffect(weapon, effect)"
+                  tabindex="-1"
+                >
+                  <app-icon class="size-5 block" icon="X"></app-icon>
+                </button>
+              </div>
+            }
+
+            <button
+              class="h-[28px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+              (click)="weapon.newEffect()"
+            >
+              <app-icon
+                class="size-5 inline-block"
+                icon="plus-circle"
+              ></app-icon>
+              <span>Effet</span>
+            </button>
+          </div>
         </div>
       </div>
     }
