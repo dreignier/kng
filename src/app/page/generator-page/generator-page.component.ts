@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { DatabaseService } from '../../database.service'
 import { DialogService } from '../../dialog/dialog.service'
 import { IconComponent } from '../../icon/icon.component'
@@ -12,7 +13,7 @@ import { NpcComponent } from '../../npc/npc.component'
 @Component({
   selector: 'app-generator-page',
   standalone: true,
-  imports: [NpcComponent, NpcFormComponent, IconComponent, ModalCanvasComponent, ModalComponent],
+  imports: [NpcComponent, NpcFormComponent, IconComponent, ModalCanvasComponent, ModalComponent, FormsModule],
   templateUrl: './generator-page.component.html',
   styleUrl: './generator-page.component.scss'
 })
@@ -21,6 +22,8 @@ export class GeneratorPageComponent {
 
 	@ViewChild('imageModal') imageModal!: ModalCanvasComponent
 	@ViewChild('exportModal') exportModal!: ModalComponent
+	@ViewChild('importModal') importModal!: ModalComponent
+	imported = ''
 	exported = ''
 
 	constructor(
@@ -57,8 +60,16 @@ export class GeneratorPageComponent {
 		this.imageModal.open(target)
 	}
 
-	import(json: string) {
+	openImport() {
+		this.imported = ''
+		this.importModal.open()
+	}
 
+	import() {
+		this.npc = new Npc()
+		this.npc.import(JSON.parse(this.imported))
+		window.scrollTo(0, 0)
+		this.importModal.close()
 	}
 
 	export(npc: Npc) {
