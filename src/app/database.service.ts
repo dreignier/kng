@@ -44,32 +44,40 @@ export class DatabaseService {
 			const colorA = COLORS.indexOf(a.color)
 			const colorB = COLORS.indexOf(b.color)
 
-			if (colorA !== -1 && colorB !== -1) {
-        return colorA - colorB
+			if (colorA !== colorB) {
+				if (colorA !== -1 && colorB !== -1) {
+        	return colorA - colorB
+				}
+
+				if (colorA !== -1) {
+					return -1
+				}
+
+				if (colorB !== -1) {
+					return 1
+				}
+
+				return parseInt(a.color.replace('#', ''), 16) - parseInt(b.color.replace('#', ''), 16)
       }
-
-			if (colorA !== -1) {
-				return -1
-			}
-
-			if (colorB !== -1) {
-				return 1
-			}
 
 			const typeA = TYPE_ORDER.indexOf(a.type)
 			const typeB = TYPE_ORDER.indexOf(b.type)
 
-			if (typeA !== -1 && typeB !== -1) {
-        return typeA - typeB
+			if (typeA !== typeB) {
+        if (typeA !== -1 && typeB !== -1) {
+        	return typeA - typeB
+				}
+
+				if (typeA !== -1) {
+					return -1
+				}
+
+				if (typeB !== -1) {
+					return 1
+				}
+
+				return a.type.localeCompare(b.type)
       }
-
-			if (typeA !== -1) {
-				return -1
-			}
-
-			if (typeB !== -1) {
-				return 1
-			}
 
 			return a.name.localeCompare(b.name)
 		})

@@ -1,0 +1,24 @@
+<div
+  class="fixed top-0 right-0 bottom-0 left-0 overflow-x-hidden overflow-y-auto flex-col items-center"
+  [class.hidden]="!displayed"
+  [class.flex]="displayed"
+  style="background-color: rgba(0, 0, 0, 0.5)"
+>
+  <div
+    class="bg-[#2e2a31] text-white max-w-4xl my-20 p-5"
+    [class.w-96]="!large"
+    [class.w-full]="large"
+  >
+    <div class="flex justify-end">
+      <button
+        class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+        (click)="close()"
+      >
+        <app-icon class="inline-block size-5" icon="X"></app-icon>
+      </button>
+    </div>
+    <div>
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>
