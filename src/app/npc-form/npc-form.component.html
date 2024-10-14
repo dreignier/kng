@@ -80,7 +80,7 @@
         <app-icon class="size-5 inline-block" icon="brush"></app-icon>
       </button>
 
-      @for (color of colors; track color) {
+      @for (color of db.colors; track color) {
         <button
           class="w-[30px] h-[30px] border border-white ml-2"
           [style.background-color]="color"
@@ -188,12 +188,20 @@
           >
             <app-icon class="size-5 block" icon="arrow-down"></app-icon>
           </button>
-          <input
-            class="text-[#2e2a31] h-[28px] pl-1 min-w-0 flex-grow"
-            type="text"
-            [(ngModel)]="capacity.name"
+
+          <ng-autocomplete
+            class="npc-autocomplete flex-grow"
+            [data]="db.capacities"
+            searchKeyword="name"
+            [initialValue]="capacity"
+            [customFilter]="filter"
+            [itemTemplate]="itemTemplate"
+            (inputChanged)="changed($event, capacity)"
+            (selected)="selected($event, capacity)"
+            [focusFirst]="true"
             placeholder="Nom"
-          />
+          ></ng-autocomplete>
+
           <button
             class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
             (click)="removeCapacity(capacity)"
@@ -352,11 +360,18 @@
           <div class="col-span-12 grid grid-cols-4 gap-1 mb-1">
             @for (effect of weapon.effects; track effect) {
               <div class="flex flex-row">
-                <input
-                  type="text"
-                  class="text-[#2e2a31] h-[28px] pl-1 min-w-0"
-                  [(ngModel)]="effect.name"
-                />
+                <ng-autocomplete
+                  class="npc-autocomplete flex-grow"
+                  [data]="db.effects"
+                  searchKeyword="name"
+                  [initialValue]="effect"
+                  [customFilter]="filter"
+                  [itemTemplate]="itemTemplate"
+                  (inputChanged)="changed($event, effect)"
+                  (selected)="selected($event, effect)"
+                  [focusFirst]="true"
+                  placeholder="Nom"
+                ></ng-autocomplete>
                 <button
                   class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
                   (click)="removeEffect(weapon, effect)"
@@ -540,3 +555,12 @@
     </button>
   </div>
 </app-modal>
+
+<ng-template #itemTemplate let-item>
+  <a>
+    <strong [innerHTML]="item.name"></strong><br />
+    <small>
+      {{ item.tags.join(" ") }}
+    </small>
+  </a>
+</ng-template>

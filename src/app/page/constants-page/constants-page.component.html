@@ -1,1 +1,161 @@
-<p>constants-page works!</p>
+<div class="bg-[#2e2a31] p-2 m-2 mx-auto max-w-[1280px]">
+  <h2
+    class="orbitron text-2xl ml-4 mb-2 tracking-widest [text-shadow:_0_0_4px_white]"
+  >
+    Constantes du générateur de PNJ
+  </h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th class="p-2 uppercase segoe-ui-bold-italic font-bold text-xs">
+          Aspects
+        </th>
+        <th class="p-2 uppercase segoe-ui-bold-italic font-bold text-xs">
+          Aspects exceptionnels
+        </th>
+        <th class="p-2 uppercase segoe-ui-bold-italic font-bold text-xs">
+          Santé, armure, énergie et résilience
+        </th>
+        <th class="p-2 uppercase segoe-ui-bold-italic font-bold text-xs">
+          Bouclier
+        </th>
+        <th class="p-2 uppercase segoe-ui-bold-italic font-bold text-xs">
+          Capacités
+        </th>
+        <th class="p-2 uppercase segoe-ui-bold-italic font-bold text-xs">
+          Armes
+        </th>
+      </tr>
+    </thead>
+
+    <tbody class="text-sm">
+      @for (line of lines; track line) {
+        <tr class="even:bg-gray-800 odd:bg-gray-700">
+          <td class="p-2">{{ line.type }} ({{ line.level }})</td>
+          <td class="p-2">
+            Points d'aspects&nbsp;:&nbsp;{{ line.infos.aspects.min }} -
+            {{ line.infos.aspects.max }}<br />
+            Limite&nbsp;:&nbsp;{{ line.infos.aspects.limit }}
+          </td>
+          <td class="p-2">
+            Points d'aspects exceptionnels&nbsp;:&nbsp;{{
+              line.infos.aspects_exceptionals.min
+            }}
+            - {{ line.infos.aspects_exceptionals.max }}<br />
+            Limite&nbsp;:&nbsp;{{ line.infos.aspects_exceptionals.limit }}<br />
+            Aspects exceptionnels majeurs&nbsp;:&nbsp;{{
+              line.infos.aspects_exceptionals.major_min
+            }}
+            - {{ line.infos.aspects_exceptionals.major_max }}<br />
+            Aspects augmentés en élite&nbsp;:&nbsp;{{
+              line.infos.elite.major_aspects
+            }}
+          </td>
+          @if (line.type !== "bande") {
+            <td class="p-2">
+              Santé&nbsp;:&nbsp;{{ line.infos.health.min }} -
+              {{ line.infos.health.max }}<br />
+              Armure&nbsp;:&nbsp;{{ line.infos.armor.min }} -
+              {{ line.infos.armor.max }}<br />
+              Énergie&nbsp;:&nbsp;{{ line.infos.energy.min }} -
+              {{ line.infos.energy.max }}<br />
+              Coéfficient de résilience&nbsp;:&nbsp;{{ line.infos.resilience }}
+            </td>
+          } @else {
+            <td class="p-2">
+              Cohésion&nbsp;:&nbsp;{{ line.infos.health.min }} -
+              {{ line.infos.health.max }}
+            </td>
+          }
+          <td class="p-2">
+            Bouclier&nbsp;:&nbsp;{{ line.infos.shield.min }} -
+            {{ line.infos.shield.max }}<br />
+            CdF&nbsp;:&nbsp;{{ line.infos.forcefield.min }} -
+            {{ line.infos.forcefield.max }}
+          </td>
+          <td class="p-2">
+            Capacités&nbsp;:&nbsp;{{ line.infos.capacities }}<br />
+            Capacités élites&nbsp;:&nbsp;{{ line.infos.elite.capacities }}<br />
+          </td>
+          @if (line.type !== "bande") {
+            <td class="p-2">
+              PG&nbsp;:&nbsp;{{ line.infos.weapon.points }}<br />
+              Effets&nbsp;:&nbsp;{{ line.infos.weapon.effect }}
+            </td>
+          } @else {
+            <td class="p-2">
+              Débordement&nbsp;:&nbsp;{{ line.infos.outbreak.min }} -
+              {{ line.infos.outbreak.max }}<br />
+              Effets&nbsp;:&nbsp;{{ line.infos.outbreak.effects_min }} -
+              {{ line.infos.outbreak.effects_max }}
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <h2
+    class="orbitron text-2xl mt-4 ml-4 mb-2 tracking-widest [text-shadow:_0_0_4px_white]"
+  >
+    Cout des effets d'arme pour les PNJ
+  </h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="p-2 uppercase segoe-ui-bold-italic font-bold text-xs">
+          Effet
+        </th>
+        <th class="p-2 uppercase segoe-ui-bold-italic font-bold text-xs">
+          Cout
+        </th>
+        <th class="p-2 uppercase segoe-ui-bold-italic font-bold text-xs">
+          Disponibilité
+        </th>
+      </tr>
+    </thead>
+    <tbody class="text-sm">
+      @for (effect of db.effects; track effect) {
+        <tr class="even:bg-gray-800 odd:bg-gray-700">
+          <td class="p-2">{{ effect.name }}</td>
+          <td class="p-2">{{ effect.cost }}</td>
+          <td class="p-2">{{ effect.tags.join(", ") }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <h2
+    class="orbitron text-2xl mt-4 ml-4 mb-2 tracking-widest [text-shadow:_0_0_4px_white]"
+  >
+    Capacités les PNJ
+  </h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="p-2 uppercase segoe-ui-bold-italic font-bold text-xs">
+          Capacité
+        </th>
+        <th class="p-2 uppercase segoe-ui-bold-italic font-bold text-xs">
+          Description
+        </th>
+        <th class="p-2 uppercase segoe-ui-bold-italic font-bold text-xs">
+          Disponibilité
+        </th>
+      </tr>
+    </thead>
+    <tbody class="text-sm">
+      @for (capacity of db.capacities; track capacity) {
+        <tr class="even:bg-gray-800 odd:bg-gray-700">
+          <td class="p-2">{{ capacity.name }}</td>
+          <td class="p-2">{{ capacity.description }}</td>
+          <td class="p-2">{{ capacity.tags.join(", ") }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

@@ -6,7 +6,7 @@ import Npc from './model/npc'
 
 const TYPE_ORDER = [BANDE, HOSTILE, SALOPARD, COLOSSE, PATRON, PATRON_COLOSSE]
 
-class DbCapacity extends Capacity {
+export class DbCapacity extends Capacity {
 	tags: string[] = []
 	index: string = ''
 
@@ -20,7 +20,7 @@ class DbCapacity extends Capacity {
 	}
 }
 
-class DbEffect extends Effect {
+export class DbEffect extends Effect {
 	tags: string[] = []
 	index: string = ''
 	cost: number = 0
@@ -43,8 +43,17 @@ export class DatabaseService {
 	npcs: Npc[] = []
 	capacities: DbCapacity[] = []
 	effects: DbEffect[] = []
+	colors: string[] = COLORS
 
 	constructor() {
+		const json = localStorage.getItem('list')
+
+		if (json) {
+			const data = JSON.parse(json)
+			this.npcs = data.map((e: any) => new Npc(e))
+			this.sortNpcs()
+		}
+
 		for (const capacity of CAPACITIES) {
 			const c = new DbCapacity()
 			c.parse(capacity)
@@ -67,15 +76,42 @@ export class DatabaseService {
 				this.capacities.push(capacity)
 			}
 		}
+
+		for (const npc of this.npcs) {
+			this.update(npc)
+		}
+
+		this.capacities.sort((a, b) => a.index.localeCompare(b.index))
+		this.effects.sort((a, b) => a.index.localeCompare(b.index))
 	}
 
-	loadNpcs() {
-		const json = localStorage.getItem('list')
+	update(npc: Npc) {
+		if (!this.colors.includes(npc.color)) {
+			this.colors.push(npc.color)
+		}
 
-		if (json) {
-			const data = JSON.parse(json)
-			this.npcs = data.map((e: any) => new Npc(e))
-			this.sortNpcs()
+		for (const capacity of npc.capacities) {
+			if (!this.capacities.find(e => e.name === capacity.name)) {
+				const c = new DbCapacity()
+				c.name = capacity.name
+				c.description = capacity.description
+				c.tags = ['personnalisée']
+				c.index = c.name.toLowerCase() + ' personnalisée'
+				this.capacities.push(c)
+			}
+		}
+
+		for (const weapon of npc.weapons) {
+			for (const effect of weapon.effects) {
+				if (!this.effects.find(e => e.name === effect.name)) {
+					const e = new DbEffect()
+					e.name = effect.name
+					e.tags = ['personnalisé']
+					e.cost = 0
+					e.index = e.name.toLowerCase() + ' personnalisée'
+					this.effects.push(e)
+				}
+			}
 		}
 	}
 
@@ -90,6 +126,11 @@ export class DatabaseService {
 
 		this.sortNpcs()
 		this.saveNpcs()
+
+		this.update(npc)
+
+		this.capacities.sort((a, b) => a.index.localeCompare(b.index))
+		this.effects.sort((a, b) => a.index.localeCompare(b.index))
 	}
 
 	deleteNpc(npc: Npc) {

@@ -1,5 +1,5 @@
 import { Component, Input, ViewChild } from '@angular/core'
-import html2canvas from 'html2canvas'
+import { toPng } from 'html-to-image'
 import { ModalComponent } from '../modal/modal.component'
 
 @Component({
@@ -15,15 +15,12 @@ export class ModalCanvasComponent {
 	@ViewChild('modal') modal!: ModalComponent
 
 	async open(target: string) {
+		document.getElementById('canvas')!.innerHTML = ''
 		this.modal.open()
 
 		setTimeout(async () => {
-			const canvas = await html2canvas(<HTMLElement> document.getElementById(target)!.children[0], {
-				scrollX: 0,
-				scrollY: -window.scrollY
-			});
-
-			document.getElementById('canvas')!.innerHTML = '<img src="' + canvas.toDataURL() + '" />';
+			const dataUrl = await toPng(<HTMLElement> document.getElementById(target)!.children[0])
+			document.getElementById('canvas')!.innerHTML = '<img src="' + dataUrl + '" />';
 		}, 50)
 	}
 }

@@ -1,8 +1,9 @@
 import { Component, Input, ViewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { AutocompleteLibModule } from 'angular-ng-autocomplete'
 import { ColorPickerModule } from 'ngx-color-picker'
-import { ASPECTS_LABELS, BETE, CHAIR, COLORS, DAME, DERIVED_VALUES_LABELS, MACHINE, MASQUE } from '../constants'
-import { DatabaseService } from '../database.service'
+import { ASPECTS_LABELS, BETE, CHAIR, DAME, DERIVED_VALUES_LABELS, MACHINE, MASQUE } from '../constants'
+import { DatabaseService, DbCapacity, DbEffect } from '../database.service'
 import { IconComponent } from '../icon/icon.component'
 import { ModalComponent } from '../modal/modal.component'
 import Capacity from '../model/capacity'
@@ -14,7 +15,7 @@ import { arrayDown, arrayUp } from '../util'
 @Component({
   selector: 'app-npc-form',
   standalone: true,
-  imports: [FormsModule, ColorPickerModule, IconComponent, ModalComponent],
+  imports: [FormsModule, ColorPickerModule, IconComponent, ModalComponent, AutocompleteLibModule],
   templateUrl: './npc-form.component.html',
   styleUrl: './npc-form.component.scss'
 })
@@ -40,8 +41,6 @@ export class NpcFormComponent {
 	constructor(
 		readonly db: DatabaseService
 	) {}
-
-	colors = COLORS
 
 	computeProperty: { [key: string]: () => void } = {
 		defense: () => this.npc.computeDefense(),
@@ -96,4 +95,16 @@ export class NpcFormComponent {
 
 		this.generatorModal.close()
 	}
+
+	changed(val: string, target: { name: string }) {
+    target.name = val;
+  }
+
+  selected<T extends (Effect | Capacity)>(item: T, target: T) {
+    target.import(<any> item);
+  }
+
+  filter(items: (DbEffect | DbCapacity)[], query: string) {
+    return items.filter(e => e.index.includes(query.toLowerCase()));
+  }
 }

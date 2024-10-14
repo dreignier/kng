@@ -9,7 +9,7 @@
       <button
         class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
         (click)="saveNpc(npc)"
-        tabindex="-1"
+        title="Sauvegarder"
       >
         <app-icon class="size-5 block" icon="save"></app-icon>
       </button>
@@ -17,7 +17,7 @@
       <button
         class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
         (click)="image('npc')"
-        tabindex="-1"
+        title="Convertir en image"
       >
         <app-icon class="size-5 block" icon="camera"></app-icon>
       </button>
@@ -25,7 +25,7 @@
       <button
         class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
         (click)="openImport()"
-        tabindex="-1"
+        title="Importer"
       >
         <app-icon class="size-5 block" icon="import"></app-icon>
       </button>
@@ -33,7 +33,7 @@
       <button
         class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
         (click)="export(npc)"
-        tabindex="-1"
+        title="Exporter"
       >
         <app-icon class="size-5 block" icon="export"></app-icon>
       </button>
@@ -85,7 +85,7 @@
           <button
             class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
             (click)="editNpc(npc)"
-            tabindex="-1"
+            title="Modifier"
           >
             <app-icon class="size-5 block" icon="pencil"></app-icon>
           </button>
@@ -93,7 +93,7 @@
           <button
             class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
             (click)="image('npc-' + index)"
-            tabindex="-1"
+            title="Convertir en image"
           >
             <app-icon class="size-5 block" icon="camera"></app-icon>
           </button>
@@ -101,7 +101,7 @@
           <button
             class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
             (click)="export(npc)"
-            tabindex="-1"
+            title="Exporter"
           >
             <app-icon class="size-5 block" icon="export"></app-icon>
           </button>
@@ -109,7 +109,7 @@
         <button
           class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
           (click)="deleteNpc(npc)"
-          tabindex="-1"
+          title="Supprimer"
         >
           <app-icon class="size-5 block" icon="X"></app-icon>
         </button>

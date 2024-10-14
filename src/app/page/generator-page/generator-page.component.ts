@@ -34,9 +34,7 @@ export class GeneratorPageComponent {
 		readonly db: DatabaseService,
 		readonly message: MessageService,
 		readonly dialog: DialogService
-	) {
-		db.loadNpcs()
-	}
+	) {}
 
 	editNpc(npc: Npc) {
 		this.npc = new Npc()
