@@ -22,6 +22,12 @@ export const LOINTAINE = 'lointaine';
 export const ORGANIC = 'organique';
 export const ROBOT = 'robot';
 export const ARMORED = 'armuré';
+export const STANDARD = 'standard';
+export const ADVANCED = 'avancé';
+export const RARE = 'rare';
+export const PRESTIGE = 'prestige';
+export const HOPE = "relique d'espoir";
+export const IMAGES = ['knife', 'gun', 'hammer', 'module']
 
 export const COLORS = [
 	'#f25a1e', // Bête

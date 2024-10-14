@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core'
-import { BANDE, CAPACITIES, COLORS, COLOSSE, EFFECTS, HOSTILE, PATRON, PATRON_COLOSSE, SALOPARD } from './constants'
+import { ADVANCED, BANDE, CAPACITIES, COLORS, COLOSSE, EFFECTS, HOSTILE, PATRON, PATRON_COLOSSE, RARE, SALOPARD, STANDARD } from './constants'
 import Capacity from './model/capacity'
 import Effect from './model/effect'
+import Equipment, { AttackRule } from './model/equipment'
 import Npc from './model/npc'
 
 const TYPE_ORDER = [BANDE, HOSTILE, SALOPARD, COLOSSE, PATRON, PATRON_COLOSSE]
+const LEVEL_ORDER = [STANDARD, ADVANCED, RARE]
 
 export class DbCapacity extends Capacity {
 	tags: string[] = []
@@ -41,17 +43,25 @@ export class DbEffect extends Effect {
 export class DatabaseService {
 
 	npcs: Npc[] = []
+	equipments: Equipment[] = []
 	capacities: DbCapacity[] = []
 	effects: DbEffect[] = []
 	colors: string[] = COLORS
 
 	constructor() {
-		const json = localStorage.getItem('list')
+		let json = localStorage.getItem('list')
 
 		if (json) {
 			const data = JSON.parse(json)
 			this.npcs = data.map((e: any) => new Npc(e))
 			this.sortNpcs()
+		}
+
+		json = localStorage.getItem('equipmentList')
+		if (json) {
+			const data = JSON.parse(json)
+			this.equipments = data.map((e: any) => new Equipment(e))
+			this.sortEquipments()
 		}
 
 		for (const capacity of CAPACITIES) {
@@ -78,19 +88,25 @@ export class DatabaseService {
 		}
 
 		for (const npc of this.npcs) {
-			this.update(npc)
+			this.updateFromNpc(npc)
+		}
+
+		for (const equipment of this.equipments) {
+			this.updateFromEquipment(equipment)
 		}
 
 		this.capacities.sort((a, b) => a.index.localeCompare(b.index))
 		this.effects.sort((a, b) => a.index.localeCompare(b.index))
 	}
 
-	update(npc: Npc) {
-		if (!this.colors.includes(npc.color)) {
-			this.colors.push(npc.color)
+	updateColor(color: string) {
+		if (!this.colors.includes(color)) {
+			this.colors.push(color)
 		}
+	}
 
-		for (const capacity of npc.capacities) {
+	updateCapacities(capacities: Capacity[]) {
+		for (const capacity of capacities) {
 			if (!this.capacities.find(e => e.name === capacity.name)) {
 				const c = new DbCapacity()
 				c.name = capacity.name
@@ -100,42 +116,84 @@ export class DatabaseService {
 				this.capacities.push(c)
 			}
 		}
+	}
+
+	updateEffects(effects: Effect[]) {
+		for (const effect of effects) {
+			if (!this.effects.find(e => e.name === effect.name)) {
+				const e = new DbEffect()
+				e.name = effect.name
+				e.tags = ['personnalisé']
+				e.cost = 0
+				e.index = e.name.toLowerCase() + ' personnalisée'
+				this.effects.push(e)
+			}
+		}
+	}
+
+	updateFromNpc(npc: Npc) {
+		this.updateColor(npc.color)
+		this.updateCapacities(npc.capacities)
 
 		for (const weapon of npc.weapons) {
-			for (const effect of weapon.effects) {
-				if (!this.effects.find(e => e.name === effect.name)) {
-					const e = new DbEffect()
-					e.name = effect.name
-					e.tags = ['personnalisé']
-					e.cost = 0
-					e.index = e.name.toLowerCase() + ' personnalisée'
-					this.effects.push(e)
-				}
+			this.updateEffects(weapon.effects)
+		}
+	}
+
+	updateFromEquipment(equipment: Equipment) {
+		for (const rule of equipment.rules) {
+			if (rule instanceof AttackRule) {
+				this.updateEffects(rule.effects)
 			}
 		}
 	}
 
 	saveNpc(npc: Npc) {
-		const index = this.npcs.findIndex(e => e.name === npc.name)
+		const data = new Npc(npc)
+
+		const index = this.npcs.findIndex(e => e.name === data.name)
 
 		if (index === -1) {
-			this.npcs.push(npc)
+			this.npcs.push(data)
 		} else {
-			this.npcs[index] = npc
+			this.npcs[index] = data
 		}
 
 		this.sortNpcs()
 		this.saveNpcs()
 
-		this.update(npc)
+		this.updateFromNpc(data)
 
 		this.capacities.sort((a, b) => a.index.localeCompare(b.index))
+		this.effects.sort((a, b) => a.index.localeCompare(b.index))
+	}
+
+	saveEquipment(equipment: Equipment) {
+		const data = new Equipment(equipment)
+		const index = this.equipments.findIndex(e => e.name === data.name)
+
+		if (index === -1) {
+			this.equipments.push(data)
+		} else {
+			this.equipments[index] = data
+		}
+
+		this.sortEquipments()
+		this.saveEquipments()
+
+		this.updateFromEquipment(data)
+
 		this.effects.sort((a, b) => a.index.localeCompare(b.index))
 	}
 
 	deleteNpc(npc: Npc) {
 		this.npcs = this.npcs.filter(e => e.name !== npc.name)
 		this.saveNpcs()
+	}
+
+	deleteEquipment(equipment: Equipment) {
+		this.equipments = this.equipments.filter(e => e.name !== equipment.name)
+		this.saveEquipments()
 	}
 
 	sortNpcs() {
@@ -182,8 +240,49 @@ export class DatabaseService {
 		})
 	}
 
+	sortEquipments() {
+		this.equipments = this.equipments.sort((a, b) => {
+			if (a.image !== b.image) {
+				if (!a.image) {
+					return -1
+				}
+
+				if (!b.image) {
+					return 1
+				}
+
+				return a.image.localeCompare(b.image)
+			}
+
+			const levelA = LEVEL_ORDER.indexOf(a.type)
+			const levelB = LEVEL_ORDER.indexOf(b.type)
+
+			if (levelA !== levelB) {
+        if (levelA !== -1 && levelB !== -1) {
+        	return levelA - levelB
+				}
+
+				if (levelA !== -1) {
+					return -1
+				}
+
+				if (levelB !== -1) {
+					return 1
+				}
+
+				return a.type.localeCompare(b.type)
+      }
+
+			return a.name.localeCompare(b.name)
+		})
+	}
+
 	saveNpcs() {
-		localStorage.setItem('list', JSON.stringify(this.npcs))
+		localStorage.setItem('list', JSON.stringify(this.npcs.map(e => e.export())))
+	}
+
+	saveEquipments() {
+		localStorage.setItem('equipmentList', JSON.stringify(this.equipments))
 	}
 
 	importNpcs(npcs: Npc[], strategy: 'rename' | 'ignore' | 'replace') {
@@ -201,10 +300,45 @@ export class DatabaseService {
 
 		this.sortNpcs()
 		this.saveNpcs()
+
+		for (const npc of this.npcs) {
+			this.updateFromNpc(npc)
+		}
+
+		this.capacities.sort((a, b) => a.index.localeCompare(b.index))
+		this.effects.sort((a, b) => a.index.localeCompare(b.index))
 	}
 
 	exportNpcs(names: Set<string>) {
 		const npcs = this.npcs.filter(e => names.has(e.name)).map(e => e.export())
 		return JSON.stringify(npcs)
+	}
+
+	exportEquipments(names: Set<string>) {
+		const equipments = this.equipments.filter(e => names.has(e.name))
+		return JSON.stringify(equipments)
+	}
+
+	importEquipments(equipments: Equipment[], strategy: 'rename' | 'ignore' | 'replace') {
+		if (strategy === 'rename') {
+			for (const equipment of equipments) {
+				if (this.equipments.find(e => e.name === equipment.name)) {
+					equipment.name += ' bis'
+				}
+			}
+		} else if (strategy === 'ignore') {
+			equipments = equipments.filter(e => !this.equipments.find(f => f.name === e.name))
+		}
+
+		this.equipments = this.equipments.concat(equipments)
+
+		this.sortEquipments()
+		this.saveEquipments()
+
+		for (const equipment of this.equipments) {
+			this.updateFromEquipment(equipment)
+		}
+
+		this.effects.sort((a, b) => a.index.localeCompare(b.index))
 	}
 }

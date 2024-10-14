@@ -1,0 +1,608 @@
+<div class="grid grid-cols-12 gap-1 bg-[#2e2a31] p-2 pt-0">
+  <div class="col-span-3 flex flex-col">
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Nom
+    </label>
+    <div class="flex flex-row">
+      <input
+        class="text-[#2e2a31] h-[30px] pl-1 flex-grow"
+        type="text"
+        [(ngModel)]="equipment.name"
+        placeholder="Nom"
+      />
+      <button
+        class="size-[30px] min-w-[30px] flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
+        (click)="equipment.longName = !equipment.longName"
+      >
+        <app-icon
+          class="size-5 block"
+          icon="{{ equipment.longName ? 'zoom-out' : 'zoom-in' }}"
+        ></app-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="col-span-3 flex flex-col">
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Niveau
+    </label>
+    <select
+      [(ngModel)]="equipment.level"
+      class="bg-white text-[#2e2a31] h-[30px] pl-1"
+    >
+      <option value="standard">Standard</option>
+      <option value="avancé">Avancé</option>
+      <option value="rare">Rare</option>
+      <option value="prestige">Prestige</option>
+      <option value="relique d'espoir">Relique d'espoir</option>
+    </select>
+  </div>
+
+  <div class="col-span-3 flex flex-col">
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Type
+    </label>
+    <input
+      class="text-[#2e2a31] h-[30px] pl-1"
+      type="text"
+      [(ngModel)]="equipment.type"
+      placeholder="Type"
+    />
+  </div>
+
+  <div class="col-span-3 flex flex-col">
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Coût
+    </label>
+    <input
+      class="text-[#2e2a31] h-[30px] pl-1"
+      type="number"
+      [(ngModel)]="equipment.cost"
+    />
+  </div>
+
+  <div class="col-span-12 flex flex-col">
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Image
+    </label>
+
+    <div class="flex flex-row">
+      <div class="mr-8 p-1 border-2 border-white">
+        <img
+          src="/assets/icon-{{ equipment.image }}.png"
+          class="size-10 invert"
+        />
+      </div>
+      @for (image of images; track image) {
+        <div
+          class="group cursor-pointer mr-4 size-12 p-1 border-[#2e2a31] hover:invert-0 hover:bg-white"
+          (click)="equipment.image = image"
+        >
+          <img
+            src="/assets/icon-{{ image }}.png"
+            class="size-10 invert group-hover:invert-0"
+          />
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="col-span-12 flex flex-col">
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Surnoms
+    </label>
+    <input
+      class="text-[#2e2a31] h-[30px] pl-1"
+      type="text"
+      [(ngModel)]="equipment.nicknames"
+    />
+
+    <label
+      class="mt-1 uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Sommaire
+    </label>
+    <textarea
+      class="text-[#2e2a31] h-[85px] pl-1"
+      [(ngModel)]="equipment.summary"
+    ></textarea>
+
+    <label
+      class="mt-1 uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Description
+    </label>
+    <textarea
+      class="text-[#2e2a31] h-[85px] pl-1"
+      [(ngModel)]="equipment.description"
+    ></textarea>
+
+    <label
+      class="mt-1 uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Citation
+    </label>
+    <textarea
+      class="text-[#2e2a31] h-[85px] pl-1"
+      [(ngModel)]="equipment.quote"
+    ></textarea>
+
+    <label
+      class="mt-1 uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Auteur
+    </label>
+    <input
+      class="text-[#2e2a31] h-[30px] pl-1"
+      type="text"
+      [(ngModel)]="equipment.author"
+    />
+  </div>
+
+  @for (rule of equipment.rules; track rule) {
+    <div
+      class="mt-2 col-span-12 grid grid-cols-12 gap-1 p-1 pt-1.5 bg-[#42505a] relative"
+    >
+      <button
+        class="size-7 absolute top-1 left-1 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+        (click)="upRule(rule)"
+      >
+        <app-icon class="size-5 block" icon="arrow-up"></app-icon>
+      </button>
+      <button
+        class="size-7 absolute top-1 left-[34px] flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+        (click)="downRule(rule)"
+      >
+        <app-icon class="size-5 block" icon="arrow-down"></app-icon>
+      </button>
+
+      <button
+        class="size-7 absolute top-1 right-1 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+        (click)="removeRule(rule)"
+        tabindex="-1"
+      >
+        <app-icon class="size-5 block" icon="X"></app-icon>
+      </button>
+
+      @if (isDescriptiveRule(rule)) {
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Nom
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="text"
+            [(ngModel)]="rule.name"
+            placeholder="Nom"
+          />
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Niveau
+          </label>
+          <select
+            [(ngModel)]="rule.level"
+            class="bg-white text-[#2e2a31] h-[30px] pl-1"
+          >
+            <option value="standard">Standard</option>
+            <option value="avancé">Avancé</option>
+            <option value="rare">Rare</option>
+            <option value="prestige">Prestige</option>
+            <option value="relique d'espoir">Relique d'espoir</option>
+          </select>
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            En-tête
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="text"
+            [(ngModel)]="rule.important"
+            placeholder="En-tête"
+          />
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Coût
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="number"
+            [(ngModel)]="rule.cost"
+            placeholder="Coût"
+          />
+        </div>
+
+        <div class="col-span-12 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Description
+          </label>
+          <textarea
+            class="text-[#2e2a31] h-[85px] pl-1"
+            [(ngModel)]="rule.description"
+          ></textarea>
+        </div>
+      } @else if (isAttackRule(rule)) {
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Nom
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="text"
+            [(ngModel)]="rule.name"
+            placeholder="Nom"
+          />
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Niveau
+          </label>
+          <select
+            [(ngModel)]="rule.level"
+            class="bg-white text-[#2e2a31] h-[30px] pl-1"
+          >
+            <option value="standard">Standard</option>
+            <option value="avancé">Avancé</option>
+            <option value="rare">Rare</option>
+            <option value="prestige">Prestige</option>
+            <option value="relique d'espoir">Relique d'espoir</option>
+          </select>
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Dégâts
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="text"
+            [(ngModel)]="rule.damage"
+            placeholder="Dégâts"
+          />
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Violence
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="text"
+            [(ngModel)]="rule.violence"
+            placeholder="Violence"
+          />
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Portée
+          </label>
+          <select
+            [(ngModel)]="rule.range"
+            class="bg-white text-[#2e2a31] h-[28px] pl-1 flex-grow"
+          >
+            <option value="contact">Contact</option>
+            <option value="courte">Courte</option>
+            <option value="moyenne">Moyenne</option>
+            <option value="longue">Longue</option>
+            <option value="lointaine">Lointaine</option>
+          </select>
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Énergie
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="number"
+            [(ngModel)]="rule.energy"
+            placeholder="Énergie"
+          />
+        </div>
+
+        <div class="col-span-12 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Effets
+          </label>
+          <div class="col-span-12 grid grid-cols-4 gap-1 mb-1">
+            @for (effect of rule.effects; track effect) {
+              <div class="flex flex-row">
+                <ng-autocomplete
+                  class="npc-autocomplete flex-grow"
+                  [data]="db.effects"
+                  searchKeyword="name"
+                  [initialValue]="effect"
+                  [customFilter]="filter"
+                  [itemTemplate]="itemTemplate"
+                  (inputChanged)="changed($event, effect)"
+                  (selected)="selected($event, effect)"
+                  [focusFirst]="true"
+                  placeholder="Nom"
+                ></ng-autocomplete>
+                <button
+                  class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
+                  (click)="removeEffect(rule, effect)"
+                  tabindex="-1"
+                >
+                  <app-icon class="size-5 block" icon="X"></app-icon>
+                </button>
+              </div>
+            }
+
+            <button
+              class="h-[28px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+              (click)="rule.newEffect()"
+            >
+              <app-icon
+                class="size-5 inline-block"
+                icon="plus-circle"
+              ></app-icon>
+              <span>Effet</span>
+            </button>
+          </div>
+        </div>
+      } @else if (isModuleRule(rule)) {
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Niveau
+          </label>
+          <select
+            [(ngModel)]="rule.level"
+            class="bg-white text-[#2e2a31] h-[30px] pl-1"
+          >
+            <option value="standard">Standard</option>
+            <option value="avancé">Avancé</option>
+            <option value="rare">Rare</option>
+            <option value="prestige">Prestige</option>
+            <option value="relique d'espoir">Relique d'espoir</option>
+          </select>
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Slots
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="text"
+            [(ngModel)]="rule.slots"
+            placeholder="Slots"
+          />
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Activation
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="text"
+            [(ngModel)]="rule.activation"
+            placeholder="Activation"
+          />
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Durée
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="text"
+            [(ngModel)]="rule.duration"
+            placeholder="Durée"
+          />
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Portée
+          </label>
+          <select
+            [(ngModel)]="rule.range"
+            class="bg-white text-[#2e2a31] h-[28px] pl-1 flex-grow"
+          >
+            <option value="contact">Contact</option>
+            <option value="courte">Courte</option>
+            <option value="moyenne">Moyenne</option>
+            <option value="longue">Longue</option>
+            <option value="lointaine">Lointaine</option>
+          </select>
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Énergie
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="number"
+            [(ngModel)]="rule.energy"
+            placeholder="Énergie"
+          />
+        </div>
+      } @else if (isDroneRule(rule)) {
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Niveau
+          </label>
+          <select
+            [(ngModel)]="rule.level"
+            class="bg-white text-[#2e2a31] h-[30px] pl-1"
+          >
+            <option value="standard">Standard</option>
+            <option value="avancé">Avancé</option>
+            <option value="rare">Rare</option>
+            <option value="prestige">Prestige</option>
+            <option value="relique d'espoir">Relique d'espoir</option>
+          </select>
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Défense
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="number"
+            [(ngModel)]="rule.defense"
+            placeholder="Défense"
+          />
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Réaction
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="number"
+            [(ngModel)]="rule.reaction"
+            placeholder="Réaction"
+          />
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Armure
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="number"
+            [(ngModel)]="rule.armor"
+            placeholder="Armure"
+          />
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            CdF
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="number"
+            [(ngModel)]="rule.forcefield"
+            placeholder="CdF"
+          />
+        </div>
+
+        <div class="col-span-3 flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Vitesse
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="number"
+            [(ngModel)]="rule.speed"
+            placeholder="Vitesse"
+          />
+        </div>
+      }
+    </div>
+  }
+
+  <button
+    class="mt-4 col-span-3 h-[28px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+    (click)="equipment.newDescriptiveRule()"
+  >
+    <app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+    <span class="ml-1">Ajouter une ligne descriptive</span>
+  </button>
+
+  <button
+    class="mt-4 col-span-3 h-[28px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+    (click)="equipment.newAttackRule()"
+  >
+    <app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+    <span class="ml-1">Ajouter une attaque</span>
+  </button>
+
+  <button
+    class="mt-4 col-span-3 h-[28px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+    (click)="equipment.newModuleRule()"
+  >
+    <app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+    <span class="ml-1">Ajouter une ligne de module</span>
+  </button>
+
+  <button
+    class="mt-4 col-span-3 h-[28px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+    (click)="equipment.newDroneRule()"
+  >
+    <app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+    <span class="ml-1">Ajouter une ligne de drone</span>
+  </button>
+</div>
+
+<ng-template #itemTemplate let-item>
+  <a>
+    <strong [innerHTML]="item.name"></strong>
+  </a>
+</ng-template>

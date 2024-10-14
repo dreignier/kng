@@ -1,0 +1,319 @@
+<div
+  class="equipment w-[362px] bg-primary text-black text-[13px] relative"
+  [class.module]="equipment.image === 'module'"
+  [class.standard]="equipment.level === 'standard'"
+  [class.advanced]="equipment.level === 'avancé'"
+  [class.rare]="equipment.level === 'rare'"
+  [class.prestige]="equipment.level === 'prestige'"
+  [class.hope]="equipment.level === 'relique d\'espoir'"
+>
+  <div
+    class="header flex justify-between items-stretch h-[51px] overflow-hidden border-t-2 border-r-2 border-l-2 border-secondary"
+  >
+    <div
+      class="logo size-[52px] ml-5 flex justify-center items-center relative bottom-[2px] flex-shrink-0"
+    >
+      <img
+        class="size-[40px] invert"
+        src="/assets/icon-{{ equipment.image }}.png"
+      />
+    </div>
+
+    <div class="flex flex-col flex-grow">
+      <div
+        class="segoe-ui-bold font-bold uppercase text-white text-center flex-grow mr-5"
+        [class.text-[15px]]="!equipment.longName"
+        [class.pt-[7px]]="!equipment.longName"
+        [class.text-[10px]]="equipment.longName"
+        [class.pt-0]="equipment.longName"
+      >
+        {{ equipment.name }}
+      </div>
+      <div
+        class="type bg-secondary text-center ml-3 mr-[46px] uppercase text-[10px] relative flex-shrink-0"
+      >
+        {{ equipment.type }}
+      </div>
+    </div>
+
+    <div
+      class="cost text-[#f04827] segoe-ui-bold italic font-bold text-base w-[37px] pt-2 leading-[15px] relative flex-shrink-0"
+    >
+      PG<br />{{ equipment.cost }}
+    </div>
+  </div>
+
+  <div class="text-justify p-[5px] border-x-2 border-tertiary">
+    @if (equipment.nicknames) {
+      <p class="my-[5px] mx-0 segoe-ui-italic text-right text-[12px]">
+        {{ equipment.nicknames.includes("/") ? "Surnoms" : "Surnom" }}&nbsp;:
+        {{ equipment.nicknames }}
+      </p>
+    }
+
+    @if (equipment.summary) {
+      <p class="my-[5px] mx-0 text-justify italic">{{ equipment.summary }}</p>
+    }
+
+    @if (equipment.description) {
+      @for (text of equipment.description.split("\n"); track text) {
+        <p class="my-[5px] mx-0 text-justify">{{ text }}</p>
+      }
+    }
+
+    @if (equipment.quote || equipment.author) {
+      <p class="my-[5px] mx-0">
+        « <span class="italic">{{ equipment.quote }}</span> »
+        @if (equipment.author) {
+          —&nbsp;{{ equipment.author }}
+        }
+      </p>
+    }
+  </div>
+
+  <div class="flex flex-col">
+    @for (rule of equipment.rules; track rule) {
+      <div
+        class="flex bg-tertiary px-[2px] py-[1px] first:pt-[2px] last:pb-[2px]"
+        [class.standard]="rule.level === 'standard'"
+        [class.advanced]="rule.level === 'avancé'"
+        [class.rare]="rule.level === 'rare'"
+        [class.prestige]="rule.level === 'prestige'"
+        [class.hope]="rule.level === 'relique d\'espoir'"
+      >
+        @if (rule.name) {
+          <div
+            class="grid items-center segoe-ui-bold text-center w-[70px] min-w-[70px] py-0 px-[10px]"
+          >
+            {{ rule.name }}
+          </div>
+        }
+
+        @if (isDescriptiveRule(rule)) {
+          <div class="bg-primary py-0 px-[3px] flex-grow">
+            @if (rule.important || rule.cost) {
+              <p class="segoe-ui-bold italic font-bold text-base mb-[5px]">
+                @if (rule.important) {
+                  <span class="text-[14px]">{{ rule.important }}</span>
+                }
+
+                @if (rule.important && rule.cost) {
+                  <span class="text-[14px]"> - </span>
+                }
+
+                @if (rule.cost) {
+                  <span class="text-[#f04827]">{{ rule.cost }} PG</span>
+                }
+              </p>
+            }
+
+            @if (rule.description) {
+              @for (text of rule.description.split("\n"); track text) {
+                <p class="text-justify">{{ text }}</p>
+              }
+            }
+          </div>
+        } @else if (isAttackRule(rule)) {
+          <div class="flex flex-col flex-grow">
+            <div class="grid grid-cols-4 justify-between gap-[2px]">
+              <div class="flex flex-col">
+                <div
+                  class="uppercase segoe-ui-bold font-bold text-center text-[10px] tracking-[0.5px] pt-[5px] pb-[2px]"
+                >
+                  Dégâts
+                </div>
+                <div
+                  class="text-center bg-primary py-0 px-[5px] flex-grow text-[11px]"
+                >
+                  {{ rule.damage || "-" }}
+                </div>
+              </div>
+
+              <div class="flex flex-col">
+                <div
+                  class="uppercase segoe-ui-bold font-bold text-center text-[10px] tracking-[0.5px] pt-[5px] pb-[2px]"
+                >
+                  Violence
+                </div>
+                <div
+                  class="text-center bg-primary py-0 px-[5px] flex-grow text-[11px]"
+                >
+                  {{ rule.violence || "-" }}
+                </div>
+              </div>
+
+              <div class="flex flex-col">
+                <div
+                  class="uppercase segoe-ui-bold font-bold text-center text-[10px] tracking-[0.5px] pt-[5px] pb-[2px]"
+                >
+                  Portée
+                </div>
+                <div
+                  class="text-center bg-primary py-0 px-[5px] flex-grow text-[11px] capitalize"
+                >
+                  {{ rule.range || "-" }}
+                </div>
+              </div>
+
+              <div class="flex flex-col">
+                <div
+                  class="uppercase segoe-ui-bold font-bold text-center text-[10px] tracking-[0.5px] pt-[5px] pb-[2px]"
+                >
+                  Énergie
+                </div>
+                <div
+                  class="text-center bg-primary py-0 px-[5px] flex-grow text-[11px]"
+                >
+                  {{ rule.energy || "-" }}
+                </div>
+              </div>
+            </div>
+
+            @if (rule.effects.length) {
+              <div class="bg-primary mt-[2px] text-[11px] pl-[3px]">
+                <span class="font-bold">
+                  {{ rule.effects.length > 1 ? "Effets" : "Effet" }}&nbsp;:
+                </span>
+                <span class="italic">{{ effects(rule) }}</span>
+              </div>
+            }
+          </div>
+        } @else if (isModuleRule(rule)) {
+          <div class="grid grid-cols-5 justify-between gap-[2px]">
+            <div class="flex flex-col">
+              <div
+                class="uppercase segoe-ui-bold font-bold text-center text-[10px] tracking-[0.5px] pt-[5px] pb-[2px]"
+              >
+                Slots
+              </div>
+              <div
+                class="text-center bg-primary py-0 px-[5px] flex-grow text-[11px]"
+              >
+                {{ rule.slots || "-" }}
+              </div>
+            </div>
+
+            <div class="flex flex-col">
+              <div
+                class="uppercase segoe-ui-bold font-bold text-center text-[10px] tracking-[0.5px] pt-[5px] pb-[2px]"
+              >
+                Activation
+              </div>
+              <div
+                class="text-center bg-primary py-0 px-[5px] flex-grow text-[11px]"
+              >
+                {{ rule.activation || "-" }}
+              </div>
+            </div>
+
+            <div class="flex flex-col">
+              <div
+                class="uppercase segoe-ui-bold font-bold text-center text-[10px] tracking-[0.5px] pt-[5px] pb-[2px]"
+              >
+                Durée
+              </div>
+              <div
+                class="text-center bg-primary py-0 px-[5px] flex-grow text-[11px]"
+              >
+                {{ rule.duration || "-" }}
+              </div>
+            </div>
+
+            <div class="flex flex-col">
+              <div
+                class="uppercase segoe-ui-bold font-bold text-center text-[10px] tracking-[0.5px] pt-[5px] pb-[2px]"
+              >
+                Portée
+              </div>
+              <div
+                class="text-center bg-primary py-0 px-[5px] flex-grow text-[11px] capitalize"
+              >
+                {{ rule.range || "-" }}
+              </div>
+            </div>
+
+            <div class="flex flex-col">
+              <div
+                class="uppercase segoe-ui-bold font-bold text-center text-[10px] tracking-[0.5px] pt-[5px] pb-[2px]"
+              >
+                Énergie
+              </div>
+              <div
+                class="text-center bg-primary py-0 px-[5px] flex-grow text-[11px]"
+              >
+                {{ rule.energy || "-" }}
+              </div>
+            </div>
+          </div>
+        } @else if (isDroneRule(rule)) {
+          <div class="grid grid-cols-5 justify-between gap-[2px] flex-grow">
+            <div class="flex flex-col">
+              <div
+                class="uppercase segoe-ui-bold font-bold text-center text-[10px] tracking-[0.5px] pt-[5px] pb-[2px]"
+              >
+                Défense
+              </div>
+              <div
+                class="text-center bg-primary py-0 px-[5px] flex-grow text-[11px]"
+              >
+                {{ rule.defense || "-" }}
+              </div>
+            </div>
+
+            <div class="flex flex-col">
+              <div
+                class="uppercase segoe-ui-bold font-bold text-center text-[10px] tracking-[0.5px] pt-[5px] pb-[2px]"
+              >
+                Réaction
+              </div>
+              <div
+                class="text-center bg-primary py-0 px-[5px] flex-grow text-[11px]"
+              >
+                {{ rule.reaction || "-" }}
+              </div>
+            </div>
+
+            <div class="flex flex-col">
+              <div
+                class="uppercase segoe-ui-bold font-bold text-center text-[10px] tracking-[0.5px] pt-[5px] pb-[2px]"
+              >
+                Armure
+              </div>
+              <div
+                class="text-center bg-primary py-0 px-[5px] flex-grow text-[11px]"
+              >
+                {{ rule.armor || "-" }}
+              </div>
+            </div>
+
+            <div class="flex flex-col">
+              <div
+                class="uppercase segoe-ui-bold font-bold text-center text-[10px] tracking-[0.5px] pt-[5px] pb-[2px]"
+              >
+                CdF
+              </div>
+              <div
+                class="text-center bg-primary py-0 px-[5px] flex-grow text-[11px]"
+              >
+                {{ rule.forcefield || "-" }}
+              </div>
+            </div>
+
+            <div class="flex flex-col">
+              <div
+                class="uppercase segoe-ui-bold font-bold text-center text-[10px] tracking-[0.5px] pt-[5px] pb-[2px]"
+              >
+                Vitesse
+              </div>
+              <div
+                class="text-center bg-primary py-0 px-[5px] flex-grow text-[11px]"
+              >
+                {{ rule.speed || "-" }}
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

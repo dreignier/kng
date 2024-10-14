@@ -1,0 +1,251 @@
+<div class="2xl:flex 2xl:flex-row 2xl:justify-between">
+  <div class="m-3 flex-grow">
+    <app-npc-form [npc]="npc"></app-npc-form>
+  </div>
+
+  <div class="m-3 sm:flex sm:flex-col sm:items-center 2xl:block 2xl:flex-none">
+    <app-npc id="npc" [npc]="npc"></app-npc>
+    <div class="flex flex-row mt-1">
+      <button
+        class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+        (click)="saveNpc(npc)"
+        title="Sauvegarder"
+      >
+        <app-icon class="size-5 block" icon="save"></app-icon>
+      </button>
+
+      <button
+        class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+        (click)="image('npc')"
+        title="Convertir en image"
+      >
+        <app-icon class="size-5 block" icon="camera"></app-icon>
+      </button>
+
+      <button
+        class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+        (click)="openImport()"
+        title="Importer"
+      >
+        <app-icon class="size-5 block" icon="import"></app-icon>
+      </button>
+
+      <button
+        class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+        (click)="export(npc)"
+        title="Exporter"
+      >
+        <app-icon class="size-5 block" icon="export"></app-icon>
+      </button>
+    </div>
+  </div>
+</div>
+
+<hr
+  class="mx-20 my-10 border border-white [box-shadow:_-0_-0_10px_5px_white]"
+/>
+
+<div class="flex flex-row items-center">
+  <h2
+    class="orbitron text-4xl ml-4 mb-2 tracking-widest [text-shadow:_0_0_4px_white]"
+  >
+    PNJ sauvegardés
+  </h2>
+  <button
+    class="h-7 ml-5 px-1 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+    (click)="openMassImport()"
+  >
+    <app-icon class="size-5 block" icon="import"></app-icon>
+    <span class="ml-1">Importer plusieurs PNJ</span>
+  </button>
+
+  <button
+    class="h-7 ml-5 px-1 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+    (click)="openMassExport()"
+  >
+    <app-icon class="size-5 block" icon="export"></app-icon>
+    <span class="ml-1">Exporter plusieurs PNJ</span>
+  </button>
+</div>
+
+<div class="ml-4 mb-3 flex items-center">
+  <app-icon class="inline-block size-5 mr-1" icon="warning"></app-icon>
+  <span class="text-sm">
+    Les PNJ sauvegardés sont stockés dans les données locales de votre
+    navigateur.
+  </span>
+</div>
+
+<div class="flex flex-row flex-wrap justify-center">
+  @for (npc of db.npcs; track npc; let index = $index) {
+    <div class="mx-3 mb-10">
+      <app-npc id="npc-{{ $index }}" [npc]="npc"></app-npc>
+      <div class="flex flex-row justify-between mt-1">
+        <div class="flex flex-row">
+          <button
+            class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+            (click)="editNpc(npc)"
+            title="Modifier"
+          >
+            <app-icon class="size-5 block" icon="pencil"></app-icon>
+          </button>
+
+          <button
+            class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+            (click)="image('npc-' + index)"
+            title="Convertir en image"
+          >
+            <app-icon class="size-5 block" icon="camera"></app-icon>
+          </button>
+
+          <button
+            class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+            (click)="export(npc)"
+            title="Exporter"
+          >
+            <app-icon class="size-5 block" icon="export"></app-icon>
+          </button>
+        </div>
+        <button
+          class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+          (click)="deleteNpc(npc)"
+          title="Supprimer"
+        >
+          <app-icon class="size-5 block" icon="X"></app-icon>
+        </button>
+      </div>
+    </div>
+  }
+</div>
+
+<app-modal-canvas #imageModal></app-modal-canvas>
+
+<app-modal #importModal>
+  <p class="text-justify text-sm">
+    Vous pouvez coller ici le résultat d'un export de PNJ pour l'importer.
+  </p>
+
+  <div class="flex flex-col mt-2">
+    <textarea
+      class="text-[#2e2a31] h-24 pl-1 text-sm"
+      [(ngModel)]="imported"
+    ></textarea>
+
+    <button
+      class="h-[28px] mt-2 border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+      (click)="import()"
+    >
+      <app-icon class="size-5 block" icon="import"></app-icon>
+      <span>Importer</span>
+    </button>
+  </div>
+</app-modal>
+
+<app-modal #exportModal>
+  <p class="text-justify text-sm">
+    Vous pouvez copier/coller ce texte et l'utiliser pour importer un PNJ dans
+    tout outil supportant ce format. Vous pouvez bien sur l'utiliser dans
+    l'outil d'import de Knight NPC Generator.
+  </p>
+
+  <div class="flex flex-col mt-2">
+    <textarea class="text-[#2e2a31] h-24 pl-1 text-sm">{{ exported }}</textarea>
+  </div>
+</app-modal>
+
+<app-modal #massImportModal>
+  <p class="text-justify text-sm">
+    Vous pouvez coller ici le résultat d'un export d'un ou plusieurs PNJ pour
+    l'importer.
+  </p>
+
+  <div class="flex flex-col mt-2">
+    <textarea
+      class="text-[#2e2a31] h-24 pl-1 text-sm"
+      [(ngModel)]="imported"
+    ></textarea>
+
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs block text-center mt-2 mb-1"
+      for="massImportStrategy"
+    >
+      Stratégie de gestion des doublons
+    </label>
+    <select
+      id="massImportStrategy"
+      class="bg-white text-[#2e2a31] h-[30px] pl-1"
+      [(ngModel)]="massImportStrategy"
+    >
+      <option value="rename">Renommer les doublons</option>
+      <option value="ignore">Ne pas importer les doublons</option>
+      <option value="replace">
+        Écraser les données locales avec les doublons
+      </option>
+    </select>
+
+    <button
+      class="h-[28px] mt-2 border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+      (click)="massImport()"
+    >
+      <app-icon class="size-5 block" icon="import"></app-icon>
+      <span class="ml-1">Importer</span>
+    </button>
+  </div>
+</app-modal>
+
+<app-modal #massExportModal>
+  <p class="text-justify text-sm">
+    Sélectionnez les PNJ que vous voulez exporter puis utiliser le bouton pour
+    générer les données.
+  </p>
+
+  <div class="flex flex-col mt-2">
+    <button
+      class="h-[28px] mt-2 mb-1 border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+      (click)="massExportSelectAll()"
+    >
+      <app-icon class="size-5 block" icon="check-circle"></app-icon>
+      <span class="ml-1">Tout sélectionner</span>
+    </button>
+
+    @for (npc of db.npcs; track npc) {
+      <button
+        class="min-h-[30px] text-left flex items-center border border-white bg-white my-1 hover:bg-[#2e2a31]"
+        [style.color]="npc.color"
+        (click)="
+          massExportNames.has(npc.name)
+            ? massExportNames.delete(npc.name)
+            : massExportNames.add(npc.name)
+        "
+      >
+        <span class="mr-2 size-5">
+          @if (massExportNames.has(npc.name)) {
+            <app-icon class="size-5 block" icon="check-circle"></app-icon>
+          }
+        </span>
+        <span [class.segoe-ui-bold]="massExportNames.has(npc.name)">
+          {{ npc.name }}
+        </span>
+      </button>
+    }
+
+    <button
+      class="h-[28px] mt-2 border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+      (click)="massExport()"
+    >
+      <app-icon class="size-5 block" icon="import"></app-icon>
+      <span class="ml-1">Exporter</span>
+    </button>
+
+    @if (exported) {
+      <p class="text-justify text-sm my-2">
+        Vous pouvez copier/coller ce texte et l'utiliser pour importer un PNJ
+        dans tout outil supportant ce format. Vous pouvez bien sur l'utiliser
+        dans l'outil d'import de Knight NPC Generator.
+      </p>
+
+      <textarea class="text-[#2e2a31] h-24 pl-1 text-sm" [(ngModel)]="exported">
+      </textarea>
+    }
+  </div>
+</app-modal>
