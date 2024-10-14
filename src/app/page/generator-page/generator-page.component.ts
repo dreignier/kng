@@ -23,8 +23,12 @@ export class GeneratorPageComponent {
 	@ViewChild('imageModal') imageModal!: ModalCanvasComponent
 	@ViewChild('exportModal') exportModal!: ModalComponent
 	@ViewChild('importModal') importModal!: ModalComponent
+	@ViewChild('massImportModal') massImportModal!: ModalComponent
+	@ViewChild('massExportModal') massExportModal!: ModalComponent
 	imported = ''
 	exported = ''
+	massImportStrategy: 'rename' | 'ignore' | 'replace' = 'rename'
+	massExportNames: Set<string> = new Set()
 
 	constructor(
 		readonly db: DatabaseService,
@@ -75,5 +79,41 @@ export class GeneratorPageComponent {
 	export(npc: Npc) {
 		this.exported = JSON.stringify(npc)
 		this.exportModal.open()
+	}
+
+	openMassImport() {
+		this.imported = ''
+		this.massImportModal.open()
+	}
+
+	massImport() {
+		let npcs = JSON.parse(this.imported)
+
+		if (npcs) {
+			if (!Array.isArray(npcs)) {
+        npcs = [npcs];
+      }
+
+			npcs = npcs.map((e: any) => new Npc(e));
+
+			this.db.importNpcs(npcs, this.massImportStrategy)
+
+			this.massImportModal.close()
+		}
+	}
+
+	openMassExport() {
+		this.massExportNames.clear()
+		this.massExportModal.open()
+	}
+
+	massExportSelectAll() {
+		for (const npc of this.db.npcs) {
+			this.massExportNames.add(npc.name)
+		}
+	}
+
+	massExport() {
+		this.exported = this.db.exportNpcs(this.massExportNames)
 	}
 }

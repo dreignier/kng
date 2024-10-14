@@ -86,4 +86,26 @@ export class DatabaseService {
 	saveNpcs() {
 		localStorage.setItem('list', JSON.stringify(this.npcs))
 	}
+
+	importNpcs(npcs: Npc[], strategy: 'rename' | 'ignore' | 'replace') {
+		if (strategy === 'rename') {
+			for (const npc of npcs) {
+				if (this.npcs.find(e => e.name === npc.name)) {
+					npc.name += ' bis'
+				}
+			}
+		} else if (strategy === 'ignore') {
+			npcs = npcs.filter(e => !this.npcs.find(f => f.name === e.name))
+		}
+
+		this.npcs = this.npcs.concat(npcs)
+
+		this.sortNpcs()
+		this.saveNpcs()
+	}
+
+	exportNpcs(names: Set<string>) {
+		const npcs = this.npcs.filter(e => names.has(e.name))
+		return JSON.stringify(npcs)
+	}
 }
