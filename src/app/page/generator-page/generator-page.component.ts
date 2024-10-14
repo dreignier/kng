@@ -77,7 +77,7 @@ export class GeneratorPageComponent {
 	}
 
 	export(npc: Npc) {
-		this.exported = JSON.stringify(npc)
+		this.exported = JSON.stringify(npc.export())
 		this.exportModal.open()
 	}
 

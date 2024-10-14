@@ -210,7 +210,7 @@
 
     @for (npc of db.npcs; track npc) {
       <button
-        class="min-h-[30px] text-left flex items-center border border-white bg-white my-1"
+        class="min-h-[30px] text-left flex items-center border border-white bg-white my-1 hover:bg-[#2e2a31]"
         [style.color]="npc.color"
         (click)="
           massExportNames.has(npc.name)

@@ -14,4 +14,8 @@ export default class Capacity {
 		this.name = isString(data.name) ? data.name : '';
 		this.description = isString(data.description) ? data.description : '';
 	}
+
+	raw() {
+    return this.name.replace(/\(.+\)|[0-9]/g, '').trim();
+  }
 }

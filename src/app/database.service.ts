@@ -1,8 +1,39 @@
 import { Injectable } from '@angular/core'
-import { BANDE, COLORS, COLOSSE, HOSTILE, PATRON, PATRON_COLOSSE, SALOPARD } from './constants'
+import { BANDE, CAPACITIES, COLORS, COLOSSE, EFFECTS, HOSTILE, PATRON, PATRON_COLOSSE, SALOPARD } from './constants'
+import Capacity from './model/capacity'
+import Effect from './model/effect'
 import Npc from './model/npc'
 
 const TYPE_ORDER = [BANDE, HOSTILE, SALOPARD, COLOSSE, PATRON, PATRON_COLOSSE]
+
+class DbCapacity extends Capacity {
+	tags: string[] = []
+	index: string = ''
+
+	parse(data: string) {
+		const [name, tags, description] = data.split(' | ');
+
+		this.name = name;
+		this.description = description;
+		this.tags = tags.split(' - ');
+		this.index = (this.name + ' ' + this.tags.join(' ')).toLowerCase();
+	}
+}
+
+class DbEffect extends Effect {
+	tags: string[] = []
+	index: string = ''
+	cost: number = 0
+
+	parse(data: string) {
+		const [name, tags, cost] = data.split(' | ');
+
+		this.name = name;
+		this.tags = tags.split(' - ');
+		this.cost = Number(cost);
+		this.index = (this.name + ' ' + this.tags.join(' ')).toLowerCase();
+	}
+}
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +41,33 @@ const TYPE_ORDER = [BANDE, HOSTILE, SALOPARD, COLOSSE, PATRON, PATRON_COLOSSE]
 export class DatabaseService {
 
 	npcs: Npc[] = []
+	capacities: DbCapacity[] = []
+	effects: DbEffect[] = []
+
+	constructor() {
+		for (const capacity of CAPACITIES) {
+			const c = new DbCapacity()
+			c.parse(capacity)
+			this.capacities.push(c)
+		}
+
+		for (const effect of EFFECTS) {
+			const e = new DbEffect()
+			e.parse(effect)
+			this.effects.push(e)
+
+			if (e.tags.includes('bande')) {
+				const capacity = new DbCapacity()
+
+				capacity.name = e.name;
+				capacity.description = "Le PNJ bénéficie de l'équivalent de l'effet " + capacity.name + '.';
+				capacity.tags = ['effet', ...e.tags.filter(tag => ['bande', 'recrue', 'initié', 'héros', 'autre'].includes(tag))];
+				capacity.index = (capacity.name + ' ' + capacity.tags.join(' ')).toLocaleLowerCase();
+
+				this.capacities.push(capacity)
+			}
+		}
+	}
 
 	loadNpcs() {
 		const json = localStorage.getItem('list')
@@ -105,7 +163,7 @@ export class DatabaseService {
 	}
 
 	exportNpcs(names: Set<string>) {
-		const npcs = this.npcs.filter(e => names.has(e.name))
+		const npcs = this.npcs.filter(e => names.has(e.name)).map(e => e.export())
 		return JSON.stringify(npcs)
 	}
 }
