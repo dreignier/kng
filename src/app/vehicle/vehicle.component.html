@@ -1,0 +1,91 @@
+<div class="w-[362px] text-[#231f20] text-[13px] segoe-ui">
+  <div
+    class="bg-[#312f3a] min-h-[30px] border-2 border-[#2f424c] flex flex-col items-center p-[8px] pb-[7px] text-white uppercase text-xl segoe-ui-bold"
+  >
+    {{ vehicle.name }}
+  </div>
+
+  <div class="p-[5px] bg-[#bee3f5] border-x-2 border-b-2 border-[#32b7dc]">
+    @for (p of vehicle.description.split("\n"); track p) {
+      <p class="text-justify mb-[6px] leading-tight">{{ p }}</p>
+    }
+  </div>
+
+  @if (
+    vehicle.armor ||
+    vehicle.energy ||
+    vehicle.forcefield ||
+    vehicle.handling ||
+    vehicle.speed ||
+    vehicle.crew
+  ) {
+    <div class="flex flex-row flex-wrap bg-[#32b7dc] p-[2px] gap-[2px]">
+      <div class="flex flex-col w-[130px]">
+        <div class="h-[29px] text-center segoe-ui-bold font-bold p-[4px]">
+          PA
+        </div>
+        <div class="min-h-[16px] bg-[#bee3f5] text-center">
+          {{ vehicle.armor || "-" }}
+        </div>
+      </div>
+
+      <div class="flex flex-col w-[106px]">
+        <div class="h-[29px] text-center segoe-ui-bold font-bold p-[4px]">
+          PE
+        </div>
+        <div class="min-h-[16px] bg-[#bee3f5] text-center">
+          {{ vehicle.energy || "-" }}
+        </div>
+      </div>
+
+      <div class="flex flex-col w-[118px]">
+        <div class="h-[29px] text-center segoe-ui-bold font-bold p-[4px]">
+          CdF
+        </div>
+        <div class="min-h-[16px] bg-[#bee3f5] text-center">
+          {{ vehicle.forcefield || "-" }}
+        </div>
+      </div>
+
+      <div class="flex flex-col w-[130px]">
+        <div class="h-[29px] text-center segoe-ui-bold font-bold p-[4px]">
+          Manoeuvrabilité
+        </div>
+        <div class="min-h-[16px] bg-[#bee3f5] text-center">
+          {{ vehicle.handling || "-" }}
+        </div>
+      </div>
+
+      <div class="flex flex-col w-[106px]">
+        <div class="h-[29px] text-center segoe-ui-bold font-bold p-[4px]">
+          Vitesse
+        </div>
+        <div class="min-h-[16px] bg-[#bee3f5] text-center">
+          {{ vehicle.speed || "-" }}
+        </div>
+      </div>
+
+      <div class="flex flex-col w-[118px]">
+        <div class="h-[29px] text-center segoe-ui-bold font-bold p-[4px]">
+          Équipage
+        </div>
+        <div class="min-h-[16px] bg-[#bee3f5] text-center">
+          {{ vehicle.crew || "-" }}
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (vehicle.weapons) {
+    <div class="flex flex-row bg-[#32b7dc] p-[2px] pt-0">
+      <div
+        class="w-[132px] flex flex-col items-center justify-center segoe-ui-bold font-bold flex-shrink-0"
+      >
+        Armement
+      </div>
+      <div class="flex-grow bg-[#bee3f5] text-justify px-[2px]">
+        {{ vehicle.weapons }}
+      </div>
+    </div>
+  }
+</div>

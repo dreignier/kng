@@ -4,6 +4,7 @@ import Capacity from './model/capacity'
 import Effect from './model/effect'
 import Equipment, { AttackRule } from './model/equipment'
 import Npc from './model/npc'
+import Vehicle from './model/vehicle'
 
 const TYPE_ORDER = [BANDE, HOSTILE, SALOPARD, COLOSSE, PATRON, PATRON_COLOSSE]
 const LEVEL_ORDER = [STANDARD, ADVANCED, RARE]
@@ -44,6 +45,7 @@ export class DatabaseService {
 
 	npcs: Npc[] = []
 	equipments: Equipment[] = []
+	vehicles: Vehicle[] = []
 	capacities: DbCapacity[] = []
 	effects: DbEffect[] = []
 	colors: string[] = COLORS
@@ -62,6 +64,12 @@ export class DatabaseService {
 			const data = JSON.parse(json)
 			this.equipments = data.map((e: any) => new Equipment(e))
 			this.sortEquipments()
+		}
+
+		json = localStorage.getItem('vehicleList')
+		if (json) {
+			const data = JSON.parse(json)
+			this.vehicles = data.map((e: any) => new Vehicle(e))
 		}
 
 		for (const capacity of CAPACITIES) {
@@ -94,6 +102,10 @@ export class DatabaseService {
 		for (const equipment of this.equipments) {
 			this.updateFromEquipment(equipment)
 		}
+
+		this.sortNpcs()
+		this.sortEquipments()
+		this.sortVehicles()
 
 		this.capacities.sort((a, b) => a.index.localeCompare(b.index))
 		this.effects.sort((a, b) => a.index.localeCompare(b.index))
@@ -186,6 +198,20 @@ export class DatabaseService {
 		this.effects.sort((a, b) => a.index.localeCompare(b.index))
 	}
 
+	saveVehicle(vehicle: Vehicle) {
+		const data = new Vehicle(vehicle)
+		const index = this.vehicles.findIndex(e => e.name === data.name)
+
+		if (index === -1) {
+			this.vehicles.push(data)
+		} else {
+			this.vehicles[index] = data
+		}
+
+		this.sortVehicles()
+		this.saveVehicles()
+	}
+
 	deleteNpc(npc: Npc) {
 		this.npcs = this.npcs.filter(e => e.name !== npc.name)
 		this.saveNpcs()
@@ -194,6 +220,19 @@ export class DatabaseService {
 	deleteEquipment(equipment: Equipment) {
 		this.equipments = this.equipments.filter(e => e.name !== equipment.name)
 		this.saveEquipments()
+	}
+
+	deleteVehicle(vehicle: Vehicle) {
+		this.vehicles = this.vehicles.filter(e => e.name !== vehicle.name)
+		this.saveVehicles();
+	}
+
+	saveVehicles() {
+		localStorage.setItem('vehicleList', JSON.stringify(this.vehicles))
+	}
+
+	sortVehicles() {
+		this.vehicles = this.vehicles.sort((a, b) => a.name.localeCompare(b.name))
 	}
 
 	sortNpcs() {
@@ -319,6 +358,11 @@ export class DatabaseService {
 		return JSON.stringify(equipments)
 	}
 
+	exportVehicles(names: Set<string>) {
+		const vehicles = this.vehicles.filter(e => names.has(e.name))
+		return JSON.stringify(vehicles)
+	}
+
 	importEquipments(equipments: Equipment[], strategy: 'rename' | 'ignore' | 'replace') {
 		if (strategy === 'rename') {
 			for (const equipment of equipments) {
@@ -340,5 +384,22 @@ export class DatabaseService {
 		}
 
 		this.effects.sort((a, b) => a.index.localeCompare(b.index))
+	}
+
+	importVehicles(vehicles: Vehicle[], strategy: 'rename' | 'ignore' | 'replace') {
+		if (strategy === 'rename') {
+			for (const vehicle of vehicles) {
+				if (this.vehicles.find(e => e.name === vehicle.name)) {
+					vehicle.name += ' bis'
+				}
+			}
+		} else if (strategy === 'ignore') {
+			vehicles = vehicles.filter(e => !this.vehicles.find(f => f.name === e.name))
+		}
+
+		this.vehicles = this.vehicles.concat(vehicles)
+
+		this.sortVehicles()
+		this.saveVehicles()
 	}
 }

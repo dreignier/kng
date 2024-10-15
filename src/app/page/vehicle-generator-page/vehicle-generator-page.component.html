@@ -1,14 +1,14 @@
 <div class="2xl:flex 2xl:flex-row 2xl:justify-between">
   <div class="m-3 flex-grow">
-    <app-equipment-form [equipment]="equipment"></app-equipment-form>
+    <app-vehicle-form [vehicle]="vehicle"></app-vehicle-form>
   </div>
 
   <div class="m-3 sm:flex sm:flex-col sm:items-center 2xl:block 2xl:flex-none">
-    <app-equipment id="equipment" [equipment]="equipment"></app-equipment>
+    <app-vehicle id="vehicle" [vehicle]="vehicle"></app-vehicle>
     <div class="flex flex-row mt-1">
       <button
         class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
-        (click)="save(equipment)"
+        (click)="save(vehicle)"
         title="Sauvegarder"
       >
         <app-icon class="size-5 block" icon="save"></app-icon>
@@ -16,7 +16,7 @@
 
       <button
         class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
-        (click)="image('equipment')"
+        (click)="image('vehicle')"
         title="Convertir en image"
       >
         <app-icon class="size-5 block" icon="camera"></app-icon>
@@ -32,7 +32,7 @@
 
       <button
         class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
-        (click)="export(equipment)"
+        (click)="export(vehicle)"
         title="Exporter"
       >
         <app-icon class="size-5 block" icon="export"></app-icon>
@@ -49,14 +49,14 @@
   <h2
     class="orbitron text-4xl ml-4 mb-2 tracking-widest [text-shadow:_0_0_4px_white]"
   >
-    Équipements sauvegardés
+    Véhicules sauvegardés
   </h2>
   <button
     class="h-7 ml-5 px-1 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
     (click)="openMassImport()"
   >
     <app-icon class="size-5 block" icon="import"></app-icon>
-    <span class="ml-1">Importer plusieurs équipements</span>
+    <span class="ml-1">Importer plusieurs véhicules</span>
   </button>
 
   <button
@@ -64,30 +64,27 @@
     (click)="openMassExport()"
   >
     <app-icon class="size-5 block" icon="export"></app-icon>
-    <span class="ml-1">Exporter plusieurs équipements</span>
+    <span class="ml-1">Exporter plusieurs véhicules</span>
   </button>
 </div>
 
 <div class="ml-4 mb-3 flex items-center">
   <app-icon class="inline-block size-5 mr-1" icon="warning"></app-icon>
   <span class="text-sm">
-    Les équipements sauvegardés sont stockés dans les données locales de votre
+    Les véhicules sauvegardés sont stockés dans les données locales de votre
     navigateur.
   </span>
 </div>
 
 <div class="flex flex-row flex-wrap justify-center">
-  @for (equipment of db.equipments; track equipment; let index = $index) {
+  @for (vehicle of db.vehicles; track vehicle; let index = $index) {
     <div class="mx-3 mb-10">
-      <app-equipment
-        id="equipment-{{ $index }}"
-        [equipment]="equipment"
-      ></app-equipment>
+      <app-vehicle id="vehicle-{{ $index }}" [vehicle]="vehicle"></app-vehicle>
       <div class="flex flex-row justify-between mt-1">
         <div class="flex flex-row">
           <button
             class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
-            (click)="edit(equipment)"
+            (click)="edit(vehicle)"
             title="Modifier"
           >
             <app-icon class="size-5 block" icon="pencil"></app-icon>
@@ -95,7 +92,7 @@
 
           <button
             class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
-            (click)="image('equipment-' + index)"
+            (click)="image('vehicle-' + index)"
             title="Convertir en image"
           >
             <app-icon class="size-5 block" icon="camera"></app-icon>
@@ -103,7 +100,7 @@
 
           <button
             class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
-            (click)="export(equipment)"
+            (click)="export(vehicle)"
             title="Exporter"
           >
             <app-icon class="size-5 block" icon="export"></app-icon>
@@ -111,7 +108,7 @@
         </div>
         <button
           class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
-          (click)="deleteEquipment(equipment)"
+          (click)="deleteVehicle(vehicle)"
           title="Supprimer"
         >
           <app-icon class="size-5 block" icon="X"></app-icon>
@@ -125,7 +122,7 @@
 
 <app-modal #importModal>
   <p class="text-justify text-sm">
-    Vous pouvez coller ici le résultat d'un export d'équipment pour l'importer.
+    Vous pouvez coller ici le résultat d'un export de véhicules pour l'importer.
   </p>
 
   <div class="flex flex-col mt-2">
@@ -146,7 +143,7 @@
 
 <app-modal #exportModal>
   <p class="text-justify text-sm">
-    Vous pouvez copier/coller ce texte et l'utiliser pour importer un équipment
+    Vous pouvez copier/coller ce texte et l'utiliser pour importer un véhicule
     dans tout outil supportant ce format. Vous pouvez bien sur l'utiliser dans
     l'outil d'import de Knight NPC Generator.
   </p>
@@ -158,8 +155,8 @@
 
 <app-modal #massExportModal>
   <p class="text-justify text-sm">
-    Sélectionnez les équipements que vous voulez exporter puis utiliser le
-    bouton pour générer les données.
+    Sélectionnez les véhicules que vous voulez exporter puis utiliser le bouton
+    pour générer les données.
   </p>
 
   <div class="flex flex-col mt-2">
@@ -171,22 +168,22 @@
       <span class="ml-1">Tout sélectionner</span>
     </button>
 
-    @for (equipment of db.equipments; track equipment) {
+    @for (vehicle of db.vehicles; track vehicle) {
       <button
         class="min-h-[30px] pl-1 text-left flex items-center border text-black border-white bg-white my-1"
         (click)="
-          massExportNames.has(equipment.name)
-            ? massExportNames.delete(equipment.name)
-            : massExportNames.add(equipment.name)
+          massExportNames.has(vehicle.name)
+            ? massExportNames.delete(vehicle.name)
+            : massExportNames.add(vehicle.name)
         "
       >
         <span class="mr-2 size-5">
-          @if (massExportNames.has(equipment.name)) {
+          @if (massExportNames.has(vehicle.name)) {
             <app-icon class="size-5 block" icon="check-circle"></app-icon>
           }
         </span>
-        <span [class.segoe-ui-bold]="massExportNames.has(equipment.name)">
-          {{ equipment.name }}
+        <span [class.segoe-ui-bold]="massExportNames.has(vehicle.name)">
+          {{ vehicle.name }}
         </span>
       </button>
     }
@@ -202,7 +199,7 @@
     @if (exported) {
       <p class="text-justify text-sm my-2">
         Vous pouvez copier/coller ce texte et l'utiliser pour importer un
-        equipment dans tout outil supportant ce format. Vous pouvez bien sur
+        véhicule dans tout outil supportant ce format. Vous pouvez bien sur
         l'utiliser dans l'outil d'import de Knight NPC Generator.
       </p>
 
@@ -214,7 +211,7 @@
 
 <app-modal #massImportModal>
   <p class="text-justify text-sm">
-    Vous pouvez coller ici le résultat d'un export d'un ou plusieurs équipments
+    Vous pouvez coller ici le résultat d'un export d'un ou plusieurs vehicules
     pour l'importer.
   </p>
 

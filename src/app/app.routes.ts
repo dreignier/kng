@@ -4,6 +4,7 @@ import { AboutPageComponent } from './page/about-page/about-page.component'
 import { ConstantsPageComponent } from './page/constants-page/constants-page.component'
 import { EquipmentGeneratorPageComponent } from './page/equipment-generator-page/equipment-generator-page.component'
 import { NpcGeneratorPageComponent } from './page/npc-generator-page/npc-generator-page.component'
+import { VehicleGeneratorPageComponent } from './page/vehicle-generator-page/vehicle-generator-page.component'
 
 export const routes: Routes = [{
 	path: '',
@@ -12,6 +13,7 @@ export const routes: Routes = [{
 		{ path: '', redirectTo: 'npc', pathMatch: 'full' },
 		{ path: 'npc', component: NpcGeneratorPageComponent },
 		{ path: 'equipment', component: EquipmentGeneratorPageComponent },
+		{ path: 'vehicle', component: VehicleGeneratorPageComponent} ,
 		{ path: 'about', component: AboutPageComponent },
 		{ path: 'constants', component: ConstantsPageComponent }
 	]

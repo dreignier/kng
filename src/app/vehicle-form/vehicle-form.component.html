@@ -1,0 +1,123 @@
+<div class="grid grid-cols-12 gap-1 bg-[#2e2a31] p-2 pt-0">
+  <div class="col-span-12 flex flex-col">
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Nom
+    </label>
+    <input
+      class="text-[#2e2a31] h-[30px] pl-1 flex-grow"
+      type="text"
+      [(ngModel)]="vehicle.name"
+      placeholder="Nom"
+    />
+  </div>
+
+  <div class="col-span-12 flex flex-col">
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Description
+    </label>
+    <textarea
+      class="text-[#2e2a31] h-[85px] pl-1"
+      [(ngModel)]="vehicle.description"
+    ></textarea>
+  </div>
+
+  <div class="col-span-4 flex flex-col">
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Armure
+    </label>
+    <input
+      class="text-[#2e2a31] h-[30px] pl-1 flex-grow"
+      type="number"
+      [(ngModel)]="vehicle.armor"
+      placeholder="Nom"
+    />
+  </div>
+
+  <div class="col-span-4 flex flex-col">
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Énergie
+    </label>
+    <input
+      class="text-[#2e2a31] h-[30px] pl-1 flex-grow"
+      type="number"
+      [(ngModel)]="vehicle.energy"
+      placeholder="Énergie"
+    />
+  </div>
+
+  <div class="col-span-4 flex flex-col">
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      CdF
+    </label>
+    <input
+      class="text-[#2e2a31] h-[30px] pl-1 flex-grow"
+      type="number"
+      [(ngModel)]="vehicle.forcefield"
+      placeholder="CdF"
+    />
+  </div>
+
+  <div class="col-span-4 flex flex-col">
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Manoeuvrabilité
+    </label>
+    <input
+      class="text-[#2e2a31] h-[30px] pl-1 flex-grow"
+      type="number"
+      [(ngModel)]="vehicle.handling"
+      placeholder="Manoeuvrabilité"
+    />
+  </div>
+
+  <div class="col-span-4 flex flex-col">
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Vitesse
+    </label>
+    <input
+      class="text-[#2e2a31] h-[30px] pl-1 flex-grow"
+      type="text"
+      [(ngModel)]="vehicle.speed"
+      placeholder="Vitesse"
+    />
+  </div>
+
+  <div class="col-span-4 flex flex-col">
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Équipage
+    </label>
+    <input
+      class="text-[#2e2a31] h-[30px] pl-1 flex-grow"
+      type="text"
+      [(ngModel)]="vehicle.crew"
+      placeholder="Équipage"
+    />
+  </div>
+
+  <div class="col-span-12 flex flex-col">
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Armement
+    </label>
+    <textarea
+      class="text-[#2e2a31] h-[85px] pl-1"
+      [(ngModel)]="vehicle.weapons"
+    ></textarea>
+  </div>
+</div>
