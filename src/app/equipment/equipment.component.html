@@ -43,7 +43,9 @@
     </div>
   </div>
 
-  <div class="text-justify p-[5px] border-x-2 border-tertiary">
+  <div
+    class="text-justify leading-tight py-[5px] px-[6px] border-x-2 border-tertiary"
+  >
     @if (equipment.nicknames) {
       <p class="my-[5px] mx-0 segoe-ui-italic text-right text-[12px]">
         {{ equipment.nicknames.includes("/") ? "Surnoms" : "Surnom" }}&nbsp;:
@@ -92,7 +94,7 @@
         @if (isDescriptiveRule(rule)) {
           <div class="bg-primary py-0 px-[3px] flex-grow">
             @if (rule.important || rule.cost) {
-              <p class="segoe-ui-bold italic font-bold text-base mb-[5px]">
+              <p class="segoe-ui-bold italic font-bold text-base mb-[2px]">
                 @if (rule.important) {
                   <span class="text-[14px]">{{ rule.important }}</span>
                 }
@@ -124,9 +126,8 @@
                 </div>
                 <div
                   class="text-center bg-primary py-0 px-[5px] flex-grow text-[11px]"
-                >
-                  {{ rule.damage || "-" }}
-                </div>
+                  [innerHTML]="rule.damageAsHtml(sanitizer) || '-'"
+                ></div>
               </div>
 
               <div class="flex flex-col">
@@ -137,9 +138,8 @@
                 </div>
                 <div
                   class="text-center bg-primary py-0 px-[5px] flex-grow text-[11px]"
-                >
-                  {{ rule.violence || "-" }}
-                </div>
+                  [innerHTML]="rule.violenceAsHtml(sanitizer) || '-'"
+                ></div>
               </div>
 
               <div class="flex flex-col">

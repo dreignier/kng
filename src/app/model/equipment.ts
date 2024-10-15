@@ -1,3 +1,5 @@
+import { SecurityContext } from '@angular/core'
+import { DomSanitizer } from '@angular/platform-browser'
 import { isString } from 'lodash'
 import { ADVANCED, HOPE, PRESTIGE, RARE, STANDARD } from '../constants'
 import Effect from './effect'
@@ -50,6 +52,23 @@ export class AttackRule extends Rule {
 
 	newEffect() {
 		this.effects.push(new Effect())
+	}
+
+	damageAsHtml(sanitizer: DomSanitizer) {
+		return this.asHtml(this.damage, sanitizer)
+	}
+
+	violenceAsHtml(sanitizer: DomSanitizer) {
+		return this.asHtml(this.violence, sanitizer)
+	}
+
+	private asHtml(value: string, sanitizer: DomSanitizer) {
+		let html = sanitizer.sanitize(SecurityContext.HTML, value) || ''
+
+		html = html.replace(/(déplacement|force|endurance|hargne|combat|instinct|tir|savoir|technique|aura|parole|sang-froid|sang|froid|discrétion|dextérité|perception)/gi, '<i>$1</i>')
+		html = html.replace(/avec ([^\)\., ]+)/gi, 'avec <i>$1</i>')
+
+		return html
 	}
 }
 

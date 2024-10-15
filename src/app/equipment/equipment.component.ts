@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core'
+import { DomSanitizer } from '@angular/platform-browser'
 import Equipment, { AttackRule, DescriptiveRule, DroneRule, ModuleRule, Rule } from '../model/equipment'
 
 @Component({
@@ -10,6 +11,10 @@ import Equipment, { AttackRule, DescriptiveRule, DroneRule, ModuleRule, Rule } f
 })
 export class EquipmentComponent {
 	@Input() equipment!: Equipment
+
+	constructor(
+		readonly sanitizer: DomSanitizer
+	) {}
 
 	isAttackRule(rule: Rule) {
 		return rule instanceof AttackRule
