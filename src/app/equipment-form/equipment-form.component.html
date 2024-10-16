@@ -69,7 +69,22 @@
     />
   </div>
 
-  <div class="col-span-12 flex flex-col">
+  <div class="col-span-2 flex flex-col">
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+    >
+      Apparence
+    </label>
+    <select
+      [(ngModel)]="equipment.appearance"
+      class="bg-white text-[#2e2a31] h-[30px] pl-1"
+    >
+      <option value="weapon">Arme</option>
+      <option value="module">Module</option>
+    </select>
+  </div>
+
+  <div class="col-start-4 col-span-9 flex flex-col">
     <label
       class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
     >
@@ -77,23 +92,25 @@
     </label>
 
     <div class="flex flex-row">
-      <div class="mr-8 p-1 border-2 border-white">
+      <div class="mr-8 p-1 border-2 border-white size-[52px] flex-shrink-0">
         <img
           src="/assets/icon-{{ equipment.image }}.png"
           class="size-10 invert"
         />
       </div>
-      @for (image of images; track image) {
-        <div
-          class="group cursor-pointer mr-4 size-12 p-1 border-[#2e2a31] hover:invert-0 hover:bg-white"
-          (click)="equipment.image = image"
-        >
-          <img
-            src="/assets/icon-{{ image }}.png"
-            class="size-10 invert group-hover:invert-0"
-          />
-        </div>
-      }
+      <div class="flex flex-row flex-wrap">
+        @for (image of images; track image) {
+          <div
+            class="group cursor-pointer mr-4 size-12 p-1 border-[#2e2a31] hover:invert-0 hover:bg-white"
+            (click)="equipment.image = image"
+          >
+            <img
+              src="/assets/icon-{{ image }}.png"
+              class="size-10 invert group-hover:invert-0"
+            />
+          </div>
+        }
+      </div>
     </div>
   </div>
 

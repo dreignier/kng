@@ -1,6 +1,7 @@
 <div
-  class="equipment w-[362px] bg-primary text-black text-[13px] relative"
-  [class.module]="equipment.image === 'module'"
+  class="equipment w-[362px] bg-primary text-black text-[13px] relative {{
+    equipment.appearance
+  }}"
   [class.standard]="equipment.level === 'standard'"
   [class.advanced]="equipment.level === 'avancé'"
   [class.rare]="equipment.level === 'rare'"

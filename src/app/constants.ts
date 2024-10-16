@@ -27,7 +27,7 @@ export const ADVANCED = 'avancé';
 export const RARE = 'rare';
 export const PRESTIGE = 'prestige';
 export const HOPE = "relique d'espoir";
-export const IMAGES = ['knife', 'gun', 'hammer', 'module']
+export const IMAGES = ['knife', 'gun', 'hammer', 'module', 'ai', 'armor', 'bam', 'boot', 'circuit', 'cybersec', 'fist', 'form', 'fortune', 'glove', 'heart', 'ironman', 'jet', 'labcoat', 'luck', 'peoples', 'shield', 'shield2', 'star', 'table', 'bang', 'bolt', 'energy', 'eye', 'fire', 'gear', 'gears', 'grenade', 'learning', 'magazine', 'mindmap', 'network', 'physics', 'sniper']
 
 export const COLORS = [
 	'#f25a1e', // Bête
@@ -63,6 +63,7 @@ export const CAPACITIES = [
   "Abyssal | héros - salopard - colosse - patron | Le PNJ est insensible à tous les types de dégâts sauf ceux avec l’effet anti-Anathème et lumière X.",
   "À coup sûr (contact) | héros - salopard - patron - autre | Le PNJ, lorsqu’il attaque au contact, ne rate jamais sa cible. La défense du personnage ciblé est systématiquement ramenée à 0 pour chacune de ses attaques.",
   "À coup sûr (distance) | héros - salopard - patron - autre | Le PNJ, lorsqu’il attaque à distance, ne rate jamais sa cible. La réaction du personnage ciblé est systématiquement ramenée à 0 pour chacune de ses attaques.",
+	"À revers | recrue - initié - héros - patron | Une fois par phase de conflit, le PNJ peut prendre les personnages à revers, en apparaissant simplement dans leur dos à chacune de ses attaques. Leur défense et leur réaction sont alors divisées par 2 et les dégâts du PNJ sont augmentés de 3D6 pendant tout le tour.",
   "Actions multiples (1) | recrue - hostile - salopard - colosse - patron - autre | Le PNJ possède 1 action de combat en plus de son action de déplacement et de combat de base. Cette action est à effectuer à son initiative.",
   "Actions multiples (2) | initié - hostile - salopard - colosse - patron - autre | Le PNJ possède 2 actions de combat en plus de son action de déplacement et de combat de base. Ces actions sont à effectuer à son initiative.",
   "Actions multiples (3) | initié - hostile - salopard - colosse - patron - autre | Le PNJ possède 3 actions de combat en plus de son action de déplacement et de combat de base. Ces actions sont à effectuer à son initiative.",
@@ -158,7 +159,34 @@ export const CAPACITIES = [
   "Intouchable | élite - héros - hostile - salopard - colosse - patron - autre | Le PNJ est insensible aux attaques qui nécessitent de dépasser sa réaction (incompatible avec insaisissable).",
   "Insaisissable | élite - héros - hostile - salopard - colosse - patron - autre | Le PNJ est insensible aux attaques qui nécessitent de dépasser sa défense (incompatible avec intouchable).",
   "Il est partout | élite - initié - salopard - colosse - patron | Les attaques du PNJ ciblent automatiquement tous les PJ impliqués dans le conflit (sauf ceux cachés ou invisibles), peu importe leur distance ou leur attitude.",
-  "Phase 2 | spécial | Lorsque le PNJ a été mis à l’agonie une première fois, il récupère la totalité de ses PS, PA et PE (s’il en a) et reprend le combat. Il ne peut utiliser cette capacité qu’une seule fois. Le reste de la phase 2 doit être définie par le MJ."
+  "Phase 2 | spécial | Lorsque le PNJ a été mis à l’agonie une première fois, il récupère la totalité de ses PS, PA et PE (s’il en a) et reprend le combat. Il ne peut utiliser cette capacité qu’une seule fois. Le reste de la phase 2 doit être définie par le MJ.",
+	"Amour parental | spécial | Bien que corrompu par l’Anathème, le PNJ reste attaché à son enfant. Si les PJ mènent l’assaut avec lui, alors le PNJ est troublé. Il perd la capacité actions multiples lors de sa première phase (et uniquement celle-ci).",
+	"Appui d'artillerie | spécial | Une fois par combat, le PNJ peut faire appel à un barrage d’artillerie qui suit les règles d’un pod roquette nv1 ou d’un pod missile nv1 avec en plus l’effet dispersion 6.",
+	"Attaque spéciale | spécial | Le PNJ peut décider de sacrifier toutes ses actions de combat pour pouvoir utiliser son attaque spéciale. Attention, pour l’utiliser, il a besoin de points d’énergie qu’il a préalablement drainés.",
+	"Aura de fureur | spécial | Les PJ et PNJ en présence du PNJ doivent effectuer un jet base Sang-Froid difficulté ardu (5) sous peine d’attaquer, avec l’arme de leur choix, la personne la plus proche d’eux. Ce test ne s’effectue qu’une fois, au début d’une scène ou d’une phase de conflit.",
+	"Dévoreur | spécial | Le PNJ ignore les scores d’égide et de bouclier, sauf conditions indiquées dans un scénario et en fonction des actions des PJ.",
+	"Don de la Chair | spécial | Le PNJ peut soigner une blessure grave (tirée sur le tableau aléatoire) d’un personnage, mais celui-ci perd définitivement 1D6 points d’espoir (sur son score actuel et son total).",
+	"Double face | spécial | Le PNJ, lorsqu’il possède un personnage et face à des systèmes de détection ou d’enregistrement, n’est visible que lorsqu’il est de dos, mais complètement invisible de face.",
+	"Écho | spécial | Le PNJ est la copie d’un PJ présent dans la scène. Il en simule la quasi-totalité des équipements et des armes (sans les effets lumière X, anti-Anathème et espérance). Seuls les armes de prestige, les modules de prestige, les capacités héroïques et les capacités ultimes ne sont pas simulés.",
+	"Entre les mondes | spécial | Tant qu’il n’a pas attaqué, le PNJ est considéré comme ayant le double de sa défense et de sa réaction. Une fois qu’il a attaqué, il devient tangible jusqu’à la fin du combat et possède ses scores de défense et de réaction normaux.",
+	"Espion | recrue - initié - héros - hostile - salopard - colosse - patron - bande | Le PNJ est en lien direct avec son Seigneur. Si un (ou plusieurs) PNJ avec cette capacité est présent dans une phase de conflit, et tant qu’il est présent à portée longue ou moins, il offre 3 réussites automatiques aux tests des autres créatures de son Seigneur. Le bonus ne peut être cumulé.",
+	"Enfant à maman | spécial | Si le PNJ est d’une façon ou d’une autre retenu prisonnier, son Seigneur fera tout pour le libérer.",
+	"Griffe des ténèbres | recrue - initié - héros - hostile - salopard - colosse - patron | Une fois par tour, le PNJ peut ignorer les points d’armure et infliger ses dégâts directement sur la santé.",
+	"Immunité technologique | recrue - initié - héros - hostile - salopard - colosse - patron - bande | Le PNJ est immunisé aux effets choc X et parasitage X.",
+	"Invulnérabilité | spécial | Pour faire le moindre dégât à la cible, un personnage doit d’abord faire baisser sa résilience à 0, même si l’attaque utilisée possède l’effet anti-véhicule. En effet, tant que le personnage ou le véhicule possède des points de résilience, l’invulnérabilité lui permet d’ignorer l’ensemble des dégâts même ceux possédant l’effet anti-véhicule.",
+	"Isolement | recrue - initié - héros - patron | Une fois par partie, le PNJ peut isoler n’importe quel personnage (un ou plusieurs) présent dans la scène dans des cubes de glace et de silence qui possèdent 100 PA. Les murs des cubes résistent jusqu’à leur destruction. Le PNJ possédant cette capacité peut attaquer au travers des murs. Les personnages isolés peuvent attaquer le mur ou activer des modules, mais pas se déplacer. Ils ne peuvent pas tirer au travers des murs, même avec des armes possédant l’effet artillerie.",
+	"Horde | héros - patron | Le PNJ est toujours accompagné d’une bande de petits créatures de toutes sortes. Cette marée grouillante est à traiter comme une bande de noctes avec 1000 de cohésion.",
+	"Mitraillage | recrue - initié - héros - hostile - salopard - colosse - patron | Lorsque le PNJ attaque à distance, il reçoit un bonus de 1 réussite automatique à ses jets.",
+	"Noyau central | recrue - initié - héros - patron | Le noyau central du PNJ ne se déplace pas. S’il est détruit, tout ce que le PNJ contrôlait est libéré de son emprise. En contrepartie, le noyau reçoit la règle invulnérabilité et 10 points de résilience.",
+	"Oubli | spécial | Plutôt que de subir le débordement, les dégâts et les effets, un PJ peut toujours décider de sacrifier un souvenir. Si le PJ choisit cette option, le MJ lui fait subir un de ces effets (au choix) : perte de 3D6 points d’espoir, perte d’un contact, perte d’un point de caractéristique (parmi les plus basses), perte d’une capacité héroïque, perte de 3D6 points de gloire totaux.",
+	"Presque humain | spécial | Le PNJ se souvient encore d’une partie de son passé et garde des attitudes humaines. Il est donc plus facile pour lui de communiquer avec les PJ et de bénéficier de leur sympathie.",
+	"Prévoyant | spécial | Le PNJ a préparé plusieurs sorties, pièges et armements automatisés pour assurer sa sécurité et se défendre d’éventuels ennemis. Lorsque le PNJ est rencontré dans un lieu, il peut avoir dissimulé une sortie secrète, deux pièges explosifs à traiter comme des grenades intelligentes pouvant être déclenchées à portée longue, ainsi qu’une tourelle automatisée équipée d’une mitrailleuse lourde ou d’un railgun.",
+	"Psychopathe | recrue - initié - héros - patron | Si le PNJ désigne un ou plusieurs PJ comme ses proies, il les traque jusqu’à la mort.",
+	"Résistant au présent | héros - hostile - salopard - colosse - patron - bande | Le PNJ subit toujours la moitié des dégâts ou de la violence infligés, sauf conditions indiquées dans un scénario et en fonction des actions des PJ.",
+	"Sous les ordres | spécial | Le PNJ répond aux ordres d’un immortel et les PJ peuvent avoir des problèmes s’ils vont à son encontre sans justification.",
+	"Spores | spécial | Le PNJ peut projeter des spores qui, en atteignant les voies respiratoires d’un PNJ, s’y accrochent. Dès qu’il le souhaite, le PNJ peut activer ces spores, tuant la personne de l’intérieur, avec ou sans retardement. Cet effet n’est à jouer que sur des PNJ, les chevaliers y sont naturellement immunisés grâce aux méta-armures.",
+	"Tireur d'élite | spécial | Toutes les armes à feu utilisées par le personnage ne possèdent plus de limite de portée.",
+	"Versatile | recrue - initié - héros - hostile - salopard - colosse - patron | Le PNJ dipose, au choix du MJ, d’un module de saut niv. 1, d’un module de vol niv. 1, d’un module d’adhérence niv. 1 ou d’un module de déplacement silencieux niv. 1 représentant une mutation animale."
 ];
 
 export const EFFECTS = [
@@ -193,7 +221,41 @@ export const EFFECTS = [
   "Perce armure 40 | initié - hostile - salopard - colosse - patron - autre - bande | 40",
   "Perce armure 60 | héros - hostile - salopard - colosse - patron - autre - bande | 50",
   "Silencieux | recrue - hostile - salopard - colosse - patron - autre | 10",
-  "Soumission | initié - hostile - salopard - colosse - patron - autre - bande | 30"
+  "Soumission | initié - hostile - salopard - colosse - patron - autre - bande | 30",
+	"Artillerie | PJ | 0",
+	"Assassin 2 | PJ | 0",
+	"Assassin 4 | PJ | 0",
+	"Assistance à l’attaque | PJ | 0",
+	"Cadence 2 | PJ | 0",
+	"Cadence 3 | PJ | 0",
+	"Chargeur 4 | PJ | 0",
+	"Chargeur 5 | PJ | 0",
+	"Chargeur 6 | PJ | 0",
+	"Défense 2 | PJ | 0",
+	"Défense 3 | PJ | 0",
+	"Défense 4 | PJ | 0",
+	"Démoralisant | PJ | 0",
+	"Désignation | PJ | 0",
+	"Deux mains | PJ | 0",
+	"En chaîne | PJ | 0",
+	"Espérance | PJ | 0",
+	"Fureur | PJ | 0",
+	"Jumelé (akimbo) | PJ | 0",
+	"Jumelé (ambidextrie) | PJ | 0",
+	"Lesté | PJ | 0",
+	"Lourd | PJ | 0",
+	"Oblitération | PJ | 0",
+	"Orfèvrerie | PJ | 0",
+	"Pénétrant 5 | PJ | 0",
+	"Pénétrant 10 | PJ | 0",
+	"Précision | PJ | 0",
+	"Réaction 2 | PJ | 0",
+	"Réaction 3 | PJ | 0",
+	"Réaction 4 | PJ | 0",
+	"Ténébricide | PJ | 0",
+	"Tir en rafale | PJ | 0",
+	"Tir en sécurité | PJ | 0",
+	"Ultraviolence | PJ | 0"
 ];
 
 export const GRID = {

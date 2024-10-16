@@ -106,6 +106,7 @@ export class DescriptiveRule extends Rule {
 
 export default class Equipment extends Entity {
 	longName: boolean = false
+	appearance: string = 'weapon'
 	image: string = 'knife'
 	level: string = 'standard'
 	cost: number = 0
@@ -138,6 +139,12 @@ export default class Equipment extends Entity {
 		this.description = isString(data.description) ? data.description : ''
 		this.quote = isString(data.quote) ? data.quote : ''
 		this.author = isString(data.author) ? data.author : ''
+
+		if (data.appearance === undefined) {
+			this.appearance = this.image === 'module' ? 'module' : 'weapon'
+		} else {
+			this.appearance = isString(data.appearance) ? data.appearance : 'weapon'
+		}
 
 		this.extras = []
 		this.rules = []
