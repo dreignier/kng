@@ -78,10 +78,10 @@
     @for (rule of equipment.rules; track rule) {
       <div
         class="flex bg-tertiary px-[2px] py-[1px] first:pt-[2px] last:pb-[2px]"
-        [style.--primary]="primary(rule.level)"
-        [style.--secondary]="secondary(rule.level)"
-        [style.--tertiary]="tertiary(rule.level)"
-        [style.--logo]="logo(rule.level)"
+        [style.--primary]="primary(rule.level || equipment.level)"
+        [style.--secondary]="secondary(rule.level || equipment.level)"
+        [style.--tertiary]="tertiary(rule.level || equipment.level)"
+        [style.--logo]="logo(rule.level || equipment.level)"
       >
         @if (rule.name) {
           <div
