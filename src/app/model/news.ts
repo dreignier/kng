@@ -3,6 +3,9 @@ import { DomSanitizer } from '@angular/platform-browser'
 import { isString } from 'lodash'
 import Entity from './entity'
 
+const WIDTH = 1080
+const GAP = 20
+
 export default class News extends Entity {
 	columns: NewsColumn[] = [new NewsColumn(), new NewsColumn(), new NewsColumn()]
 
@@ -12,79 +15,36 @@ export default class News extends Entity {
 		if (data) {
 			this.import(data)
 		}
-
-		this.import({
-			columns: [{
-				elements: [
-					{ title: `1er Avril 2038
-N°13` },
-					{ align: 'left' },
-					{ align: 'right' },
-					{ shadowX: true, shadowY: true, content: `Le 1^^er^^ Chevalier Schwarzy nous a fait le plaisir de tester notre nouveau lance grenade lourd à propulsion magnétique.
-
->>« *Cet engin est le meilleur que j'ai jamais vu pour casser du manifestant !* »<<
-
-**Faites comme Schwarzy et équipez votre milice avec ce qu'il se fait de mieux !**
-
-==Gros texte==
-
-==Encore plus gros texte==
-
-===Le plus gros texte possible===
-
-@@Cliquez ici pour en savoir plus@@`}
-				]
-			}, {
-				elements: [
-					{ header: 'FLASH' },
-					{ align: 'left' },
-					{ align: 'right' },
-					{ shadowY: true, content: `
-# test h1
-
-## test h2
-
-### test h3
-
-\`\`\`
-Coucou, ceci est un bloc de code
-Coucou, ceci est un bloc de code
-Coucou, ceci est un bloc de code
-Coucou, ceci est un bloc de code
-\`\`\`
-`}
-				]
-			}, {
-				elements: [
-					{ header: 'FLASH' },
-					{ align: 'left' },
-					{ align: 'right' },
-					{ bgColor: '#ff000044', color: '#ff0000', content: `# ALERTE
-
-Surtout ne \`paniquez\` pas et appliquez les consignes de sécurité suivantes :
-1. Restez chez vous
-2. Appelez le __Knight__
-3. Prenez 5 minutes pour sangloter parce que c'est les PJ qui viennent vous sauver
-
-Si le Knight ne vient pas assez rapidement :
-* Surtout ne négociez pas avec le Masque
-* Ne léchez pas les créatures de la Chair
-* Non les créatures de la Bête ne sont pas des pokemons
-* Ne faites pas confiance à votre grille pain
-`}
-				]
-			}]
-		})
 	}
 
 	import(data: any) {
 		this.name = isString(data.name) ? data.name : ''
 		this.columns = Array.isArray(data.columns) ? data.columns.map((data: any) => new NewsColumn(data)) : [new NewsColumn(), new NewsColumn(), new NewsColumn()]
 	}
+
+	addColumn() {
+		const width = (WIDTH - GAP * this.columns.length) / (this.columns.length + 1)
+
+		// Remove the width from all columns
+		for (const column of this.columns) {
+			column.width -= Math.round(Math.max(100, width / this.columns.length))
+		}
+
+		const totalWidth = this.columns.reduce((acc, column) => acc + column.width, 0) + GAP * (this.columns.length + 1)
+
+		const column = new NewsColumn()
+		column.width = WIDTH - totalWidth
+
+		this.columns.push(column)
+	}
+
+	removeColumn() {
+		this.columns = this.columns.slice(0, -1)
+	}
 }
 
 export class NewsColumn {
-	width: number = 360
+	width: number = Math.ceil((WIDTH - GAP *2) / 3)
 	elements: NewsElement[] = []
 
 	constructor(data?: any) {
@@ -122,7 +82,7 @@ export class NewsElement {
 
 export class Title extends NewsElement {
 	big = 'news'
-	title = ''
+	title = '11 janvier 2038\nN°2'
 	color = '#00ffcc44'
 
 	constructor(data?: any) {
@@ -198,7 +158,39 @@ export class Article extends NewsElement {
 	background = 0
 	color = '#00ffcc'
 	bgColor = '#00ffcc44'
-	content = ''
+	content = `
+Ceci est un texte d'exemple pour vous montrer ce qui est possible de faire.
+
+# Ceci est un titre
+
+>>Ce texte est centré<<
+
+*Ce texte est en italique*
+
+**Ce texte est en gras**
+
+__Ce texte est souligné__
+
+==Ce texte est en gros==
+
+===Ce texte est encore plus gros===
+
+====Ce texte est le plus gros possible====
+
+@@Ce texte est un lien@@
+
+>>**Il est possible de combiner les effets**<<
+
+Vous pouvez faire des listes :
+* **N'hésitez** pas à __utiliser__ les *effets*
+* Cela fonctionne même au ==milieu des phrases==
+* Vous pouvez aussi surelever du texte avec ^^cet effet^^
+
+Les listes peuvent aussi être numérotées :
+1. Si vous avez besoin d'aide, n'hésitez pas à demander sur le serveur discord de Knight
+2. Des personnages vous aiderons
+3. **__Bonne écriture !__**
+`
 
 	constructor(data?: any) {
 		super()

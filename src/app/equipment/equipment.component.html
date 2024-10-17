@@ -2,11 +2,11 @@
   class="equipment w-[362px] bg-primary text-black text-[13px] relative {{
     equipment.appearance
   }}"
-  [class.standard]="equipment.level === 'standard'"
-  [class.advanced]="equipment.level === 'avancé'"
-  [class.rare]="equipment.level === 'rare'"
-  [class.prestige]="equipment.level === 'prestige'"
-  [class.hope]="equipment.level === 'relique d\'espoir'"
+  [class.shiny]="shiny(equipment.level)"
+  [style.--primary]="primary(equipment.level)"
+  [style.--secondary]="secondary(equipment.level)"
+  [style.--tertiary]="tertiary(equipment.level)"
+  [style.--logo]="logo(equipment.level)"
 >
   <div
     class="header flex justify-between items-stretch h-[51px] overflow-hidden border-t-2 border-r-2 border-l-2 border-secondary"
@@ -78,11 +78,10 @@
     @for (rule of equipment.rules; track rule) {
       <div
         class="flex bg-tertiary px-[2px] py-[1px] first:pt-[2px] last:pb-[2px]"
-        [class.standard]="rule.level === 'standard'"
-        [class.advanced]="rule.level === 'avancé'"
-        [class.rare]="rule.level === 'rare'"
-        [class.prestige]="rule.level === 'prestige'"
-        [class.hope]="rule.level === 'relique d\'espoir'"
+        [style.--primary]="primary(rule.level)"
+        [style.--secondary]="secondary(rule.level)"
+        [style.--tertiary]="tertiary(rule.level)"
+        [style.--logo]="logo(rule.level)"
       >
         @if (rule.name) {
           <div

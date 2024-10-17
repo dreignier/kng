@@ -1,5 +1,25 @@
 <div class="flex flex-col items-center">
-  <div id="news" class="mt-[20px]">
+  <div class="bg-[#2e2a31] p-2 mt-1 w-[1120px]">
+    <div class="flex flex-row gap-2">
+      <button
+        class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center flex-grow"
+      >
+        <app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+        <span class="ml-1">Ajouter une colonne à droite</span>
+      </button>
+
+      <button
+        class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center flex-grow"
+      >
+        <app-icon class="size-5 inline-block" icon="minus-circle"></app-icon>
+        <span class="ml-1">Supprimer la colonne de droite</span>
+      </button>
+    </div>
+
+    <div></div>
+  </div>
+
+  <div id="news" class="mt-2">
     <div
       id="newsContent"
       class="w-[1120px] p-[20px] text-white segoe-ui text-[14px] leading-[1.1] relative"
