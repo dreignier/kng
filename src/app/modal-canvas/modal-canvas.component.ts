@@ -12,15 +12,19 @@ import { ModalComponent } from '../modal/modal.component'
 export class ModalCanvasComponent {
 
 	@Input() target!: string
+	@Input() bgColor?: string
 	@ViewChild('modal') modal!: ModalComponent
 
-	async open(target: string) {
+	open(target: string) {
 		document.getElementById('canvas')!.innerHTML = ''
 		this.modal.open()
 
-		setTimeout(async () => {
-			const dataUrl = await toPng(<HTMLElement> document.getElementById(target)!.children[0])
-			document.getElementById('canvas')!.innerHTML = '<img src="' + dataUrl + '" />';
-		}, 50)
+		return new Promise<void>(resolve => {
+			setTimeout(async () => {
+				const dataUrl = await toPng(<HTMLElement> document.getElementById(target)!.children[0])
+				document.getElementById('canvas')!.innerHTML = '<img src="' + dataUrl + '"' + (this.bgColor ? `style="background-color: ${this.bgColor};"` : '') + '/>';
+				resolve()
+			}, 50)
+		})
 	}
 }

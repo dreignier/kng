@@ -408,7 +408,6 @@ export default class Npc extends Entity {
   }
 
 	generate(db: DatabaseService, options: GenerateOptions) {
-		console.log(options)
     this.import(new Npc());
 
     this.type = options.type;

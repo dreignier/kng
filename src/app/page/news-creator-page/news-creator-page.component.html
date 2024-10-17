@@ -1,0 +1,148 @@
+<div class="flex flex-col items-center">
+  <div id="news" class="mt-[20px]">
+    <div
+      id="newsContent"
+      class="w-[1120px] p-[20px] text-white segoe-ui text-[14px] leading-[1.1] relative"
+    >
+      <div class="flex flex-row gap-[20px]">
+        @for (column of news.columns; track column) {
+          <div
+            class="flex flex-col gap-[15px]"
+            [style.width]="column.width + 'px'"
+          >
+            @for (element of column.elements; track element) {
+              @if (isTitle(element)) {
+                <div
+                  class="flex flex-row items-start justify-between uppercase tracking-[-1px] segoe-ui-bold"
+                  [style.--color]="element.color"
+                >
+                  <div class="gradient-text flash text-[50px] mr-[20px]">
+                    {{ element.big }}
+                  </div>
+                  <div class="flex flex-col text-[25px] text-nowrap">
+                    @for (part of element.titleHtml(sanitizer); track part) {
+                      <span class="gradient-text" [innerHtml]="part"></span>
+                    }
+                  </div>
+                </div>
+              } @else if (isHeader(element)) {
+                <div class="flex flex-col items-center">
+                  <span
+                    class="gradient-text flash inline-block segoe-ui-bold text-[30px] uppercase mb-[-15px]"
+                    [style.--color]="element.color"
+                  >
+                    {{ element.header }}
+                  </span>
+                </div>
+              } @else if (isArticle(element)) {
+                <div
+                  class="article alternate{{
+                    element.background
+                  }} p-[10px] pb-[15px] rounded-[3px] relative"
+                  [class.shadowX]="element.shadowX"
+                  [class.shadowY]="element.shadowY"
+                  [style.--bg-color]="element.bgColor"
+                  [style.--color]="element.color"
+                >
+                  @for (
+                    corner of element.corners;
+                    let index = $index;
+                    track $index
+                  ) {
+                    @if (corner) {
+                      <div
+                        class="article-corner article-corner{{ $index }}"
+                      ></div>
+                    }
+                  }
+
+                  <div
+                    class="article-content"
+                    [innerHTML]="converter.makeHtml(element.content)"
+                  ></div>
+                </div>
+              } @else if (isSeparator(element)) {
+                <hr
+                  class="h-[2px] w-[60%] relative border-none"
+                  [class.right-[5px]]="element.align === 'left'"
+                  [class.self-end]="element.align === 'right'"
+                  [class.left-[5px]]="element.align === 'right'"
+                  [style.background-color]="element.color"
+                />
+              }
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-row mt-1 w-[1120px]">
+    <button
+      class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+      (click)="save(news)"
+      title="Sauvegarder"
+    >
+      <app-icon class="size-5 block" icon="save"></app-icon>
+    </button>
+
+    <button
+      class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+      (click)="image('news')"
+      title="Convertir en image"
+    >
+      <app-icon class="size-5 block" icon="camera"></app-icon>
+    </button>
+
+    <button
+      class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+      (click)="openImport()"
+      title="Importer"
+    >
+      <app-icon class="size-5 block" icon="import"></app-icon>
+    </button>
+
+    <button
+      class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+      (click)="export(news)"
+      title="Exporter"
+    >
+      <app-icon class="size-5 block" icon="export"></app-icon>
+    </button>
+  </div>
+</div>
+
+<app-modal-canvas #imageModal></app-modal-canvas>
+
+<app-modal #importModal>
+  <p class="text-justify text-sm">
+    Vous pouvez coller ici le résultat d'un export de news RA pour l'importer.
+  </p>
+
+  <div class="flex flex-col mt-2">
+    <textarea
+      class="text-[#2e2a31] h-24 pl-1 text-sm"
+      [(ngModel)]="imported"
+    ></textarea>
+
+    <button
+      class="h-[28px] mt-2 border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+      (click)="import()"
+    >
+      <app-icon class="size-5 block" icon="import"></app-icon>
+      <span>Importer</span>
+    </button>
+  </div>
+</app-modal>
+
+<app-modal #exportModal>
+  <p class="text-justify text-sm">
+    Vous pouvez copier/coller ce texte et l'utiliser pour importer une news RA
+    dans tout outil supportant ce format. Vous pouvez bien sur l'utiliser dans
+    l'outil d'import de Knight NPC Generator.
+  </p>
+
+  <div class="flex flex-col mt-2">
+    <textarea class="text-[#2e2a31] h-24 pl-1 text-sm">{{ exported }}</textarea>
+  </div>
+</app-modal>
