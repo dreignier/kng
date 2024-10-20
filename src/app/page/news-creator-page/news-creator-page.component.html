@@ -1,8 +1,9 @@
-<div class="flex flex-col items-center">
+<div class="flex flex-col items-center" (click)="onGlobalClick()">
   <div class="bg-[#2e2a31] p-2 mt-1 w-[1120px]">
     <div class="flex flex-row gap-2">
       <button
         class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center flex-grow"
+        (click)="news.addColumn()"
       >
         <app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
         <span class="ml-1">Ajouter une colonne à droite</span>
@@ -10,13 +11,32 @@
 
       <button
         class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center flex-grow"
+        (click)="news.removeColumn()"
       >
         <app-icon class="size-5 inline-block" icon="minus-circle"></app-icon>
         <span class="ml-1">Supprimer la colonne de droite</span>
       </button>
     </div>
 
-    <div></div>
+    <p>
+      Vous pouvez bouger les curseurs pour modifier la largeur des colonnes.
+    </p>
+
+    <div id="sliders" class="px-3 relative mt-2">
+      @for (slider of news.sliders; track slider) {
+        <input
+          type="range"
+          class="h-4 cursor-move appearance-none bg-transparent"
+          [style.width]="slider.max - slider.min + 'px'"
+          [style.margin-left]="slider.min + 'px'"
+          [min]="slider.min"
+          [max]="slider.max"
+          [step]="1"
+          [(ngModel)]="slider.value"
+          (ngModelChange)="news.slider(slider)"
+        />
+      }
+    </div>
   </div>
 
   <div id="news" class="mt-2">
@@ -26,74 +46,100 @@
     >
       <div class="flex flex-row gap-[20px]">
         @for (column of news.columns; track column) {
-          <div
-            class="flex flex-col gap-[15px]"
-            [style.width]="column.width + 'px'"
-          >
+          <div class="flex flex-col" [style.width]="column.width + 'px'">
             @for (element of column.elements; track element) {
-              @if (isTitle(element)) {
-                <div
-                  class="flex flex-row items-start justify-between uppercase tracking-[-1px] segoe-ui-bold"
-                  [style.--color]="element.color"
-                >
-                  <div class="gradient-text flash text-[50px] mr-[20px]">
-                    {{ element.big }}
-                  </div>
-                  <div class="flex flex-col text-[25px] text-nowrap">
-                    @for (part of element.titleHtml(sanitizer); track part) {
-                      <span class="gradient-text" [innerHtml]="part"></span>
-                    }
-                  </div>
-                </div>
-              } @else if (isHeader(element)) {
-                <div class="flex flex-col items-center">
-                  <span
-                    class="gradient-text flash inline-block segoe-ui-bold text-[30px] uppercase mb-[-15px]"
-                    [style.--color]="element.color"
-                  >
-                    {{ element.header }}
-                  </span>
-                </div>
-              } @else if (isArticle(element)) {
-                <div
-                  class="article alternate{{
-                    element.background
-                  }} p-[10px] pb-[15px] rounded-[3px] relative"
-                  [class.shadowX]="element.shadowX"
-                  [class.shadowY]="element.shadowY"
-                  [style.--bg-color]="element.bgColor"
-                  [style.--color]="element.color"
-                >
-                  @for (
-                    corner of element.corners;
-                    let index = $index;
-                    track $index
-                  ) {
-                    @if (corner) {
-                      <div
-                        class="article-corner article-corner{{ $index }}"
-                      ></div>
-                    }
-                  }
+              <div
+                class="flex flex-col py-[7.5px] first:pt-0 last:pb-0 ra-element z-0"
+                [class.active]="element === activeElement"
+                (click)="onClick(element, $event)"
+              >
+                <app-news-element [element]="element"></app-news-element>
 
-                  <div
-                    class="article-content"
-                    [innerHTML]="converter.makeHtml(element.content)"
-                  ></div>
+                <div
+                  class="ra-toolbar flex flex-row justify-between left-[-5px] right-[-5px] top-[-7.5px]"
+                  [class.hidden]="
+                    element !== activeElement || editModal.displayed
+                  "
+                  [class.absolute]="
+                    element === activeElement && !editModal.displayed
+                  "
+                >
+                  <div class="flex flex-row gap-1">
+                    <button
+                      class="size-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+                      (click)="column.up(element)"
+                    >
+                      <app-icon class="size-5 block" icon="arrow-up"></app-icon>
+                    </button>
+                    <button
+                      class="size-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+                      (click)="column.down(element)"
+                    >
+                      <app-icon
+                        class="size-5 block"
+                        icon="arrow-down"
+                      ></app-icon>
+                    </button>
+                    <button
+                      class="size-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+                      (click)="edit(element)"
+                    >
+                      <app-icon class="size-5 block" icon="pencil"></app-icon>
+                    </button>
+                  </div>
+
+                  <button
+                    class="size-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+                    (click)="column.remove(element)"
+                  >
+                    <app-icon class="size-5 block" icon="X"></app-icon>
+                  </button>
                 </div>
-              } @else if (isSeparator(element)) {
-                <hr
-                  class="h-[2px] w-[60%] relative border-none"
-                  [class.right-[5px]]="element.align === 'left'"
-                  [class.self-end]="element.align === 'right'"
-                  [class.left-[5px]]="element.align === 'right'"
-                  [style.background-color]="element.color"
-                />
-              }
+              </div>
             }
           </div>
         }
       </div>
+    </div>
+  </div>
+
+  <div
+    class="w-[1120px] p-[20px] text-white segoe-ui text-[14px] leading-[1.1] relative"
+  >
+    <div class="flex flex-row gap-[20px]">
+      @for (column of news.columns; track column) {
+        <div class="flex flex-col gap-2" [style.width]="column.width + 'px'">
+          <button
+            class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center flex-grow"
+            (click)="column.addTitle()"
+          >
+            <app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+            <span class="ml-1">Ajouter un titre</span>
+          </button>
+
+          <button
+            class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center flex-grow"
+            (click)="column.addHeader()"
+          >
+            <app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+            <span class="ml-1">Ajouter un flash</span>
+          </button>
+          <button
+            class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center flex-grow"
+            (click)="column.addArticle()"
+          >
+            <app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+            <span class="ml-1">Ajouter un article</span>
+          </button>
+          <button
+            class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center flex-grow"
+            (click)="column.addSeparator()"
+          >
+            <app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+            <span class="ml-1">Ajouter un séparateur</span>
+          </button>
+        </div>
+      }
     </div>
   </div>
 
@@ -164,5 +210,26 @@
 
   <div class="flex flex-col mt-2">
     <textarea class="text-[#2e2a31] h-24 pl-1 text-sm">{{ exported }}</textarea>
+  </div>
+</app-modal>
+
+<app-modal #editModal [large]="true">
+  <div class="grid grid-cols-12 gap-4 mt-4">
+    <app-news-element-form
+      class="col-span-7"
+      [element]="editedElement!"
+    ></app-news-element-form>
+    <app-news-element
+      class="col-span-5 relative z-10"
+      [element]="editedElement!"
+    ></app-news-element>
+
+    <button
+      class="col-span-12 h-[30px] mt-2 border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center flex-grow"
+      (click)="saveEditedElement()"
+    >
+      <app-icon class="size-5 inline-block" icon="check-circle"></app-icon>
+      <span class="ml-1">Sauvegarder</span>
+    </button>
   </div>
 </app-modal>

@@ -1,0 +1,249 @@
+<div class="grid grid-cols-12 gap-2">
+  @if (isTitle(element)) {
+    <div class="col-span-6 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Titre
+      </label>
+      <input
+        class="text-[#2e2a31] h-[30px] pl-1"
+        type="text"
+        [(ngModel)]="element.big"
+        placeholder="Titre"
+      />
+    </div>
+
+    <div class="col-span-6 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Couleur
+      </label>
+      <button
+        class="h-[30px] border border-white flex items-center justify-center"
+        [(colorPicker)]="element.color"
+        [style.background-color]="element.color"
+      >
+        <app-icon class="size-5 inline-block" icon="brush"></app-icon>
+      </button>
+    </div>
+
+    <div class="col-span-12 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Texte
+      </label>
+      <textarea
+        class="text-[#2e2a31] h-[80px] pl-1"
+        type="text"
+        [(ngModel)]="element.title"
+        placeholder="Nom"
+      ></textarea>
+    </div>
+  } @else if (isHeader(element)) {
+    <div class="col-span-6 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Texte
+      </label>
+      <input
+        class="text-[#2e2a31] h-[30px] pl-1"
+        type="text"
+        [(ngModel)]="element.header"
+        placeholder="Nom"
+      />
+    </div>
+
+    <div class="col-span-6 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Couleur
+      </label>
+      <button
+        class="h-[30px] border border-white flex items-center justify-center"
+        [(colorPicker)]="element.color"
+        [style.background-color]="element.color"
+      >
+        <app-icon class="size-5 inline-block" icon="brush"></app-icon>
+      </button>
+    </div>
+  } @else if (isArticle(element)) {
+    <div class="col-span-4 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Type de fond
+      </label>
+      <select
+        [(ngModel)]="element.background"
+        class="bg-white text-[#2e2a31] h-[30px] pl-1"
+      >
+        <option [value]="0">Type 1</option>
+        <option [value]="1">Type 2</option>
+        <option [value]="2">Type 3</option>
+      </select>
+    </div>
+
+    <div class="col-span-4 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Lumière verticale
+      </label>
+      <button
+        class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+        (click)="element.shadowX = !element.shadowX"
+      >
+        {{ element.shadowX ? "Oui" : "Non" }}
+      </button>
+    </div>
+
+    <div class="col-span-4 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Lumière horizontale
+      </label>
+      <button
+        class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+        (click)="element.shadowY = !element.shadowY"
+      >
+        {{ element.shadowY ? "Oui" : "Non" }}
+      </button>
+    </div>
+
+    <div class="col-span-3 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs mb-2 flex flex-col justify-center content-center text-center"
+      >
+        Coin haut<br />gauche
+      </label>
+      <button
+        class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+        (click)="element.corners[0] = !element.corners[0]"
+      >
+        {{ element.corners[0] ? "Oui" : "Non" }}
+      </button>
+    </div>
+
+    <div class="col-span-3 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs mb-2 flex flex-col justify-center content-center text-center"
+      >
+        Coin haut<br />droite
+      </label>
+      <button
+        class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+        (click)="element.corners[1] = !element.corners[1]"
+      >
+        {{ element.corners[1] ? "Oui" : "Non" }}
+      </button>
+    </div>
+
+    <div class="col-span-3 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs mb-2 flex flex-col justify-center content-center text-center"
+      >
+        Coin bas<br />droite
+      </label>
+      <button
+        class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+        (click)="element.corners[2] = !element.corners[2]"
+      >
+        {{ element.corners[2] ? "Oui" : "Non" }}
+      </button>
+    </div>
+
+    <div class="col-span-3 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs mb-2 flex flex-col justify-center content-center text-center"
+      >
+        Coin bas<br />gauche
+      </label>
+      <button
+        class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+        (click)="element.corners[3] = !element.corners[3]"
+      >
+        {{ element.corners[3] ? "Oui" : "Non" }}
+      </button>
+    </div>
+
+    <div class="col-span-6 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Couleur
+      </label>
+      <button
+        class="h-[30px] border border-white flex items-center justify-center"
+        [(colorPicker)]="element.color"
+        [style.background-color]="element.color"
+      >
+        <app-icon class="size-5 inline-block" icon="brush"></app-icon>
+      </button>
+    </div>
+
+    <div class="col-span-6 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Couleur du fond
+      </label>
+      <button
+        class="h-[30px] border border-white flex items-center justify-center"
+        [(colorPicker)]="element.bgColor"
+        [style.background-color]="element.bgColor"
+      >
+        <app-icon class="size-5 inline-block" icon="brush"></app-icon>
+      </button>
+    </div>
+
+    <div class="col-span-12 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Texte
+      </label>
+      <textarea
+        class="text-[#2e2a31] h-[640px] pl-1"
+        type="text"
+        [(ngModel)]="element.content"
+        placeholder="Nom"
+      ></textarea>
+    </div>
+  } @else if (isSeparator(element)) {
+    <div class="col-span-6 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Alignement
+      </label>
+      <select
+        [(ngModel)]="element.align"
+        class="bg-white text-[#2e2a31] h-[30px] pl-1"
+      >
+        <option value="left">Gauche</option>
+        <option value="right">Droite</option>
+      </select>
+    </div>
+
+    <div class="col-span-6 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Couleur
+      </label>
+      <button
+        class="h-[30px] border border-white flex items-center justify-center"
+        [(colorPicker)]="element.color"
+        [style.background-color]="element.color"
+      >
+        <app-icon class="size-5 inline-block" icon="brush"></app-icon>
+      </button>
+    </div>
+  }
+</div>

@@ -1,13 +1,17 @@
 import { SecurityContext } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { isString } from 'lodash'
+import { arrayDown, arrayUp } from '../util'
 import Entity from './entity'
 
 const WIDTH = 1080
 const GAP = 20
 
+export type NewsSlider = { value: number; actual: number; min: number; max: number; colA: NewsColumn; colB: NewsColumn }
+
 export default class News extends Entity {
 	columns: NewsColumn[] = [new NewsColumn(), new NewsColumn(), new NewsColumn()]
+	sliders: NewsSlider[] = []
 
 	constructor(data?: any) {
 		super()
@@ -15,6 +19,66 @@ export default class News extends Entity {
 		if (data) {
 			this.import(data)
 		}
+
+		this.recomputeSliders()
+	}
+
+	recomputeSliders() {
+		let left = 0
+
+		for (let i = 0; i < this.columns.length - 1; ++i) {
+			left += this.columns[i].width
+			const value = left + GAP / 2
+
+			if (!this.sliders[i]) {
+				this.sliders.push({ value, actual: value, min: 0, max: WIDTH, colA: this.columns[i], colB: this.columns[i + 1] })
+			} else {
+				const slider = this.sliders[i]
+				slider.value = value
+				slider.actual = value
+				slider.colA = this.columns[i]
+				slider.colB = this.columns[i + 1]
+			}
+
+			this.clampSlider(this.sliders[i])
+
+			left += GAP
+		}
+	}
+
+	clampSlider(slider: NewsSlider) {
+		slider.min = slider.value - (slider.colA.width - 100)
+		slider.max = slider.value + (slider.colB.width - 100)
+	}
+
+	slider(slider: NewsSlider) {
+		let colA!: NewsColumn
+		let colB!: NewsColumn
+		let diff = 0
+		let neighbor: NewsSlider | undefined
+
+		if (slider.value < slider.actual) {
+			colA = slider.colA
+			colB = slider.colB
+			diff = slider.actual - slider.value
+			neighbor = this.sliders[this.sliders.indexOf(slider) - 1]
+		} else {
+			colA = slider.colB
+			colB = slider.colA
+			diff = slider.value - slider.actual
+			neighbor = this.sliders[this.sliders.indexOf(slider) + 1]
+		}
+
+		colA.width -= diff
+		colB.width += diff
+
+		slider.actual = slider.value
+
+		if (neighbor) {
+			this.clampSlider(neighbor)
+		}
+
+		this.fixWidth()
 	}
 
 	import(data: any) {
@@ -23,23 +87,52 @@ export default class News extends Entity {
 	}
 
 	addColumn() {
-		const width = (WIDTH - GAP * this.columns.length) / (this.columns.length + 1)
-
-		// Remove the width from all columns
-		for (const column of this.columns) {
-			column.width -= Math.round(Math.max(100, width / this.columns.length))
+		if (this.columns.length >= 6) {
+			return
 		}
 
-		const totalWidth = this.columns.reduce((acc, column) => acc + column.width, 0) + GAP * (this.columns.length + 1)
+		const width = (WIDTH - (GAP * this.columns.length)) / (this.columns.length + 1)
+
+		for (const column of this.columns) {
+			column.width = Math.max(100, Math.ceil(column.width - (width + GAP) / this.columns.length))
+		}
 
 		const column = new NewsColumn()
-		column.width = WIDTH - totalWidth
+		column.elements.push(new Header())
+
+		column.width = WIDTH - (this.width() + GAP)
 
 		this.columns.push(column)
+
+		this.fixWidth()
+
+		this.recomputeSliders()
+	}
+
+	width() {
+		return this.columns.reduce((acc, column) => acc + column.width, 0) + GAP * (this.columns.length - 1)
 	}
 
 	removeColumn() {
+		if (this.columns.length <= 1) {
+			return
+		}
+
 		this.columns = this.columns.slice(0, -1)
+		this.sliders = this.sliders.slice(0, -1)
+
+		const width = this.width()
+		for (const column of this.columns) {
+			column.width = Math.ceil(column.width + (WIDTH - width) / this.columns.length)
+		}
+
+		this.fixWidth()
+
+		this.recomputeSliders()
+	}
+
+	fixWidth() {
+		this.columns[0]!.width += WIDTH - this.width()
 	}
 }
 
@@ -51,6 +144,34 @@ export class NewsColumn {
 		if (data) {
 			this.import(data)
 		}
+	}
+
+	up(element: NewsElement) {
+		arrayUp(this.elements, element)
+	}
+
+	down(element: NewsElement) {
+		arrayDown(this.elements, element)
+	}
+
+	remove(element: NewsElement) {
+		this.elements = this.elements.filter(e => e !== element)
+	}
+
+	addTitle() {
+		this.elements.push(new Title())
+	}
+
+	addHeader() {
+		this.elements.push(new Header())
+	}
+
+	addSeparator() {
+		this.elements.push(new Separator())
+	}
+
+	addArticle() {
+		this.elements.push(new Article())
 	}
 
 	import(data: any) {
@@ -98,6 +219,7 @@ export class Title extends NewsElement {
 
 		this.big = isString(data.big) ? data.big : 'news'
 		this.title = isString(data.title) ? data.title : ''
+		this.color = isString(data.color) ? data.color : '#00ffcc44'
 	}
 
 	titleHtml(sanitizer: DomSanitizer) {
@@ -105,7 +227,7 @@ export class Title extends NewsElement {
 
 		result = sanitizer.sanitize(SecurityContext.HTML,result) || ''
 
-		result = result.replace(/([0-9]+)([^ .,!\n\r:?]+)/g, '$1<sup>$2</sup>')
+		result = result.replace(/([\d]+)([^\d\s.,_;!\n\r:?]+)/g, '$1<sup>$2</sup>')
 
 		return result.split('___BR___')
 	}
@@ -171,7 +293,7 @@ Ceci est un texte d'exemple pour vous montrer ce qui est possible de faire.
 
 __Ce texte est souligné__
 
-==Ce texte est en gros==
+==Ce texte est gros==
 
 ===Ce texte est encore plus gros===
 
@@ -188,7 +310,7 @@ Vous pouvez faire des listes :
 
 Les listes peuvent aussi être numérotées :
 1. Si vous avez besoin d'aide, n'hésitez pas à demander sur le serveur discord de Knight
-2. Des personnages vous aiderons
+2. Des personnes vous aiderons
 3. **__Bonne écriture !__**
 `
 

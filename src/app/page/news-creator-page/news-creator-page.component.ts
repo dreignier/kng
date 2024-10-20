@@ -1,53 +1,24 @@
-import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core'
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { DomSanitizer } from '@angular/platform-browser'
-import { Converter, ShowdownExtension } from 'showdown'
 import { IconComponent } from '../../icon/icon.component'
 import { ModalCanvasComponent } from '../../modal-canvas/modal-canvas.component'
 import { ModalComponent } from '../../modal/modal.component'
 import News, { Article, Header, NewsElement, Separator, Title } from '../../model/news'
-
-const showdownExtensions: ShowdownExtension[] = [{
-	type: 'lang',
-	regex: />>([^<]+)<</g,
-	replace: '<center>$1</center>'
-}, {
-	type: 'lang',
-	regex: /@@([^@]+)@@/g,
-	replace: '<span class="link">$1</span>'
-}, {
-	type: 'lang',
-	regex: /\^\^([^\^]+)\^\^/g,
-	replace: '<sup>$1</sup>'
-}, {
-	type: 'lang',
-	regex: /__([^_]+)__/g,
-	replace: '<ins>$1</ins>'
-}, {
-	type: 'lang',
-	regex: /====([^=]+)====/g,
-	replace: '<big class="biggest">$1</big>'
-}, {
-	type: 'lang',
-	regex: /===([^=]+)===/g,
-	replace: '<big class="bigger">$1</big>'
-}, {
-	type: 'lang',
-	regex: /==([^=]+)==/g,
-	replace: '<big>$1</big>'
-}]
+import { NewsElementFormComponent } from '../../news-element-form/news-element-form.component'
+import { NewsElementComponent } from '../../news-element/news-element.component'
 
 @Component({
   selector: 'app-news-creator-page',
   standalone: true,
-  imports: [FormsModule, ModalCanvasComponent, ModalComponent, IconComponent],
+  imports: [FormsModule, ModalCanvasComponent, ModalComponent, IconComponent, NewsElementComponent, NewsElementFormComponent],
   templateUrl: './news-creator-page.component.html',
-  styleUrl: './news-creator-page.component.scss',
-	encapsulation: ViewEncapsulation.None,
+  styleUrl: './news-creator-page.component.scss'
 })
 export class NewsCreatorPageComponent implements OnInit, OnDestroy{
 	news = new News()
-	converter = new Converter({ extensions: showdownExtensions })
+	activeElement?: NewsElement
+	editedElement?: NewsElement
+	sliders: number[] = []
 
 	imported = ''
 	exported = ''
@@ -55,10 +26,14 @@ export class NewsCreatorPageComponent implements OnInit, OnDestroy{
 	@ViewChild('imageModal') imageModal!: ModalCanvasComponent
 	@ViewChild('exportModal') exportModal!: ModalComponent
 	@ViewChild('importModal') importModal!: ModalComponent
+	@ViewChild('editModal') editModal!: ModalComponent
 
 	constructor(
-		readonly sanitizer: DomSanitizer
-	) {}
+	) {
+		this.news.columns[0].elements.push(new Title(), new Article())
+		this.news.columns[1].elements.push(new Separator(), new Article(), new Separator(), new Separator({ align: 'right' }))
+		this.news.columns[2].elements.push(new Header(), new Article())
+	}
 
 	ngOnInit(): void {
 		document.body.classList.add('bg-news')
@@ -66,22 +41,6 @@ export class NewsCreatorPageComponent implements OnInit, OnDestroy{
 
 	ngOnDestroy(): void {
 		document.body.classList.remove('bg-news')
-	}
-
-	isArticle(element: NewsElement) {
-		return element instanceof Article
-	}
-
-	isTitle(element: NewsElement) {
-		return element instanceof Title
-	}
-
-	isSeparator(element: NewsElement) {
-		return element instanceof Separator
-	}
-
-	isHeader(element: NewsElement) {
-		return element instanceof Header
 	}
 
 	save(news: News) {
@@ -119,5 +78,26 @@ export class NewsCreatorPageComponent implements OnInit, OnDestroy{
 	export(news: News) {
 		this.exported = JSON.stringify(news)
 		this.exportModal.open()
+	}
+
+	onClick(element: NewsElement, event: MouseEvent) {
+		event.stopPropagation()
+
+		this.activeElement = element
+	}
+
+	onGlobalClick() {
+		this.activeElement = undefined
+	}
+
+	edit(element: NewsElement) {
+		this.editedElement = new (element.constructor as any)()
+		this.editedElement?.import(this.activeElement)
+		this.editModal.open()
+	}
+
+	saveEditedElement() {
+		this.activeElement!.import(this.editedElement)
+		this.editModal.close()
 	}
 }
