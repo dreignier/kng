@@ -383,7 +383,7 @@
 
     @for (news of db.news; track news) {
       <button
-        class="min-h-[30px] text-left flex items-center border border-white bg-white my-1 hover:bg-[#2e2a31]"
+        class="min-h-[30px] text-left flex items-center border text-[#2e2a31] border-white bg-white my-1 hover:bg-[#2e2a31] hover:text-white"
         (click)="
           massExportNames.has(news.name)
             ? massExportNames.delete(news.name)
