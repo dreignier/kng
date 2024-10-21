@@ -66,10 +66,8 @@
 } @else if (isSeparator(element)) {
   <hr
     class="h-[2px] w-[60%] border-none relative separator overflow-visible {{
-      element.align
+      element.align || 'left'
     }}"
-    [class.right-[-5px]]="element.align === 'right'"
-    [class.left-[-5px]]="element.align === 'left'"
     [style.--color]="element.color"
     [style.background-color]="element.color"
   />

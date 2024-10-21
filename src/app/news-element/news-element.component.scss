@@ -259,6 +259,15 @@
 }
 
 .separator {
+  &.right {
+    right: -5px;
+    float: right;
+  }
+
+  &.left {
+    left: -5px;
+  }
+
   &::before {
     content: "";
     display: block;
@@ -281,8 +290,12 @@
     background-color: var(--color);
   }
 
-  &.right::before,
+  &.right::before {
+    left: 0;
+  }
+
   &.right::after {
     left: 0;
+    clear: both;
   }
 }
