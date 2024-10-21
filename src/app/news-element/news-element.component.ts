@@ -13,6 +13,10 @@ const showdownExtensions: ShowdownExtension[] = [{
 	replace: '<span class="link">$1</span>'
 }, {
 	type: 'lang',
+	regex: /~~([^~]+)~~/g,
+	replace: '<del>$1</del>'
+}, {
+	type: 'lang',
 	regex: /\^\^([^\^]+)\^\^/g,
 	replace: '<sup>$1</sup>'
 }, {

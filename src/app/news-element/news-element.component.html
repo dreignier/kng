@@ -1,6 +1,6 @@
 @if (isTitle(element)) {
   <div
-    class="flex flex-row items-start justify-between uppercase tracking-[-1px] segoe-ui-bold"
+    class="flex flex-row items-start justify-between uppercase tracking-[-1px] segoe-ui-bold flash-container flash-container-title bg-[#39373e]"
     [style.--color]="element.color"
   >
     <div class="gradient-text flash text-[50px] mr-[20px]">
@@ -14,39 +14,63 @@
   </div>
 } @else if (isHeader(element)) {
   <div class="flex flex-col items-center">
-    <span
-      class="gradient-text flash inline-block segoe-ui-bold text-[30px] uppercase mb-[-15px]"
-      [style.--color]="element.color"
-    >
-      {{ element.header }}
+    <span class="inline-block bg-[#39373e] flash-container">
+      <span
+        class="gradient-text flash flash-container inline-block segoe-ui-bold text-[30px] uppercase text-center"
+        [style.--color]="element.color"
+      >
+        {{ element.header }}
+      </span>
     </span>
   </div>
 } @else if (isArticle(element)) {
   <div
-    class="article alternate{{
-      element.background
-    }} p-[10px] pb-[15px] rounded-[3px] relative"
-    [class.shadowX]="element.shadowX"
-    [class.shadowY]="element.shadowY"
+    class="relative"
     [style.--bg-color]="element.bgColor"
     [style.--color]="element.color"
   >
-    @for (corner of element.corners; let index = $index; track $index) {
-      @if (corner) {
-        <div class="article-corner article-corner{{ $index }}"></div>
+    <div
+      class="article alternate{{
+        element.background
+      }} p-[10px] pb-[15px] rounded-[3px] relative"
+      [class.shadowX]="element.shadowX"
+      [class.shadowY]="element.shadowY"
+    >
+      @for (corner of element.corners; let index = $index; track $index) {
+        @if (corner) {
+          <div class="article-corner article-corner{{ $index }}"></div>
+        }
+      }
+
+      <div
+        class="article-content"
+        [innerHTML]="converter.makeHtml(element.content)"
+      ></div>
+    </div>
+
+    @if (element.bug) {
+      @for (i of [1, 2, 3, 4, 5]; track i) {
+        <div
+          class="article alternate{{
+            element.background
+          }} p-[10px] pb-[15px] rounded-[3px] bug{{ i }}"
+        >
+          <div
+            class="article-content"
+            [innerHTML]="converter.makeHtml(element.content)"
+          ></div>
+        </div>
       }
     }
-
-    <div
-      class="article-content"
-      [innerHTML]="converter.makeHtml(element.content)"
-    ></div>
   </div>
 } @else if (isSeparator(element)) {
   <hr
-    class="h-[2px] w-[60%] absolute border-none"
+    class="h-[2px] w-[60%] border-none relative separator overflow-visible {{
+      element.align
+    }}"
     [class.right-[-5px]]="element.align === 'right'"
     [class.left-[-5px]]="element.align === 'left'"
+    [style.--color]="element.color"
     [style.background-color]="element.color"
   />
 }

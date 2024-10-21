@@ -50,6 +50,7 @@
 
 .ra-element {
   position: relative;
+  cursor: pointer;
 
   &:hover::before {
     content: "";

@@ -1,6 +1,20 @@
 <div class="flex flex-col items-center" (click)="onGlobalClick()">
   <div class="bg-[#2e2a31] p-2 mt-1 w-[1120px]">
-    <div class="flex flex-row gap-2">
+    <div class="w-full flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Nom
+      </label>
+      <input
+        class="text-[#2e2a31] h-[30px] pl-1"
+        type="text"
+        [(ngModel)]="news.name"
+        placeholder="Nom"
+      />
+    </div>
+
+    <div class="flex flex-row gap-2 mt-2">
       <button
         class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center flex-grow"
         (click)="news.addColumn()"
@@ -42,7 +56,7 @@
   <div id="news" class="mt-2">
     <div
       id="newsContent"
-      class="w-[1120px] p-[20px] text-white segoe-ui text-[14px] leading-[1.1] relative"
+      class="w-[1120px] p-[20px] text-white segoe-ui text-[14px] leading-[1.1] relative overflow-hidden"
     >
       <div class="flex flex-row gap-[20px]">
         @for (column of news.columns; track column) {
@@ -178,11 +192,89 @@
   </div>
 </div>
 
+<hr
+  class="mx-20 my-10 border border-white [box-shadow:_-0_-0_10px_5px_white]"
+/>
+
+<div class="flex flex-row items-center">
+  <h2
+    class="orbitron text-4xl ml-4 mb-2 tracking-widest [text-shadow:_0_0_4px_white]"
+  >
+    Journeaux RA sauvegardées
+  </h2>
+  <button
+    class="h-7 ml-5 px-1 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+    (click)="openMassImport()"
+  >
+    <app-icon class="size-5 block" icon="import"></app-icon>
+    <span class="ml-1">Importer plusieurs journeaux RA</span>
+  </button>
+
+  <button
+    class="h-7 ml-5 px-1 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+    (click)="openMassExport()"
+  >
+    <app-icon class="size-5 block" icon="export"></app-icon>
+    <span class="ml-1">Exporter plusieurs journeaux RA</span>
+  </button>
+</div>
+
+<div class="ml-4 mb-3 flex items-center">
+  <app-icon class="inline-block size-5 mr-1" icon="warning"></app-icon>
+  <span class="text-sm">
+    Les journeaux RA sauvegardés sont stockés dans les données locales de votre
+    navigateur.
+  </span>
+</div>
+
+<div class="flex flex-row flex-wrap justify-center">
+  @for (news of db.news; track news) {
+    <div class="mx-3 mb-10">
+      <div
+        style="--bg-color: #00ffcc44; --color: #00ffcc"
+        class="article p-[10px] pb-[15px] rounded-[3px] w-80"
+      >
+        <p class="text-center segoe-ui-bold font-bold uppercase text-[15px]">
+          {{ news.name }}
+        </p>
+      </div>
+
+      <div class="flex flex-row justify-between mt-1">
+        <div class="flex flex-row">
+          <button
+            class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+            (click)="editNews(news)"
+            title="Modifier"
+          >
+            <app-icon class="size-5 block" icon="pencil"></app-icon>
+          </button>
+
+          <button
+            class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+            (click)="export(news)"
+            title="Exporter"
+          >
+            <app-icon class="size-5 block" icon="export"></app-icon>
+          </button>
+        </div>
+        <button
+          class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
+          (click)="deleteNews(news)"
+          title="Supprimer"
+        >
+          <app-icon class="size-5 block" icon="X"></app-icon>
+        </button>
+      </div>
+    </div>
+  }
+</div>
+
 <app-modal-canvas #imageModal></app-modal-canvas>
 
 <app-modal #importModal>
   <p class="text-justify text-sm">
-    Vous pouvez coller ici le résultat d'un export de news RA pour l'importer.
+    Vous pouvez coller ici le résultat d'un export de journaux RA pour
+    l'importer.
   </p>
 
   <div class="flex flex-col mt-2">
@@ -203,7 +295,7 @@
 
 <app-modal #exportModal>
   <p class="text-justify text-sm">
-    Vous pouvez copier/coller ce texte et l'utiliser pour importer une news RA
+    Vous pouvez copier/coller ce texte et l'utiliser pour importer un journal RA
     dans tout outil supportant ce format. Vous pouvez bien sur l'utiliser dans
     l'outil d'import de Knight NPC Generator.
   </p>
@@ -220,7 +312,7 @@
       [element]="editedElement!"
     ></app-news-element-form>
     <app-news-element
-      class="col-span-5 relative z-10"
+      class="col-span-5 relative z-10 text-white segoe-ui text-[14px] leading-[1.1]"
       [element]="editedElement!"
     ></app-news-element>
 
@@ -231,5 +323,101 @@
       <app-icon class="size-5 inline-block" icon="check-circle"></app-icon>
       <span class="ml-1">Sauvegarder</span>
     </button>
+  </div>
+</app-modal>
+
+<app-modal #massImportModal>
+  <p class="text-justify text-sm">
+    Vous pouvez coller ici le résultat d'un export d'une ou plusieurs journeaux
+    RA pour l'importer.
+  </p>
+
+  <div class="flex flex-col mt-2">
+    <textarea
+      class="text-[#2e2a31] h-24 pl-1 text-sm"
+      [(ngModel)]="imported"
+    ></textarea>
+
+    <label
+      class="uppercase segoe-ui-bold-italic font-bold text-xs block text-center mt-2 mb-1"
+      for="massImportStrategy"
+    >
+      Stratégie de gestion des doublons
+    </label>
+    <select
+      id="massImportStrategy"
+      class="bg-white text-[#2e2a31] h-[30px] pl-1"
+      [(ngModel)]="massImportStrategy"
+    >
+      <option value="rename">Renommer les doublons</option>
+      <option value="ignore">Ne pas importer les doublons</option>
+      <option value="replace">
+        Écraser les données locales avec les doublons
+      </option>
+    </select>
+
+    <button
+      class="h-[28px] mt-2 border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+      (click)="massImport()"
+    >
+      <app-icon class="size-5 block" icon="import"></app-icon>
+      <span class="ml-1">Importer</span>
+    </button>
+  </div>
+</app-modal>
+
+<app-modal #massExportModal>
+  <p class="text-justify text-sm">
+    Sélectionnez les journeaux RA que vous voulez exporter puis utiliser le
+    bouton pour générer les données.
+  </p>
+
+  <div class="flex flex-col mt-2">
+    <button
+      class="h-[28px] mt-2 mb-1 border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+      (click)="massExportSelectAll()"
+    >
+      <app-icon class="size-5 block" icon="check-circle"></app-icon>
+      <span class="ml-1">Tout sélectionner</span>
+    </button>
+
+    @for (news of db.news; track news) {
+      <button
+        class="min-h-[30px] text-left flex items-center border border-white bg-white my-1 hover:bg-[#2e2a31]"
+        (click)="
+          massExportNames.has(news.name)
+            ? massExportNames.delete(news.name)
+            : massExportNames.add(news.name)
+        "
+      >
+        <span class="mr-2 size-5">
+          @if (massExportNames.has(news.name)) {
+            <app-icon class="size-5 block" icon="check-circle"></app-icon>
+          }
+        </span>
+        <span [class.segoe-ui-bold]="massExportNames.has(news.name)">
+          {{ news.name }}
+        </span>
+      </button>
+    }
+
+    <button
+      class="h-[28px] mt-2 border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+      (click)="massExport()"
+    >
+      <app-icon class="size-5 block" icon="import"></app-icon>
+      <span class="ml-1">Exporter</span>
+    </button>
+
+    @if (exported) {
+      <p class="text-justify text-sm my-2">
+        Vous pouvez copier/coller ce texte et l'utiliser pour importer une news
+        RA dans tout outil supportant ce format. Vous pouvez bien sur l'utiliser
+        dans l'outil d'import de Knight NPC Generator.
+      </p>
+
+      <textarea class="text-[#2e2a31] h-24 pl-1 text-sm" [(ngModel)]="exported">
+      </textarea>
+    }
   </div>
 </app-modal>

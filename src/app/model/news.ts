@@ -6,6 +6,7 @@ import Entity from './entity'
 
 const WIDTH = 1080
 const GAP = 20
+const MIN_WIDTH = 200
 
 export type NewsSlider = { value: number; actual: number; min: number; max: number; colA: NewsColumn; colB: NewsColumn }
 
@@ -47,8 +48,8 @@ export default class News extends Entity {
 	}
 
 	clampSlider(slider: NewsSlider) {
-		slider.min = slider.value - (slider.colA.width - 100)
-		slider.max = slider.value + (slider.colB.width - 100)
+		slider.min = slider.value - (slider.colA.width - MIN_WIDTH)
+		slider.max = slider.value + (slider.colB.width - MIN_WIDTH)
 	}
 
 	slider(slider: NewsSlider) {
@@ -94,7 +95,7 @@ export default class News extends Entity {
 		const width = (WIDTH - (GAP * this.columns.length)) / (this.columns.length + 1)
 
 		for (const column of this.columns) {
-			column.width = Math.max(100, Math.ceil(column.width - (width + GAP) / this.columns.length))
+			column.width = Math.max(MIN_WIDTH, Math.ceil(column.width - (width + GAP) / this.columns.length))
 		}
 
 		const column = new NewsColumn()
@@ -280,6 +281,7 @@ export class Article extends NewsElement {
 	background = 0
 	color = '#00ffcc'
 	bgColor = '#00ffcc44'
+	bug = false
 	content = `
 Ceci est un texte d'exemple pour vous montrer ce qui est possible de faire.
 
@@ -292,6 +294,8 @@ Ceci est un texte d'exemple pour vous montrer ce qui est possible de faire.
 **Ce texte est en gras**
 
 __Ce texte est souligné__
+
+~~Ce texte est barré~~
 
 ==Ce texte est gros==
 
@@ -332,5 +336,6 @@ Les listes peuvent aussi être numérotées :
 		this.color = isString(data.color) ? data.color : '#00ffcc'
 		this.bgColor = isString(data.bgColor) ? data.bgColor : '#00ffcc44'
 		this.content = isString(data.content) ? data.content : ''
+		this.bug = data.bug === true
 	}
 }

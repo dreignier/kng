@@ -3,6 +3,7 @@ import { ADVANCED, BANDE, CAPACITIES, COLORS, COLOSSE, EFFECTS, HOSTILE, PATRON,
 import Capacity from './model/capacity'
 import Effect from './model/effect'
 import Equipment, { AttackRule } from './model/equipment'
+import News from './model/news'
 import Npc from './model/npc'
 import Vehicle from './model/vehicle'
 
@@ -46,6 +47,7 @@ export class DatabaseService {
 	npcs: Npc[] = []
 	equipments: Equipment[] = []
 	vehicles: Vehicle[] = []
+	news: News[] = []
 	capacities: DbCapacity[] = []
 	effects: DbEffect[] = []
 	colors: string[] = COLORS
@@ -70,6 +72,12 @@ export class DatabaseService {
 		if (json) {
 			const data = JSON.parse(json)
 			this.vehicles = data.map((e: any) => new Vehicle(e))
+		}
+
+		json = localStorage.getItem('newsList')
+		if (json) {
+			const data = JSON.parse(json)
+			this.news = data.map((e: any) => new News(e))
 		}
 
 		for (const capacity of CAPACITIES) {
@@ -401,5 +409,54 @@ export class DatabaseService {
 
 		this.sortVehicles()
 		this.saveVehicles()
+	}
+
+	saveNews(news: News) {
+		const data = new News(news)
+		const index = this.news.findIndex(e => e.name === data.name)
+
+		if (index === -1) {
+			this.news.push(data)
+		} else {
+			this.news[index] = data
+		}
+
+		this.sortNews()
+		this.saveAllNews()
+	}
+
+	saveAllNews() {
+		localStorage.setItem('newsList', JSON.stringify(this.news))
+	}
+
+	sortNews() {
+		this.news = this.news.sort((a, b) => a.name.localeCompare(b.name))
+	}
+
+	exportNews(names: Set<string>) {
+		const news = this.news.filter(e => names.has(e.name))
+		return JSON.stringify(news)
+	}
+
+	importNews(allNews: News[], strategy: 'rename' | 'ignore' | 'replace') {
+		if (strategy === 'rename') {
+			for (const news of allNews) {
+				if (this.news.find(e => e.name === news.name)) {
+					news.name += ' bis'
+				}
+			}
+		} else if (strategy === 'ignore') {
+			allNews = allNews.filter(e => !this.news.find(f => f.name === e.name))
+		}
+
+		this.news = this.news.concat(allNews)
+
+		this.sortNews()
+		this.saveAllNews()
+	}
+
+	deleteNews(news: News) {
+		this.news = this.news.filter(e => e.name !== news.name)
+		this.saveAllNews()
 	}
 }

@@ -1,22 +1,28 @@
 .flash {
   position: relative;
+  text-shadow: 0 0 1px var(--color);
+}
+
+.flash-container {
+  border-top: 1px solid var(--color);
+  border-bottom: 1px solid var(--color);
 
   &::before {
     content: "";
     display: block;
     z-index: -1;
-    width: 100%;
-    height: 0;
-    right: 0;
-    left: 0;
-    top: 50%;
+    bottom: 0;
+    right: 20%;
+    left: 20%;
+    top: 0;
+    border-radius: 50%;
     position: absolute;
-    box-shadow:
-      0 0 20px 10px var(--color),
-      0 0 20px 10px var(--color),
-      0 0 10px 10px var(--color),
-      0 0 10px 10px var(--color);
+    box-shadow: 0 0 10px 10px var(--color);
   }
+}
+
+.flash-container-title::before {
+  bottom: 7.5px;
 }
 
 .gradient-text {
@@ -213,5 +219,70 @@
     &.biggest {
       font-size: 36px;
     }
+  }
+}
+
+.bug1,
+.bug2,
+.bug3,
+.bug4,
+.bug5 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.bug1 {
+  opacity: 0.5;
+  transform: translate(60%, -20%);
+}
+
+.bug2 {
+  opacity: 0.4;
+  transform: translate(25%, 90%);
+}
+
+.bug3 {
+  opacity: 0.3;
+  transform: translate(-10%, 80%);
+}
+
+.bug4 {
+  opacity: 0.2;
+  transform: translate(-45%, -50%);
+}
+
+.bug5 {
+  opacity: 0.1;
+  transform: translate(-30%, -200%);
+}
+
+.separator {
+  &::before {
+    content: "";
+    display: block;
+    position: absolute;
+    right: 0;
+    top: -1px;
+    width: 20%;
+    height: 1px;
+    background-color: var(--color);
+  }
+
+  &::after {
+    content: "";
+    display: block;
+    position: absolute;
+    right: 0;
+    top: 2px;
+    width: 20%;
+    height: 1px;
+    background-color: var(--color);
+  }
+
+  &.right::before,
+  &.right::after {
+    left: 0;
   }
 }

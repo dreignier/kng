@@ -72,11 +72,11 @@
       </button>
     </div>
   } @else if (isArticle(element)) {
-    <div class="col-span-4 flex flex-col">
+    <div class="col-span-3 flex flex-col">
       <label
-        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[32px] mb-2 flex flex-col justify-center content-center text-center"
       >
-        Type de fond
+        Fond
       </label>
       <select
         [(ngModel)]="element.background"
@@ -88,11 +88,11 @@
       </select>
     </div>
 
-    <div class="col-span-4 flex flex-col">
+    <div class="col-span-3 flex flex-col">
       <label
-        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+        class="uppercase segoe-ui-bold-italic font-bold text-xs mb-2 flex flex-col justify-center content-center text-center"
       >
-        Lumière verticale
+        Lumière<br />verticale
       </label>
       <button
         class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
@@ -102,17 +102,31 @@
       </button>
     </div>
 
-    <div class="col-span-4 flex flex-col">
+    <div class="col-span-3 flex flex-col">
       <label
-        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+        class="uppercase segoe-ui-bold-italic font-bold text-xs mb-2 flex flex-col justify-center content-center text-center"
       >
-        Lumière horizontale
+        Lumière<br />horizontale
       </label>
       <button
         class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
         (click)="element.shadowY = !element.shadowY"
       >
         {{ element.shadowY ? "Oui" : "Non" }}
+      </button>
+    </div>
+
+    <div class="col-span-3 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[32px] mb-2 flex flex-col justify-center content-center text-center"
+      >
+        Piraté
+      </label>
+      <button
+        class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+        (click)="element.bug = !element.bug"
+      >
+        {{ element.bug ? "Oui" : "Non" }}
       </button>
     </div>
 
