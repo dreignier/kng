@@ -85,6 +85,7 @@ export default class News extends Entity {
 	import(data: any) {
 		this.name = isString(data.name) ? data.name : ''
 		this.columns = Array.isArray(data.columns) ? data.columns.map((data: any) => new NewsColumn(data)) : [new NewsColumn(), new NewsColumn(), new NewsColumn()]
+		this.recomputeSliders()
 	}
 
 	addColumn() {
