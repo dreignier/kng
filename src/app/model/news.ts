@@ -206,7 +206,7 @@ export class NewsElement {
 export class Title extends NewsElement {
 	big = 'news'
 	title = '11 janvier 2038\nN°2'
-	color = '#00ffcc44'
+	color = '#00ffcc'
 
 	constructor(data?: any) {
 		super()
@@ -221,7 +221,7 @@ export class Title extends NewsElement {
 
 		this.big = isString(data.big) ? data.big : 'news'
 		this.title = isString(data.title) ? data.title : ''
-		this.color = isString(data.color) ? data.color : '#00ffcc44'
+		this.color = isString(data.color) ? data.color : '#00ffcc'
 	}
 
 	titleHtml(sanitizer: DomSanitizer) {
@@ -237,7 +237,7 @@ export class Title extends NewsElement {
 
 export class Header extends NewsElement {
 	header = 'FLASH'
-	color = '#00ffcc44'
+	color = '#00ffcc'
 
 	constructor(data?: any) {
 		super()
@@ -251,13 +251,13 @@ export class Header extends NewsElement {
 		super.import(data)
 
 		this.header = isString(data.header) ? data.header : 'FLASH'
-		this.color = isString(data.color) ? data.color : '#00ffcc44'
+		this.color = isString(data.color) ? data.color : '#00ffcc'
 	}
 }
 
 export class Separator extends NewsElement {
 	align = 'left'
-	color = '#00ffcc44'
+	color = '#00ffcc'
 
 	constructor(data?: any) {
 		super()
@@ -271,7 +271,7 @@ export class Separator extends NewsElement {
 		super.import(data)
 
 		this.align = isString(data.align) ? data.align : 'left'
-		this.color = isString(data.color) ? data.color : '#00ffcc44'
+		this.color = isString(data.color) ? data.color : '#00ffcc50'
 	}
 }
 
@@ -281,7 +281,7 @@ export class Article extends NewsElement {
 	shadowY = false
 	background = 0
 	color = '#00ffcc'
-	bgColor = '#00ffcc44'
+	bgColor = '#00ffcc'
 	bug = false
 	content = `
 Ceci est un texte d'exemple pour vous montrer ce qui est possible de faire.
@@ -335,7 +335,7 @@ Les listes peuvent aussi être numérotées :
 		this.shadowY = data.shadowY === true
 		this.background = Number.isInteger(data.background) ? data.background : 0
 		this.color = isString(data.color) ? data.color : '#00ffcc'
-		this.bgColor = isString(data.bgColor) ? data.bgColor : '#00ffcc44'
+		this.bgColor = isString(data.bgColor) ? data.bgColor : '#00ffcc'
 		this.content = isString(data.content) ? data.content : ''
 		this.bug = data.bug === true
 	}

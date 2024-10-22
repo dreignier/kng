@@ -21,10 +21,6 @@
   }
 }
 
-.flash-container-title::before {
-  bottom: 7.5px;
-}
-
 .gradient-text {
   background: text linear-gradient(#fff 0%, #fff 30%, var(--color) 100%);
   color: transparent;
@@ -259,6 +255,8 @@
 }
 
 .separator {
+  background-color: var(--color);
+
   &.right {
     right: -5px;
     float: right;
