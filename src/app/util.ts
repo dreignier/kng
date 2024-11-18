@@ -26,5 +26,9 @@ export function shuffle(a: any[]) {
 }
 
 export function fixColor(color: string) {
-	return color.slice(0, 7)
+	if (color.charAt(0) === '#' && color.length === 9) {
+		return color.slice(0, 7)
+	}
+
+	return '#00ffcc'
 }
