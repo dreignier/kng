@@ -1,7 +1,7 @@
 import { SecurityContext } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { isString } from 'lodash'
-import { arrayDown, arrayUp } from '../util'
+import { arrayDown, arrayUp, fixColor } from '../util'
 import Entity from './entity'
 
 const WIDTH = 1080
@@ -222,6 +222,8 @@ export class Title extends NewsElement {
 		this.big = isString(data.big) ? data.big : 'news'
 		this.title = isString(data.title) ? data.title : ''
 		this.color = isString(data.color) ? data.color : '#00ffcc'
+
+		this.color = fixColor(this.color)
 	}
 
 	titleHtml(sanitizer: DomSanitizer) {
@@ -252,6 +254,8 @@ export class Header extends NewsElement {
 
 		this.header = isString(data.header) ? data.header : 'FLASH'
 		this.color = isString(data.color) ? data.color : '#00ffcc'
+
+		this.color = fixColor(this.color)
 	}
 }
 
@@ -271,7 +275,9 @@ export class Separator extends NewsElement {
 		super.import(data)
 
 		this.align = isString(data.align) ? data.align : 'left'
-		this.color = isString(data.color) ? data.color : '#00ffcc50'
+		this.color = isString(data.color) ? data.color : '#00ffcc'
+
+		this.color = fixColor(this.color)
 	}
 }
 
@@ -338,5 +344,8 @@ Les listes peuvent aussi être numérotées :
 		this.bgColor = isString(data.bgColor) ? data.bgColor : '#00ffcc'
 		this.content = isString(data.content) ? data.content : ''
 		this.bug = data.bug === true
+
+		this.color = fixColor(this.color)
+		this.bgColor = fixColor(this.bgColor)
 	}
 }

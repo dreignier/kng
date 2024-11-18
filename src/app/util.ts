@@ -24,3 +24,7 @@ export function shuffle(a: any[]) {
   }
   return a;
 }
+
+export function fixColor(color: string) {
+	return color.slice(0, 7)
+}

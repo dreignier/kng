@@ -1,4 +1,3 @@
-import { JsonPipe } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { ASPECTS_LABELS } from '../constants'
 import Npc from '../model/npc'
@@ -6,7 +5,7 @@ import Npc from '../model/npc'
 @Component({
   selector: 'app-npc',
   standalone: true,
-  imports: [JsonPipe],
+  imports: [],
   templateUrl: './npc.component.html',
   styleUrl: './npc.component.scss'
 })
