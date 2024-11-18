@@ -26,6 +26,10 @@ export function shuffle(a: any[]) {
 }
 
 export function fixColor(color: string) {
+	if (color.charAt(0) === '#' && color.length === 7) {
+		return color
+	}
+
 	if (color.charAt(0) === '#' && color.length === 9) {
 		return color.slice(0, 7)
 	}
