@@ -1,41 +1,7 @@
 import { Component, Input, ViewEncapsulation } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
-import { Converter, ShowdownExtension } from 'showdown'
 import { Article, Header, NewsElement, Separator, Title } from '../model/news'
-
-const showdownExtensions: ShowdownExtension[] = [{
-	type: 'lang',
-	regex: />>([^<]+)<</g,
-	replace: '<center>$1</center>'
-}, {
-	type: 'lang',
-	regex: /@@([^@]+)@@/g,
-	replace: '<span class="link">$1</span>'
-}, {
-	type: 'lang',
-	regex: /~~([^~]+)~~/g,
-	replace: '<del>$1</del>'
-}, {
-	type: 'lang',
-	regex: /\^\^([^\^]+)\^\^/g,
-	replace: '<sup>$1</sup>'
-}, {
-	type: 'lang',
-	regex: /__([^_]+)__/g,
-	replace: '<ins>$1</ins>'
-}, {
-	type: 'lang',
-	regex: /====([^=]+)====/g,
-	replace: '<big class="biggest">$1</big>'
-}, {
-	type: 'lang',
-	regex: /===([^=]+)===/g,
-	replace: '<big class="bigger">$1</big>'
-}, {
-	type: 'lang',
-	regex: /==([^=]+)==/g,
-	replace: '<big>$1</big>'
-}]
+import { showdownConverter } from '../util'
 
 @Component({
   selector: 'app-news-element',
@@ -47,7 +13,7 @@ const showdownExtensions: ShowdownExtension[] = [{
 })
 export class NewsElementComponent {
 	@Input() element!: NewsElement
-	converter = new Converter({ extensions: showdownExtensions })
+	converter = showdownConverter()
 
 	constructor(
 		readonly sanitizer: DomSanitizer

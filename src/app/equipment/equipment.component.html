@@ -40,7 +40,9 @@
     <div
       class="cost text-[#f04827] segoe-ui-bold italic font-bold text-base w-[37px] pt-2 leading-[15px] relative flex-shrink-0"
     >
-      PG<br />{{ equipment.cost }}
+      @if (equipment.cost > 0) {
+        PG<br />{{ equipment.cost }}
+      }
     </div>
   </div>
 

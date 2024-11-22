@@ -1,0 +1,104 @@
+.page {
+  width: 21cm;
+  height: 29.7cm;
+  overflow: hidden;
+  margin-bottom: 30px;
+  background-color: white;
+  color: black;
+  clear: both;
+  page-break-after: always;
+  position: relative;
+}
+
+@media print {
+  .page {
+    margin: 0;
+  }
+}
+
+.article-content {
+  font-family: "Segoe Regular", sans-serif;
+
+  p {
+    margin-bottom: 10px;
+    text-align: justify;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &:has(+ ul),
+    &:has(+ ol) {
+      margin-bottom: 0;
+    }
+  }
+
+  em {
+    font-family: "Segoe UI Italic", sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: 16px;
+    text-align: center;
+    font-family: "Segoe UI Bold", sans-serif;
+    text-transform: uppercase;
+    font-weight: normal;
+    margin-bottom: 10px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .link {
+    font-family: "Segoe UI Bold", sans-serif;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #5bc5f2;
+    text-shadow: none;
+  }
+
+  ol {
+    list-style: decimal;
+  }
+
+  ul {
+    list-style: disc;
+  }
+
+  ol,
+  ul {
+    margin-left: 15px;
+    margin-bottom: 10px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  li {
+    margin-bottom: 5px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  big {
+    font-family: "Segoe UI Bold", sans-serif;
+    font-size: 20px;
+
+    &.bigger {
+      font-size: 28px;
+    }
+
+    &.biggest {
+      font-size: 36px;
+    }
+  }
+}

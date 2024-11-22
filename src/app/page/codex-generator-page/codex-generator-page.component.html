@@ -1,0 +1,74 @@
+<div class="ml-4 my-3 flex items-center print:hidden">
+  <app-icon
+    class="size-6 inline-block mr-2"
+    icon="information-circle"
+  ></app-icon>
+  <span class="text-sm">
+    Pour convertir votre codex en PDF, vous devez utiliser la fonction "Imprimer
+    en PDF" de votre navigateur. Utilisez l'orientation "Portrait", le format
+    "A4", aucune marge et imprimez les arrières-plans.
+  </span>
+</div>
+
+@for (page of pages; track page) {
+  <div class="flex justify-between mx-4 print:mx-0">
+    <div class="print:hidden text-white h-[29.7cm]">
+      @if (isBestiaryPage(page)) {
+        Formulaire bestiaire
+      }
+    </div>
+    <div [id]="page.id" class="page" [style.--color]="page.color">
+      <div [id]="'content-' + page.id">
+        @if (page.title) {
+          <div
+            class="text-center text-white bg-[#2e2a31] min-h-[60px] pt-5 uppercase text-lg tracking-[12px]"
+          >
+            {{ page.title }}
+          </div>
+        }
+
+        <div class="mx-[1.75cm]">
+          @if (isBestiaryPage(page)) {
+            <div
+              class="text-center text-white bg-[#2e2a31] min-h-[80px] pt-5 mt-10 mb-2 uppercase text-4xl segoe-ui-bold font-bold"
+            >
+              {{ page.npc?.name }}
+            </div>
+
+            <div
+              class="article-content leading-tight text-sm"
+              [innerHTML]="converter.makeHtml(page.description)"
+            ></div>
+
+            @if (page.npc) {
+              <div class="flex items-center justify-center my-5">
+                <app-npc
+                  [id]="'npc-' + page.id"
+                  [npc]="page.npc"
+                  [style.transform]="'scale(' + page.npcScale + ')'"
+                  [style.margin-bottom]="page.npcMarginBottom + 'px'"
+                  class="origin-top"
+                ></app-npc>
+              </div>
+            }
+
+            @if (page.quote) {
+              <div [innerHTML]="converter.makeHtml(page.quote)"></div>
+              @if (page.author) {
+                <div>{{ page.author }}</div>
+              }
+            }
+          }
+        </div>
+
+        @if (!$first) {
+          <div
+            class="absolute bottom-0 left-[8cm] right-[8cm] py-2 h-[40px] bg-[#2e2a31] text-center text-white"
+          >
+            - {{ $index + 1 }} -
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

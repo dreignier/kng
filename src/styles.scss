@@ -38,3 +38,10 @@
 body.bg-news {
   background-color: #39373e;
 }
+
+@media print {
+  body {
+    background-color: white;
+    width: 21cm;
+  }
+}

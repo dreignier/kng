@@ -1,3 +1,5 @@
+import { Converter, ShowdownExtension } from 'showdown'
+
 export function arrayUp<T>(array: T[], element: T) {
   const index = array.indexOf(element);
 
@@ -35,4 +37,42 @@ export function fixColor(color: string) {
 	}
 
 	return '#00ffcc'
+}
+
+export function showdownConverter() {
+	const showdownExtensions: ShowdownExtension[] = [{
+		type: 'lang',
+		regex: />>([^<]+)<</g,
+		replace: '<center>$1</center>'
+	}, {
+		type: 'lang',
+		regex: /@@([^@]+)@@/g,
+		replace: '<span class="link">$1</span>'
+	}, {
+		type: 'lang',
+		regex: /~~([^~]+)~~/g,
+		replace: '<del>$1</del>'
+	}, {
+		type: 'lang',
+		regex: /\^\^([^\^]+)\^\^/g,
+		replace: '<sup>$1</sup>'
+	}, {
+		type: 'lang',
+		regex: /__([^_]+)__/g,
+		replace: '<ins>$1</ins>'
+	}, {
+		type: 'lang',
+		regex: /====([^=]+)====/g,
+		replace: '<big class="biggest">$1</big>'
+	}, {
+		type: 'lang',
+		regex: /===([^=]+)===/g,
+		replace: '<big class="bigger">$1</big>'
+	}, {
+		type: 'lang',
+		regex: /==([^=]+)==/g,
+		replace: '<big>$1</big>'
+	}]
+
+	return new Converter({ extensions: showdownExtensions })
 }
