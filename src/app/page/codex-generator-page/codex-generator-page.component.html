@@ -21,7 +21,9 @@
       <div [id]="'content-' + page.id">
         @if (page.title) {
           <div
-            class="text-center text-white bg-[#2e2a31] min-h-[60px] pt-5 uppercase text-lg tracking-[12px]"
+            class="text-center text-white min-h-[60px] pt-5 pb-4 uppercase text-lg tracking-[12px] page-title"
+            [class.page-title-left]="$odd"
+            [class.page-title-right]="$even"
           >
             {{ page.title }}
           </div>
@@ -30,7 +32,9 @@
         <div class="mx-[1.75cm]">
           @if (isBestiaryPage(page)) {
             <div
-              class="text-center text-white bg-[#2e2a31] min-h-[80px] pt-5 mt-10 mb-2 uppercase text-4xl segoe-ui-bold font-bold"
+              class="text-center text-white bg-[#2e2a31] min-h-[80px] py-5 mt-10 mb-2 uppercase text-4xl segoe-ui-bold font-bold npc-name"
+              [class.elite]="page.elite"
+              [class.incarnation]="page.incarnation"
             >
               {{ page.npc?.name }}
             </div>
@@ -53,17 +57,28 @@
             }
 
             @if (page.quote) {
-              <div [innerHTML]="converter.makeHtml(page.quote)"></div>
+              <div
+                class="quote-content text-center"
+                [innerHTML]="
+                  converter.makeHtml('==« ==' + page.quote + '== »==')
+                "
+              ></div>
               @if (page.author) {
-                <div>{{ page.author }}</div>
+                <div class="text-right">—&nbsp;{{ page.author }}</div>
               }
+            }
+
+            @if ($odd) {
+              <div class="corner corner-right"></div>
+            } @else {
+              <div class="corner corner-left"></div>
             }
           }
         </div>
 
         @if (!$first) {
           <div
-            class="absolute bottom-0 left-[8cm] right-[8cm] py-2 h-[40px] bg-[#2e2a31] text-center text-white"
+            class="absolute bottom-0 left-[8cm] right-[8cm] py-1 h-[32px] bg-[#2e2a31] text-center text-white page-number"
           >
             - {{ $index + 1 }} -
           </div>

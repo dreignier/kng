@@ -21,19 +21,19 @@ export class CodexGeneratorPageComponent {
 		readonly db: DatabaseService
 	) {
 		this.pages = [
-			...[this.db.npcs[0], this.db.npcs[1]].map(npc => {
+			...this.db.npcs.map(npc => {
 				const page = new BestiaryPage()
 
 				page.title = 'Bestiaire'
 				page.npc = npc
 				page.description = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent semper orci elit, quis scelerisque odio mattis vel. Suspendisse nec mauris consequat, consequat nibh et, facilisis lacus. Integer a placerat felis. Morbi pellentesque velit risus, non placerat arcu hendrerit et. Pellentesque vitae tristique tortor. Aliquam erat volutpat. Cras at tristique elit, sed pulvinar neque. Suspendisse maximus lacus eget dictum finibus. Vestibulum pellentesque commodo ex, vel tempor erat faucibus non. Quisque dignissim vulputate ligula tincidunt gravida. Suspendisse potenti. Sed at consequat purus. Etiam pretium dignissim convallis. Proin tempus turpis quis metus mollis fermentum.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent semper orci elit, quis scelerisque odio mattis vel. Suspendisse nec mauris consequat, consequat nibh et, facilisis lacus. Integer a placerat felis. Morbi pellentesque velit risus, non placerat arcu hendrerit et. Pellentesque vitae tristique tortor. Aliquam erat volutpat. Cras at tristique elit, sed pulvinar neque. Suspendisse maximus lacus eget dictum finibus. Vestibulum pellentesque commodo ex, vel tempor erat faucibus non. Quisque dignissim vulputate ligula tincidunt gravida. Suspendisse potenti. Sed at consequat purus. Etiam pretium dignissim convallis. Proin tempus turpis quis metus mollis fermentum.
-
 **Tactique :** Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent semper orci elit, quis scelerisque odio mattis vel. Suspendisse nec mauris consequat, consequat nibh et, facilisis lacus. Integer a placerat felis. Morbi pellentesque velit risus, non placerat arcu hendrerit et. Pellentesque vitae tristique tortor. Aliquam erat volutpat. Cras at tristique elit, sed pulvinar neque. Suspendisse maximus lacus eget dictum finibus. Vestibulum pellentesque commodo ex, vel tempor erat faucibus non. Quisque dignissim vulputate ligula tincidunt gravida. Suspendisse potenti. Sed at consequat purus. Etiam pretium dignissim convallis. Proin tempus turpis quis metus mollis fermentum.`
 
-				page.quote = 'UN **NOCTE** NE LÂCHE RIEN, SES CROCS **DÉCHIRENT** MÊME LE **MÉTAL**'
-				page.author = 'Guide du Knight'
+				page.quote = 'UN ====**NOCTE**==== NE LÂCHE RIEN, SES CROCS ====**DÉCHIRENT**==== MÊME LE ====**MÉTAL**===='
+				page.author = 'GUIDE DU KNIGHT'
+				page.elite = true
+				page.incarnation = true
 
 				return page
 			})
@@ -53,7 +53,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent semper orci el
 
 const WIDTH = 793.7
 const HEIGHT = 1122.52
-const PADDING_BOTTOM = 40
+const PADDING_BOTTOM = 48
 
 class Page {
 	static GLODAL_ID = 0
@@ -105,17 +105,22 @@ class BestiaryPage extends Page {
 
 		setTimeout(() => {
 			const content = this.content()
-			const contentHeight = content.clientHeight
+			const npcComponent = this.npcComponent()
 
+			const contentHeight = content.clientHeight
+			const npcComponentHeight = npcComponent.clientHeight
 			const overflow = contentHeight - (HEIGHT - PADDING_BOTTOM)
 
 			if (overflow > 0) {
-				const npcComponent = this.npcComponent()
-				const npcComponentHeight = npcComponent.clientHeight
 				const ratio = overflow / npcComponentHeight
 
 				this.npcScale = 1 - ratio
 				this.npcMarginBottom = -overflow
+			}
+
+			if (this.npcScale > 0.835) {
+				this.npcScale = 0.835
+				this.npcMarginBottom = -(npcComponentHeight * 0.165)
 			}
 		}, 50)
 	}
