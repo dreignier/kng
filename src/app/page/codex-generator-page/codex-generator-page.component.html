@@ -39,21 +39,42 @@
               {{ page.npc?.name }}
             </div>
 
-            <div
-              class="article-content leading-tight text-sm"
-              [innerHTML]="converter.makeHtml(page.description)"
-            ></div>
+            @if (page.twoColumns) {
+              <div
+                class="flex"
+                [style.margin-bottom]="page.npcMarginBottom + 'px'"
+              >
+                <div
+                  class="article-content leading-tight text-sm w-[200px] flex-shrink-0 mr-2"
+                  [innerHTML]="converter.makeHtml(page.description)"
+                ></div>
 
-            @if (page.npc) {
-              <div class="flex items-center justify-center my-5">
-                <app-npc
-                  [id]="'npc-' + page.id"
-                  [npc]="page.npc"
-                  [style.transform]="'scale(' + page.npcScale + ')'"
-                  [style.margin-bottom]="page.npcMarginBottom + 'px'"
-                  class="origin-top"
-                ></app-npc>
+                @if (page.npc) {
+                  <app-npc
+                    [id]="'npc-' + page.id"
+                    [npc]="page.npc"
+                    [style.transform]="'scale(' + page.npcScale + ')'"
+                    class="origin-top-left"
+                  ></app-npc>
+                }
               </div>
+            } @else {
+              <div
+                class="article-content leading-tight text-sm"
+                [innerHTML]="converter.makeHtml(page.description)"
+              ></div>
+
+              @if (page.npc) {
+                <div class="npc flex items-center justify-center my-5">
+                  <app-npc
+                    [id]="'npc-' + page.id"
+                    [npc]="page.npc"
+                    [style.transform]="'scale(' + page.npcScale + ')'"
+                    [style.margin-bottom]="page.npcMarginBottom + 'px'"
+                    class="origin-top"
+                  ></app-npc>
+                </div>
+              }
             }
 
             @if (page.quote) {

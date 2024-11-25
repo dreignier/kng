@@ -34,6 +34,7 @@ export class CodexGeneratorPageComponent {
 				page.author = 'GUIDE DU KNIGHT'
 				page.elite = true
 				page.incarnation = true
+				page.twoColumns = true
 
 				return page
 			})
@@ -89,6 +90,7 @@ class BestiaryPage extends Page {
 	author: string = ''
 	incarnation = false
 	elite = false
+	twoColumns = false
 
 	override get color() {
 		return super.color || this.npc?.color || ''
@@ -115,13 +117,19 @@ class BestiaryPage extends Page {
 				const ratio = overflow / npcComponentHeight
 
 				this.npcScale = 1 - ratio
-				this.npcMarginBottom = -overflow
 			}
 
-			if (this.npcScale > 0.835) {
-				this.npcScale = 0.835
-				this.npcMarginBottom = -(npcComponentHeight * 0.165)
+			if (this.twoColumns) {
+				if (this.npcScale > 0.5) {
+					this.npcScale = 0.565
+				}
+			} else {
+				if (this.npcScale > 0.835) {
+					this.npcScale = 0.835
+				}
 			}
+
+			this.npcMarginBottom = -(npcComponentHeight * (1 - this.npcScale))
 		}, 50)
 	}
 }
