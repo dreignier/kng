@@ -1,4 +1,4 @@
-import { Component, Input, ViewEncapsulation } from '@angular/core'
+import { Component, Input } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { Article, Header, NewsElement, Separator, Title } from '../model/news'
 import { showdownConverter } from '../util'
@@ -8,8 +8,7 @@ import { showdownConverter } from '../util'
   standalone: true,
   imports: [],
   templateUrl: './news-element.component.html',
-  styleUrl: './news-element.component.scss',
-	encapsulation: ViewEncapsulation.None
+  styleUrl: './news-element.component.scss'
 })
 export class NewsElementComponent {
 	@Input() element!: NewsElement

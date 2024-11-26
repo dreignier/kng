@@ -133,7 +133,7 @@
   }
 }
 
-.article-content {
+::ng-deep .article-content {
   p {
     margin-bottom: 10px;
     text-align: justify;

@@ -1,20 +1,132 @@
-<div class="ml-4 my-3 flex items-center print:hidden">
-  <app-icon
-    class="size-6 inline-block mr-2"
-    icon="information-circle"
-  ></app-icon>
-  <span class="text-sm">
-    Pour convertir votre codex en PDF, vous devez utiliser la fonction "Imprimer
-    en PDF" de votre navigateur. Utilisez l'orientation "Portrait", le format
-    "A4", aucune marge et imprimez les arrières-plans.
-  </span>
-</div>
+@if (printMode) {
+  <div class="ml-4 my-3 flex items-center print:hidden">
+    <app-icon
+      class="size-6 inline-block mr-2"
+      icon="information-circle"
+    ></app-icon>
+    <span class="text-sm">
+      Pour convertir votre codex en PDF, vous devez utiliser la fonction
+      "Imprimer en PDF" de votre navigateur. Utilisez l'orientation "Portrait",
+      le format "A4", aucune marge et imprimez les arrières-plans.
+    </span>
+  </div>
+}
 
-@for (page of pages; track page) {
-  <div class="flex justify-between mx-4 print:mx-0">
-    <div class="print:hidden text-white h-[29.7cm]">
-      @if (isBestiaryPage(page)) {
-        Formulaire bestiaire
+<hr
+  class="print:hidden mx-20 my-10 border border-white [box-shadow:_-0_-0_10px_5px_white]"
+/>
+
+<div id="vs-start" [style.height]="vsBefore + 'px'"></div>
+
+@for (page of displayedPages; track page) {
+  <div class="flex justify-between mx-4 h-[1138.52px] print:mx-0">
+    <div
+      class="print:hidden text-white h-[29.7cm] flex flex-col gap-1 bg-[#2e2a31] p-2 flex-grow mr-4"
+    >
+      @if (!printMode) {
+        <div class="flex flex-col">
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Titre de la page
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="text"
+            placeholder="Titre de la page"
+            [(ngModel)]="page.title"
+            (ngModelChange)="page.onChange()"
+          />
+        </div>
+        @if (isBestiaryPage(page)) {
+          <div class="flex flex-col">
+            <label
+              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+            >
+              Nom
+            </label>
+            <div class="flex">
+              <ng-autocomplete
+                class="autocomplete flex-grow"
+                [data]="db.npcs"
+                searchKeyword="name"
+                [initialValue]="page.npcName"
+                [customFilter]="npcFilter"
+                [itemTemplate]="npcTemplate"
+                (inputChanged)="page.onNpcNameChange($event)"
+                (selected)="page.onNpcSelected($event)"
+                [focusFirst]="true"
+                placeholder="Nom"
+              ></ng-autocomplete>
+              <button
+                class="size-[30px] min-w-[30] flex items-center justify-center border border-white bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white"
+                (click)="page.elite = !page.elite"
+              >
+                <app-icon
+                  class="size-5"
+                  [icon]="page.elite ? 'bolt' : 'bolt-slash'"
+                ></app-icon>
+              </button>
+
+              <button
+                class="size-[30px] min-w-[30] flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
+                (click)="page.incarnation = !page.incarnation"
+              >
+                <app-icon
+                  class="size-5"
+                  [icon]="page.incarnation ? 'sparkles' : 'star'"
+                ></app-icon>
+              </button>
+
+              <button
+                class="size-[30px] min-w-[30] flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
+                (click)="page.changeTwoColumns()"
+              >
+                <app-icon
+                  class="size-5"
+                  [icon]="page.twoColumns ? 'zoom-in' : 'zoom-out'"
+                ></app-icon>
+              </button>
+            </div>
+          </div>
+
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Description
+          </label>
+          <textarea
+            class="text-[#2e2a31] pl-1 flex-grow"
+            placeholder="Description"
+            [(ngModel)]="page.description"
+            (ngModelChange)="page.onChange()"
+          ></textarea>
+
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Citation
+          </label>
+          <textarea
+            class="text-[#2e2a31] pl-1 h-[85px]"
+            placeholder="Description"
+            [(ngModel)]="page.quote"
+            (ngModelChange)="page.onChange()"
+          ></textarea>
+
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Auteur
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="text"
+            placeholder="Nom"
+            [(ngModel)]="page.author"
+            (ngModelChange)="page.onChange()"
+          />
+        }
       }
     </div>
     <div [id]="page.id" class="page" [style.--color]="page.color">
@@ -40,11 +152,9 @@
             </div>
 
             @if (page.twoColumns) {
-              <div
-                class="flex"
-                [style.margin-bottom]="page.npcMarginBottom + 'px'"
-              >
+              <div class="flex items-start">
                 <div
+                  [id]="'description-' + page.id"
                   class="article-content leading-tight text-sm w-[200px] flex-shrink-0 mr-2"
                   [innerHTML]="converter.makeHtml(page.description)"
                 ></div>
@@ -54,12 +164,14 @@
                     [id]="'npc-' + page.id"
                     [npc]="page.npc"
                     [style.transform]="'scale(' + page.npcScale + ')'"
+                    [style.margin-bottom]="page.npcMarginBottom + 'px'"
                     class="origin-top-left"
                   ></app-npc>
                 }
               </div>
             } @else {
               <div
+                [id]="'description-' + page.id"
                 class="article-content leading-tight text-sm"
                 [innerHTML]="converter.makeHtml(page.description)"
               ></div>
@@ -81,7 +193,7 @@
               <div
                 class="quote-content text-center"
                 [innerHTML]="
-                  converter.makeHtml('==« ==' + page.quote + '== »==')
+                  converter.makeHtml('====« ====' + page.quote + '==== »====')
                 "
               ></div>
               @if (page.author) {
@@ -108,3 +220,16 @@
     </div>
   </div>
 }
+
+<div [style.height]="vsAfter + 'px'"></div>
+
+<ng-template #npcTemplate let-item>
+  <a>
+    <div
+      class="inline-block size-4 rounded-full mr-1 relative top-[2px]"
+      [style.background-color]="item.color"
+    ></div>
+    <strong [innerHTML]="item.name"></strong><br />
+    <small class="capitalize">{{ item.type }} ({{ item.level }})</small>
+  </a>
+</ng-template>

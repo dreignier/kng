@@ -1,3 +1,22 @@
+::ng-deep .autocomplete.ng-autocomplete {
+  .autocomplete-container {
+    height: 30px;
+  }
+
+  .autocomplete-container .input-container input {
+    color: #2e2a31;
+    line-height: 30px;
+    height: 30px;
+    min-width: 0;
+    font-size: 1rem;
+    padding-left: 0.25rem;
+  }
+
+  .autocomplete-container .x {
+    display: none;
+  }
+}
+
 .page {
   width: 21cm;
   height: 29.7cm;
@@ -10,7 +29,7 @@
   position: relative;
 }
 
-.article-content {
+::ng-deep .article-content {
   font-family: "Segoe Regular", sans-serif;
 
   p {
@@ -97,19 +116,26 @@
   }
 }
 
-.quote-content {
+::ng-deep .quote-content {
   font-family: "Segoe UI Italic", sans-serif;
 
   strong {
     color: var(--color);
     font-family: "Segoe UI Bold Italic", sans-serif;
-    font-size: 40px;
   }
 
   big {
     color: var(--color);
     font-family: "Segoe UI Bold", sans-serif;
-    font-size: 40px;
+    font-size: 20px;
+
+    &.bigger {
+      font-size: 28px;
+    }
+
+    &.biggest {
+      font-size: 40px;
+    }
   }
 }
 
