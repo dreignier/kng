@@ -21,10 +21,92 @@
 @for (page of displayedPages; track page) {
   <div class="flex justify-between mx-4 h-[1138.52px] print:mx-0">
     <div
-      class="print:hidden text-white h-[29.7cm] flex flex-col gap-1 bg-[#2e2a31] p-2 flex-grow mr-4"
+      class="print:hidden text-white h-[29.7cm] flex flex-col gap-1 bg-[#2e2a31] p-2 flex-grow mr-4 relative"
     >
       @if (!printMode) {
-        <div class="flex flex-col">
+        @if (isCoverPage(page)) {
+          <div class="flex flex-col">
+            <label
+              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+            >
+              Titre de la page
+            </label>
+            <input
+              class="text-[#2e2a31] h-[30px] pl-1"
+              type="text"
+              placeholder="Titre de la page"
+              [(ngModel)]="page.title"
+              (ngModelChange)="page.onChange()"
+            />
+
+            <label
+              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+            >
+              Couleur
+            </label>
+            <div class="flex flex-row flex-wrap">
+              <button
+                class="w-[100px] h-[30px] border border-white flex items-center justify-center"
+                [(colorPicker)]="page.color"
+                cpAlphaChannel="disabled"
+                [style.background-color]="page.color"
+              >
+                <app-icon class="size-5 inline-block" icon="brush"></app-icon>
+              </button>
+
+              @for (color of db.colors; track color) {
+                <button
+                  class="w-[30px] h-[30px] border border-white ml-2"
+                  [style.background-color]="color"
+                  (click)="page.color = color"
+                ></button>
+              }
+            </div>
+
+            <label
+              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+            >
+              Auteur
+            </label>
+            <input
+              class="text-[#2e2a31] h-[30px] pl-1"
+              type="text"
+              placeholder="Nom"
+              [(ngModel)]="page.author"
+              (ngModelChange)="page.onChange()"
+            />
+          </div>
+        }
+
+        @if (isSummaryPage(page)) {
+          <div class="flex flex-col">
+            <label
+              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+            >
+              Couleur
+            </label>
+            <div class="flex flex-row flex-wrap">
+              <button
+                class="w-[100px] h-[30px] border border-white flex items-center justify-center"
+                [(colorPicker)]="page.color"
+                cpAlphaChannel="disabled"
+                [style.background-color]="page.color"
+              >
+                <app-icon class="size-5 inline-block" icon="brush"></app-icon>
+              </button>
+
+              @for (color of db.colors; track color) {
+                <button
+                  class="w-[30px] h-[30px] border border-white ml-2"
+                  [style.background-color]="color"
+                  (click)="page.color = color"
+                ></button>
+              }
+            </div>
+          </div>
+        }
+
+        @if (isStandardPage(page)) {
           <label
             class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
           >
@@ -37,57 +119,173 @@
             [(ngModel)]="page.title"
             (ngModelChange)="page.onChange()"
           />
-        </div>
-        @if (isBestiaryPage(page)) {
+
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Couleur
+          </label>
+          <div class="flex flex-row flex-wrap">
+            <button
+              class="w-[100px] h-[30px] border border-white flex items-center justify-center"
+              [(colorPicker)]="page.color"
+              cpAlphaChannel="disabled"
+              [cpPositionRelativeToArrow]="true"
+              [style.background-color]="page.color"
+            >
+              <app-icon class="size-5 inline-block" icon="brush"></app-icon>
+            </button>
+
+            @for (color of db.colors; track color) {
+              <button
+                class="w-[30px] h-[30px] border border-white ml-2"
+                [style.background-color]="color"
+                (click)="page.color = color"
+              ></button>
+            }
+          </div>
+
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Entête de la page
+          </label>
+          <textarea
+            class="text-[#2e2a31] pl-1 h-[85px]"
+            placeholder="Entête de la page"
+            [(ngModel)]="page.header"
+            (ngModelChange)="page.onChange()"
+          ></textarea>
+
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Sous titre de la page
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="text"
+            placeholder="Sous titre de la page"
+            [(ngModel)]="page.subTitle"
+            (ngModelChange)="page.onChange()"
+          />
+
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Contenu
+          </label>
+          <textarea
+            class="text-[#2e2a31] pl-1 flex-grow"
+            placeholder="Contenu"
+            [(ngModel)]="page.text"
+            (ngModelChange)="page.onChange()"
+          ></textarea>
+        }
+
+        @if (isTitlePage(page)) {
           <div class="flex flex-col">
             <label
               class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
             >
-              Nom
+              Titre de la page
             </label>
-            <div class="flex">
-              <ng-autocomplete
-                class="autocomplete flex-grow"
-                [data]="db.npcs"
-                searchKeyword="name"
-                [initialValue]="page.npcName"
-                [customFilter]="npcFilter"
-                [itemTemplate]="npcTemplate"
-                (inputChanged)="page.onNpcNameChange($event)"
-                (selected)="page.onNpcSelected($event)"
-                [focusFirst]="true"
-                placeholder="Nom"
-              ></ng-autocomplete>
+            <input
+              class="text-[#2e2a31] h-[30px] pl-1"
+              type="text"
+              placeholder="Titre de la page"
+              [(ngModel)]="page.title"
+              (ngModelChange)="page.onChange()"
+            />
+
+            <label
+              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+            >
+              Couleur
+            </label>
+            <div class="flex flex-row flex-wrap">
               <button
-                class="size-[30px] min-w-[30] flex items-center justify-center border border-white bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white"
-                (click)="page.elite = !page.elite"
+                class="w-[100px] h-[30px] border border-white flex items-center justify-center"
+                [(colorPicker)]="page.color"
+                cpAlphaChannel="disabled"
+                [cpPositionRelativeToArrow]="true"
+                [style.background-color]="page.color"
               >
-                <app-icon
-                  class="size-5"
-                  [icon]="page.elite ? 'bolt' : 'bolt-slash'"
-                ></app-icon>
+                <app-icon class="size-5 inline-block" icon="brush"></app-icon>
               </button>
 
-              <button
-                class="size-[30px] min-w-[30] flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
-                (click)="page.incarnation = !page.incarnation"
-              >
-                <app-icon
-                  class="size-5"
-                  [icon]="page.incarnation ? 'sparkles' : 'star'"
-                ></app-icon>
-              </button>
-
-              <button
-                class="size-[30px] min-w-[30] flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
-                (click)="page.changeTwoColumns()"
-              >
-                <app-icon
-                  class="size-5"
-                  [icon]="page.twoColumns ? 'zoom-in' : 'zoom-out'"
-                ></app-icon>
-              </button>
+              @for (color of db.colors; track color) {
+                <button
+                  class="w-[30px] h-[30px] border border-white ml-2"
+                  [style.background-color]="color"
+                  (click)="page.color = color"
+                ></button>
+              }
             </div>
+          </div>
+        }
+
+        @if (isBestiaryPage(page)) {
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Titre de la page
+          </label>
+          <input
+            class="text-[#2e2a31] h-[30px] pl-1"
+            type="text"
+            placeholder="Titre de la page"
+            [(ngModel)]="page.title"
+            (ngModelChange)="page.onChange()"
+          />
+
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            Nom du PNJ
+          </label>
+          <div class="flex">
+            <ng-autocomplete
+              class="autocomplete flex-grow"
+              [data]="db.npcs"
+              searchKeyword="name"
+              [initialValue]="page.npcName"
+              [customFilter]="npcFilter"
+              [itemTemplate]="npcTemplate"
+              (inputChanged)="page.onNpcNameChange($event)"
+              (selected)="page.onNpcSelected($event)"
+              [focusFirst]="true"
+              placeholder="Nom"
+            ></ng-autocomplete>
+            <button
+              class="size-[30px] min-w-[30] flex items-center justify-center border border-white bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white"
+              (click)="page.elite = !page.elite"
+            >
+              <app-icon
+                class="size-5"
+                [icon]="page.elite ? 'bolt' : 'bolt-slash'"
+              ></app-icon>
+            </button>
+
+            <button
+              class="size-[30px] min-w-[30] flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
+              (click)="page.incarnation = !page.incarnation"
+            >
+              <app-icon
+                class="size-5"
+                [icon]="page.incarnation ? 'sparkles' : 'star'"
+              ></app-icon>
+            </button>
+
+            <button
+              class="size-[30px] min-w-[30] flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
+              (click)="page.changeTwoColumns()"
+            >
+              <app-icon
+                class="size-5"
+                [icon]="page.twoColumns ? 'zoom-in' : 'zoom-out'"
+              ></app-icon>
+            </button>
           </div>
 
           <label
@@ -129,20 +327,106 @@
         }
       }
     </div>
-    <div [id]="page.id" class="page" [style.--color]="page.color">
+    <div [id]="page.id" class="page group" [style.--color]="page.color">
       <div [id]="'content-' + page.id">
-        @if (page.title) {
+        @if (isTitlePage(page)) {
+          <div class="bg-[#2e2a31] h-[29.7cm]">
+            <div class="cover-title cover-title-smaller">{{ page.title }}</div>
+          </div>
+        }
+
+        @if (isCoverPage(page)) {
+          <div class="bg-[#2e2a31] h-[29.7cm]">
+            <div class="cover-title">{{ page.title }}</div>
+
+            <div
+              class="cover-author absolute left-0 right-0 bottom-[80px] uppercase text-xl h-[30px] text-center tracking-[2px] segoe-ui-bold"
+            >
+              {{ page.author }}
+            </div>
+
+            <div
+              class="absolute bottom-0 left-0 right-0 text-justify text-white text-xs p-2"
+            >
+              Ce codex a été généré en utilisant l'outil de
+              <a class="underline" href="https://kng.magusgeek.com/">KNG</a>
+              disponible à l'adresse
+              <a class="underline" href="https://kng.magusgeek.com/codex"
+                >https://kng.magusgeek.com/codex</a
+              >. Le contenu des capacités standards est soumis aux droits
+              d'auteur de ©Antre-Monde Editions
+            </div>
+          </div>
+        }
+
+        @if (isSummaryPage(page)) {
           <div
             class="text-center text-white min-h-[60px] pt-5 pb-4 uppercase text-lg tracking-[12px] page-title"
-            [class.page-title-left]="$odd"
-            [class.page-title-right]="$even"
+            [class.page-title-left]="page.index % 2"
+            [class.page-title-right]="page.index % 2 === 0"
           >
             {{ page.title }}
           </div>
         }
 
-        <div class="mx-[1.75cm]">
-          @if (isBestiaryPage(page)) {
+        @if (isStandardPage(page)) {
+          @if (page.title) {
+            <div
+              class="text-center text-white min-h-[60px] pt-5 pb-4 mb-5 uppercase text-lg tracking-[12px] page-title"
+              [class.page-title-left]="page.index % 2"
+              [class.page-title-right]="page.index % 2 === 0"
+            >
+              {{ page.title }}
+            </div>
+          }
+
+          <div class="mx-[1.75cm]">
+            <div
+              class="article-content"
+              [innerHTML]="converter.makeHtml(page.header)"
+            ></div>
+
+            @if (page.subTitle) {
+              <div
+                class="text-center text-white bg-[#2e2a31] min-h-[80px] py-5 mt-5 mb-2 uppercase text-4xl segoe-ui-bold font-bold npc-name"
+              >
+                {{ page.subTitle }}
+              </div>
+            }
+
+            <div
+              class="article-content two-columns"
+              [innerHTML]="converter.makeHtml(page.text)"
+            ></div>
+          </div>
+
+          @if (page.title) {
+            @if (page.index % 2) {
+              <div class="corner corner-right"></div>
+            } @else {
+              <div class="corner corner-left"></div>
+            }
+          }
+
+          <div
+            class="absolute bottom-0 left-[8cm] right-[8cm] py-1 h-[32px] bg-[#2e2a31] text-center text-white page-number"
+          >
+            - {{ page.index + 1 }} -
+          </div>
+        }
+
+        @if (isBestiaryPage(page)) {
+          @if (page.title) {
+            <div
+              class="text-center text-white min-h-[60px] pt-5 pb-4 uppercase text-lg tracking-[12px] page-title"
+              [class.page-title-left]="page.index % 2"
+              [class.page-title-right]="page.index % 2 === 0"
+            >
+              {{ page.title }}
+            </div>
+          }
+
+          <div class="mx-[1.75cm]">
             <div
               class="text-center text-white bg-[#2e2a31] min-h-[80px] py-5 mt-10 mb-2 uppercase text-4xl segoe-ui-bold font-bold npc-name"
               [class.elite]="page.elite"
@@ -155,7 +439,7 @@
               <div class="flex items-start">
                 <div
                   [id]="'description-' + page.id"
-                  class="article-content leading-tight text-sm w-[200px] flex-shrink-0 mr-2"
+                  class="article-content w-[200px] flex-shrink-0 mr-2"
                   [innerHTML]="converter.makeHtml(page.description)"
                 ></div>
 
@@ -172,7 +456,7 @@
             } @else {
               <div
                 [id]="'description-' + page.id"
-                class="article-content leading-tight text-sm"
+                class="article-content"
                 [innerHTML]="converter.makeHtml(page.description)"
               ></div>
 
@@ -201,19 +485,84 @@
               }
             }
 
-            @if ($odd) {
-              <div class="corner corner-right"></div>
-            } @else {
-              <div class="corner corner-left"></div>
+            @if (page.title) {
+              @if (page.index % 2) {
+                <div class="corner corner-right"></div>
+              } @else {
+                <div class="corner corner-left"></div>
+              }
             }
-          }
-        </div>
 
-        @if (!$first) {
-          <div
-            class="absolute bottom-0 left-[8cm] right-[8cm] py-1 h-[32px] bg-[#2e2a31] text-center text-white page-number"
-          >
-            - {{ $index + 1 }} -
+            <div
+              class="absolute bottom-0 left-[8cm] right-[8cm] py-1 h-[32px] bg-[#2e2a31] text-center text-white page-number"
+            >
+              - {{ page.index + 1 }} -
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="hidden group-hover:block">
+        @if (page.index > 1) {
+          <div class="absolute top-1 left-1 right-1 flex justify-between">
+            <div class="flex gap-1">
+              <button
+                class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+                (click)="pageUp(page)"
+              >
+                <app-icon class="size-7" icon="arrow-up"></app-icon>
+              </button>
+              <button
+                class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+                (click)="pageDown(page)"
+              >
+                <app-icon class="size-7" icon="arrow-down"></app-icon>
+              </button>
+            </div>
+
+            <button
+              class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+              (click)="pageRemove(page)"
+            >
+              <app-icon class="size-7" icon="X"></app-icon>
+            </button>
+          </div>
+        }
+
+        @if (page.index > 0) {
+          <div class="absolute bottom-1 left-1 right-1 flex gap-2">
+            <button
+              class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+              (click)="addTitlePage(page.index)"
+            >
+              <app-icon
+                class="size-5 inline-block"
+                icon="plus-circle"
+              ></app-icon>
+              <span class="ml-1">Titre</span>
+            </button>
+
+            <button
+              class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+              (click)="addStandardPage(page.index)"
+            >
+              <app-icon
+                class="size-5 inline-block"
+                icon="plus-circle"
+              ></app-icon>
+              <span class="ml-1">Standard</span>
+            </button>
+
+            <button
+              class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+              (click)="addBestiaryPage(page.index)"
+            >
+              <app-icon
+                class="size-5 inline-block"
+                icon="plus-circle"
+              ></app-icon>
+              <span class="ml-1">Bestiaire</span>
+            </button>
           </div>
         }
       </div>

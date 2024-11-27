@@ -30,7 +30,21 @@
 }
 
 ::ng-deep .article-content {
+  color: #2e2a31;
+  line-height: 1.25;
+  font-size: 0.875rem;
   font-family: "Segoe Regular", sans-serif;
+
+  &.two-columns {
+    column-count: 2;
+    column-gap: 20px;
+  }
+
+  hr {
+    border-color: var(--color);
+    border-width: 1px;
+    margin: 4px 16px 4px 16px;
+  }
 
   p {
     margin-bottom: 10px;
@@ -46,10 +60,6 @@
     }
   }
 
-  em {
-    font-family: "Segoe UI Italic", sans-serif;
-  }
-
   h1,
   h2,
   h3,
@@ -57,15 +67,27 @@
   h5,
   h6 {
     font-size: 16px;
-    text-align: center;
     font-family: "Segoe UI Bold", sans-serif;
     text-transform: uppercase;
     font-weight: normal;
     margin-bottom: 10px;
+    letter-spacing: 1px;
 
     &:last-child {
       margin-bottom: 0;
     }
+  }
+
+  h1 {
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+  }
+
+  h2 {
+    margin-left: 16px;
+    font-family: "Segoe Regular", sans-serif;
+    font-weight: bold;
   }
 
   .link {
@@ -103,6 +125,7 @@
   }
 
   big {
+    color: var(--color);
     font-family: "Segoe UI Bold", sans-serif;
     font-size: 20px;
 
@@ -111,12 +134,13 @@
     }
 
     &.biggest {
-      font-size: 36px;
+      font-size: 40px;
     }
   }
 }
 
 ::ng-deep .quote-content {
+  color: #2e2a31;
   font-family: "Segoe UI Italic", sans-serif;
 
   strong {
@@ -126,7 +150,7 @@
 
   big {
     color: var(--color);
-    font-family: "Segoe UI Bold", sans-serif;
+    font-family: "Segoe UI Bold Italic", sans-serif;
     font-size: 20px;
 
     &.bigger {
@@ -256,6 +280,24 @@
       1px 1px 15px var(--color),
       1px -1px 15px var(--color);
   }
+}
+
+.cover-title {
+  font-family: "Black Ops One", sans-serif;
+  color: white;
+  text-shadow: 0 0 10px var(--color);
+  font-size: 100px;
+  text-align: center;
+  padding: 100px 20px 0 20px;
+
+  &.cover-title-smaller {
+    font-size: 80px;
+    padding: 300px 20px 0 20px;
+  }
+}
+
+.cover-author {
+  color: var(--color);
 }
 
 @media print {

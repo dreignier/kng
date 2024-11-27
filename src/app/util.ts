@@ -1,17 +1,25 @@
 import { Converter, ShowdownExtension } from 'showdown'
 
-export function arrayUp<T>(array: T[], element: T) {
+export function arrayUp<T>(array: T[], element: T, minIndex?: number) {
   const index = array.indexOf(element);
 
   if (index > 0) {
+		if (minIndex !== undefined && (index - 1) <= minIndex) {
+			return
+		}
+
     [array[index], array[index - 1]] = [array[index - 1], array[index]];
   }
 }
 
-export function arrayDown<T>(array: T[], element: T) {
+export function arrayDown<T>(array: T[], element: T, maxIndex?: number) {
   const index = array.indexOf(element);
 
   if (index >= 0 && index < array.length - 1) {
+		if (maxIndex !== undefined && (index + 1) >= maxIndex) {
+			return
+		}
+
     [array[index], array[index + 1]] = [array[index + 1], array[index]];
   }
 }

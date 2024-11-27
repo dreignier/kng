@@ -7,7 +7,7 @@ import { DatabaseService } from '../../database.service'
 import { IconComponent } from '../../icon/icon.component'
 import Npc from '../../model/npc'
 import { NpcComponent } from '../../npc/npc.component'
-import { showdownConverter } from '../../util'
+import { arrayDown, arrayUp, showdownConverter } from '../../util'
 
 @Component({
   selector: 'app-codex-generator-page',
@@ -18,6 +18,7 @@ import { showdownConverter } from '../../util'
 })
 export class CodexGeneratorPageComponent implements OnInit {
 	pages: Page[] = []
+	summary = new SummaryPage()
 	displayedPages: Page[] = []
 	converter = showdownConverter()
 	printMode = false
@@ -29,27 +30,14 @@ export class CodexGeneratorPageComponent implements OnInit {
 	constructor(
 		readonly db: DatabaseService
 	) {
-		this.pages = [
-			...this.db.npcs.map(npc => {
-				const page = new BestiaryPage(this.db)
+		this.pages = [new CoverPage(), this.summary]
+		this.fixIndex()
+	}
 
-				page.title = 'Bestiaire'
-				page.npcName = npc.name
-				page.npc = npc
-				page.color = npc.color
-				page.description = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent semper orci elit, quis scelerisque odio mattis vel. Suspendisse nec mauris consequat, consequat nibh et, facilisis lacus. Integer a placerat felis. Morbi pellentesque velit risus, non placerat arcu hendrerit et. Pellentesque vitae tristique tortor. Aliquam erat volutpat. Cras at tristique elit, sed pulvinar neque. Suspendisse maximus lacus eget dictum finibus. Vestibulum pellentesque commodo ex, vel tempor erat faucibus non. Quisque dignissim vulputate ligula tincidunt gravida. Suspendisse potenti. Sed at consequat purus. Etiam pretium dignissim convallis. Proin tempus turpis quis metus mollis fermentum.
-
-**Tactique :** Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent semper orci elit, quis scelerisque odio mattis vel. Suspendisse nec mauris consequat, consequat nibh et, facilisis lacus. Integer a placerat felis. Morbi pellentesque velit risus, non placerat arcu hendrerit et. Pellentesque vitae tristique tortor. Aliquam erat volutpat. Cras at tristique elit, sed pulvinar neque. Suspendisse maximus lacus eget dictum finibus. Vestibulum pellentesque commodo ex, vel tempor erat faucibus non. Quisque dignissim vulputate ligula tincidunt gravida. Suspendisse potenti. Sed at consequat purus. Etiam pretium dignissim convallis. Proin tempus turpis quis metus mollis fermentum.`
-
-				page.quote = 'UN ====**NOCTE**==== NE LÂCHE RIEN, SES CROCS ====**DÉCHIRENT**==== MÊME LE ====**MÉTAL**===='
-				page.author = 'GUIDE DU KNIGHT'
-				page.elite = false
-				page.incarnation = false
-				page.twoColumns = false
-
-				return page
-			})
-		]
+	fixIndex() {
+		for (let i = 0; i < this.pages.length; ++i) {
+			this.pages[i].index = i
+		}
 	}
 
 	ngOnInit(): void {
@@ -84,13 +72,67 @@ export class CodexGeneratorPageComponent implements OnInit {
 		}
 	}
 
-	isBestiaryPage(page: Page) {
-		return page instanceof BestiaryPage
+	pageUp(page: Page) {
+		arrayUp(this.pages, page, 1)
+		this.fixIndex()
+		this.onScroll()
+	}
+
+	pageDown(page: Page) {
+		arrayDown(this.pages, page)
+		this.fixIndex()
+		this.onScroll()
+	}
+
+	pageRemove(page: Page) {
+		this.pages = this.pages.filter(p => p !== page)
+		this.vsTotal = this.pages.length * CONTAINER_HEIGHT
+		this.fixIndex()
+		this.onScroll()
 	}
 
 	npcFilter(items: Npc[], query: string) {
     return items.filter(e => e.name.toLowerCase().includes(query.toLowerCase()));
   }
+
+	addBestiaryPage(index: number) {
+		this.addPage(index, new BestiaryPage(this.db))
+	}
+
+	addTitlePage(index: number) {
+		this.addPage(index, new TitlePage())
+	}
+
+	addStandardPage(index: number) {
+		this.addPage(index, new StandardPage())
+	}
+
+	addPage(index: number, page: Page) {
+		this.pages.splice(index + 1, 0, page)
+		this.vsTotal = this.pages.length * CONTAINER_HEIGHT
+		this.fixIndex()
+		this.onScroll()
+	}
+
+	isBestiaryPage(page: Page) {
+		return page instanceof BestiaryPage
+	}
+
+	isCoverPage(page: Page) {
+		return page instanceof CoverPage
+	}
+
+	isSummaryPage(page: Page) {
+		return page instanceof SummaryPage
+	}
+
+	isTitlePage(page: Page) {
+		return page instanceof TitlePage
+	}
+
+	isStandardPage(page: Page) {
+		return page instanceof StandardPage
+	}
 }
 
 const HEIGHT = 1122.52
@@ -100,12 +142,9 @@ const CONTAINER_HEIGHT = 1138.52
 class Page {
 	static GLODAL_ID = 0
 	id = `codex-element-${Page.GLODAL_ID++}`
+	index: number = 0
 	title: string = ''
-	color: string = ''
-
-	constructor(
-		readonly db: DatabaseService
-	) {}
+	color: string = '#40bd97'
 
 	onChange() {
 		this.layout()
@@ -123,11 +162,40 @@ class Page {
 }
 
 class CoverPage extends Page {
+	author: string = ''
 
+	constructor() {
+		super()
+		this.title = 'Codex Fan Made'
+		this.color = '#ffffff'
+	}
 }
 
 class SummaryPage extends Page {
+	constructor() {
+		super()
+		this.title = 'Sommaire'
+	}
+}
 
+class TitlePage extends Page {
+	constructor() {
+		super()
+		this.title = 'Titre de la page'
+		this.color = '#ffffff'
+	}
+}
+
+class StandardPage extends Page {
+	header = ''
+	subTitle = ''
+	text = ''
+
+	constructor() {
+		super()
+		this.title = 'Titre de la page'
+		this.color = '#40bd97'
+	}
 }
 
 class BestiaryPage extends Page {
@@ -141,6 +209,55 @@ class BestiaryPage extends Page {
 	elite = false
 	twoColumns = false
 	npc?: Npc
+
+	constructor(
+		readonly db: DatabaseService
+	) {
+		super()
+
+		this.title = 'Bestiaire'
+		this.description = `Ceci est un texte d'exemple pour vous montrer ce qui est possible de faire.
+
+# Ceci est un titre
+
+## Ceci est un sous titre
+
+---
+
+>>Ce texte est centré<<
+
+*Ce texte est en italique*
+
+**Ce texte est en gras**
+
+__Ce texte est souligné__
+
+~~Ce texte est barré~~
+
+==Ce texte est gros==
+
+===Ce texte est encore plus gros===
+
+====Ce texte est le plus gros possible====
+
+@@Ce texte est un lien@@
+
+>>**Il est possible de combiner les effets**<<
+
+Vous pouvez faire des listes :
+* **N'hésitez** pas à __utiliser__ les *effets*
+* Cela fonctionne même au ==milieu des phrases==
+* Vous pouvez aussi surelever du texte avec ^^cet effet^^
+
+Les listes peuvent aussi être numérotées :
+1. Si vous avez besoin d'aide, n'hésitez pas à demander sur le serveur discord de Knight
+2. Des personnes vous aiderons
+3. **__Bonne écriture !__**
+`
+
+		this.quote = 'NE PERDEZ JAMAIS ====ESPOIR==== FACE À ====L\'ANATHÈME===='
+		this.author = 'GUIDE DU KNIGHT'
+	}
 
 	setNpcName(name: string) {
 		this.npcName = name
