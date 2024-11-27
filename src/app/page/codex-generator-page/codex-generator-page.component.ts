@@ -3,24 +3,24 @@ import { FormsModule } from '@angular/forms'
 import { AutocompleteLibModule } from 'angular-ng-autocomplete'
 import { isString } from 'lodash'
 import { ColorPickerModule } from 'ngx-color-picker'
+import { CodexContentComponent } from '../../codex-content/codex-content.component'
 import { DatabaseService } from '../../database.service'
 import { IconComponent } from '../../icon/icon.component'
 import Npc from '../../model/npc'
 import { NpcComponent } from '../../npc/npc.component'
-import { arrayDown, arrayUp, showdownConverter } from '../../util'
+import { arrayDown, arrayUp } from '../../util'
 
 @Component({
   selector: 'app-codex-generator-page',
   standalone: true,
   templateUrl: './codex-generator-page.component.html',
   styleUrls: ['./codex-generator-page.component.scss'],
-	imports: [IconComponent, NpcComponent, FormsModule, ColorPickerModule, AutocompleteLibModule]
+	imports: [IconComponent, NpcComponent, FormsModule, ColorPickerModule, AutocompleteLibModule, CodexContentComponent]
 })
 export class CodexGeneratorPageComponent implements OnInit {
 	pages: Page[] = []
 	summary = new SummaryPage()
 	displayedPages: Page[] = []
-	converter = showdownConverter()
 	printMode = false
 	vsStart = 0
 	vsBefore = 0
@@ -137,7 +137,7 @@ export class CodexGeneratorPageComponent implements OnInit {
 
 const HEIGHT = 1122.52
 const PADDING_BOTTOM = 48
-const CONTAINER_HEIGHT = 1138.52
+const CONTAINER_HEIGHT = HEIGHT + 30
 
 class Page {
 	static GLODAL_ID = 0
@@ -189,7 +189,8 @@ class TitlePage extends Page {
 class StandardPage extends Page {
 	header = ''
 	subTitle = ''
-	text = ''
+	column1 = ''
+	column2 = ''
 
 	constructor() {
 		super()
@@ -261,7 +262,7 @@ Les listes peuvent aussi être numérotées :
 
 	setNpcName(name: string) {
 		this.npcName = name
-		this.setNpc(this.db.npcs.find(npc => npc.name === name))
+		this.setNpc(this.db.findNpc(name))
 	}
 
 	setNpc(npc?: Npc) {

@@ -119,6 +119,22 @@ export class DatabaseService {
 		this.effects.sort((a, b) => a.index.localeCompare(b.index))
 	}
 
+	findNpc(name: string) {
+		return this.npcs.find(e => e.name.toLowerCase().trim() === name.toLowerCase().trim())
+	}
+
+	findEquipment(name: string) {
+		return this.equipments.find(e => e.name.toLowerCase().trim() === name.toLowerCase().trim())
+	}
+
+	findVehicle(name: string) {
+		return this.vehicles.find(e => e.name.toLowerCase().trim() === name.toLowerCase().trim())
+	}
+
+	findNews(name: string) {
+		return this.news.find(e => e.name.toLowerCase().trim() === name.toLowerCase().trim())
+	}
+
 	updateColor(color: string) {
 		if (!this.colors.includes(color)) {
 			this.colors.push(color)
@@ -171,7 +187,7 @@ export class DatabaseService {
 	saveNpc(npc: Npc) {
 		const data = new Npc(npc)
 
-		const index = this.npcs.findIndex(e => e.name === data.name)
+		const index = this.npcs.findIndex(e => e.name.toLowerCase() === data.name.toLowerCase())
 
 		if (index === -1) {
 			this.npcs.push(data)
@@ -190,7 +206,7 @@ export class DatabaseService {
 
 	saveEquipment(equipment: Equipment) {
 		const data = new Equipment(equipment)
-		const index = this.equipments.findIndex(e => e.name === data.name)
+		const index = this.equipments.findIndex(e => e.name.toLowerCase() === data.name.toLowerCase())
 
 		if (index === -1) {
 			this.equipments.push(data)
@@ -208,7 +224,7 @@ export class DatabaseService {
 
 	saveVehicle(vehicle: Vehicle) {
 		const data = new Vehicle(vehicle)
-		const index = this.vehicles.findIndex(e => e.name === data.name)
+		const index = this.vehicles.findIndex(e => e.name.toLowerCase() === data.name.toLowerCase())
 
 		if (index === -1) {
 			this.vehicles.push(data)
@@ -221,17 +237,17 @@ export class DatabaseService {
 	}
 
 	deleteNpc(npc: Npc) {
-		this.npcs = this.npcs.filter(e => e.name !== npc.name)
+		this.npcs = this.npcs.filter(e => e.name.toLowerCase() !== npc.name.toLowerCase())
 		this.saveNpcs()
 	}
 
 	deleteEquipment(equipment: Equipment) {
-		this.equipments = this.equipments.filter(e => e.name !== equipment.name)
+		this.equipments = this.equipments.filter(e => e.name.toLowerCase() !== equipment.name.toLowerCase())
 		this.saveEquipments()
 	}
 
 	deleteVehicle(vehicle: Vehicle) {
-		this.vehicles = this.vehicles.filter(e => e.name !== vehicle.name)
+		this.vehicles = this.vehicles.filter(e => e.name.toLowerCase() !== vehicle.name.toLowerCase())
 		this.saveVehicles();
 	}
 
@@ -335,12 +351,12 @@ export class DatabaseService {
 	importNpcs(npcs: Npc[], strategy: 'rename' | 'ignore' | 'replace') {
 		if (strategy === 'rename') {
 			for (const npc of npcs) {
-				if (this.npcs.find(e => e.name === npc.name)) {
+				if (this.findNpc(npc.name)) {
 					npc.name += ' bis'
 				}
 			}
 		} else if (strategy === 'ignore') {
-			npcs = npcs.filter(e => !this.npcs.find(f => f.name === e.name))
+			npcs = npcs.filter(e => !this.findNpc(e.name))
 		}
 
 		this.npcs = this.npcs.concat(npcs)
@@ -374,12 +390,12 @@ export class DatabaseService {
 	importEquipments(equipments: Equipment[], strategy: 'rename' | 'ignore' | 'replace') {
 		if (strategy === 'rename') {
 			for (const equipment of equipments) {
-				if (this.equipments.find(e => e.name === equipment.name)) {
+				if (this.findEquipment(equipment.name)) {
 					equipment.name += ' bis'
 				}
 			}
 		} else if (strategy === 'ignore') {
-			equipments = equipments.filter(e => !this.equipments.find(f => f.name === e.name))
+			equipments = equipments.filter(e => !this.findEquipment(e.name))
 		}
 
 		this.equipments = this.equipments.concat(equipments)
@@ -397,12 +413,12 @@ export class DatabaseService {
 	importVehicles(vehicles: Vehicle[], strategy: 'rename' | 'ignore' | 'replace') {
 		if (strategy === 'rename') {
 			for (const vehicle of vehicles) {
-				if (this.vehicles.find(e => e.name === vehicle.name)) {
+				if (this.findVehicle(vehicle.name)) {
 					vehicle.name += ' bis'
 				}
 			}
 		} else if (strategy === 'ignore') {
-			vehicles = vehicles.filter(e => !this.vehicles.find(f => f.name === e.name))
+			vehicles = vehicles.filter(e => !this.findVehicle(e.name))
 		}
 
 		this.vehicles = this.vehicles.concat(vehicles)
@@ -413,7 +429,7 @@ export class DatabaseService {
 
 	saveNews(news: News) {
 		const data = new News(news)
-		const index = this.news.findIndex(e => e.name === data.name)
+		const index = this.news.findIndex(e => e.name.toLowerCase() === data.name.toLowerCase())
 
 		if (index === -1) {
 			this.news.push(data)
@@ -441,12 +457,12 @@ export class DatabaseService {
 	importNews(allNews: News[], strategy: 'rename' | 'ignore' | 'replace') {
 		if (strategy === 'rename') {
 			for (const news of allNews) {
-				if (this.news.find(e => e.name === news.name)) {
+				if (this.findNews(news.name)) {
 					news.name += ' bis'
 				}
 			}
 		} else if (strategy === 'ignore') {
-			allNews = allNews.filter(e => !this.news.find(f => f.name === e.name))
+			allNews = allNews.filter(e => !this.findNews(e.name))
 		}
 
 		this.news = this.news.concat(allNews)
@@ -456,7 +472,7 @@ export class DatabaseService {
 	}
 
 	deleteNews(news: News) {
-		this.news = this.news.filter(e => e.name !== news.name)
+		this.news = this.news.filter(e => e.name.toLowerCase() !== news.name.toLowerCase())
 		this.saveAllNews()
 	}
 }

@@ -47,8 +47,8 @@ export function fixColor(color: string) {
 	return '#00ffcc'
 }
 
-export function showdownConverter() {
-	const showdownExtensions: ShowdownExtension[] = [{
+export function showdownConverter(...showdownExtensions: ShowdownExtension[]) {
+	const extensions: ShowdownExtension[] = [{
 		type: 'lang',
 		regex: />>([^<]+)<</g,
 		replace: '<center>$1</center>'
@@ -80,7 +80,7 @@ export function showdownConverter() {
 		type: 'lang',
 		regex: /==([^=]+)==/g,
 		replace: '<big>$1</big>'
-	}]
+	}].concat(<any> showdownExtensions)
 
-	return new Converter({ extensions: showdownExtensions })
+	return new Converter({ extensions })
 }

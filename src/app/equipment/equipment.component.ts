@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
+import { DatabaseService } from '../database.service'
 import Equipment, { AttackRule, DescriptiveRule, DroneRule, ModuleRule, Rule } from '../model/equipment'
 
 @Component({
@@ -10,7 +11,7 @@ import Equipment, { AttackRule, DescriptiveRule, DroneRule, ModuleRule, Rule } f
   styleUrl: './equipment.component.scss'
 })
 export class EquipmentComponent {
-	@Input() equipment!: Equipment
+	@Input() equipment?: Equipment
 
 	primaryColors: Record<string, string> = {
 		standard: '#bee3f5',
@@ -50,8 +51,13 @@ export class EquipmentComponent {
 	}
 
 	constructor(
-		readonly sanitizer: DomSanitizer
+		readonly sanitizer: DomSanitizer,
+		readonly db: DatabaseService
 	) {}
+
+	@Input() set name(name: string) {
+		this.equipment = this.db.findEquipment(name)
+	}
 
 	primary(level?: string) {
 		if (!level) {
@@ -107,7 +113,6 @@ export class EquipmentComponent {
 
 	isDroneRule(rule: Rule) {
 		return rule instanceof DroneRule
-
 	}
 
 	effects(rule: AttackRule) {

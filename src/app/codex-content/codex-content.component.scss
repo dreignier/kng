@@ -1,0 +1,129 @@
+.left .codex-npc {
+  position: relative;
+  left: -20px;
+}
+
+.codex-npc,
+.codex-vehicle,
+.codex-equipment {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+::ng-deep .codex-content {
+  color: #2e2a31;
+  line-height: 1;
+  font-size: 0.75rem;
+  font-family: "Segoe Regular", sans-serif;
+
+  hr {
+    border-color: var(--color);
+    border-width: 1px;
+    margin: 4px 16px 4px 16px;
+  }
+
+  p {
+    margin-bottom: 10px;
+    text-align: justify;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &:has(+ ul),
+    &:has(+ ol) {
+      margin-bottom: 0;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: 16px;
+    font-family: "Segoe UI Bold", sans-serif;
+    text-transform: uppercase;
+    font-weight: normal;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  h1 {
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+  }
+
+  h2 {
+    margin-left: 16px;
+    font-family: "Segoe Regular", sans-serif;
+    font-weight: bold;
+  }
+
+  .panel {
+    display: block;
+    background-color: #42505a;
+    padding: 0 8px 0 8px;
+    color: white;
+
+    h1 {
+      text-align: center;
+      font-family: "Segoe Regular", sans-serif;
+      font-weight: bold;
+    }
+  }
+
+  .link {
+    font-family: "Segoe UI Bold", sans-serif;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #5bc5f2;
+    text-shadow: none;
+  }
+
+  ol {
+    list-style: decimal;
+  }
+
+  ul {
+    list-style: disc;
+  }
+
+  ol,
+  ul {
+    margin-left: 15px;
+    margin-bottom: 10px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  li {
+    margin-bottom: 5px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  big {
+    color: var(--color);
+    font-family: "Segoe UI Bold", sans-serif;
+    font-size: 20px;
+
+    &.bigger {
+      font-size: 28px;
+    }
+
+    &.biggest {
+      font-size: 40px;
+    }
+  }
+}

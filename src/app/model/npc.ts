@@ -78,6 +78,10 @@ export default class Npc extends Entity {
     return data;
 	}
 
+	hasValues() {
+		return Object.keys(DERIVED_VALUES_LABELS).some(key => this[<keyof Npc>key]) || this.weakness
+	}
+
 	properties() {
 		const properties: { label: string; value: any }[] = []
 
