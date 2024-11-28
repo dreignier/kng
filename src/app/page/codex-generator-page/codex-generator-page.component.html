@@ -1,3 +1,22 @@
+<div class="flex gap-[20px] m-5 print:hidden">
+  <button
+    class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+    (click)="togglePrintMode()"
+  >
+    <app-icon
+      class="size-5 inline-block"
+      [icon]="printMode ? 'pencil' : 'printer'"
+    ></app-icon>
+    <span class="ml-1"
+      >Version {{ printMode ? "éditable" : "imprimable" }}</span
+    >
+  </button>
+</div>
+
+<hr
+  class="print:hidden mx-20 my-10 border border-white [box-shadow:_-0_-0_10px_5px_white]"
+/>
+
 @if (printMode) {
   <div class="ml-4 my-3 flex items-center print:hidden">
     <app-icon
@@ -12,18 +31,18 @@
   </div>
 }
 
-<hr
-  class="print:hidden mx-20 my-10 border border-white [box-shadow:_-0_-0_10px_5px_white]"
-/>
-
 <div id="vs-start" [style.height]="vsBefore + 'px'" class="print:hidden"></div>
 
 @for (page of displayedPages; track page) {
-  <div class="flex justify-between mx-4 print:mx-0">
-    <div
-      class="print:hidden text-white h-[29.7cm] flex flex-col gap-1 bg-[#2e2a31] p-2 flex-grow mr-4 relative mb-[30px]"
-    >
-      @if (!printMode) {
+  <div
+    class="flex mx-4 print:mx-0 {{
+      printMode ? 'justify-center' : 'justify-between'
+    }}"
+  >
+    @if (!printMode) {
+      <div
+        class="print:hidden text-white h-[29.7cm] flex flex-col gap-1 bg-[#2e2a31] p-2 flex-grow mr-4 relative mb-[30px]"
+      >
         @if (isCoverPage(page)) {
           <div class="flex flex-col">
             <label
@@ -300,8 +319,8 @@
             (ngModelChange)="page.onChange()"
           />
         }
-      }
-    </div>
+      </div>
+    }
     <div [id]="page.id" class="page group" [style.--color]="page.color">
       <div [id]="'content-' + page.id">
         @if (isTitlePage(page)) {
@@ -465,70 +484,72 @@
         }
       </div>
 
-      <div class="hidden group-hover:block">
-        @if (page.index > 1) {
-          <div class="absolute top-1 left-1 right-1 flex justify-between">
-            <div class="flex gap-1">
+      @if (!printMode) {
+        <div class="hidden group-hover:block">
+          @if (page.index > 1) {
+            <div class="absolute top-1 left-1 right-1 flex justify-between">
+              <div class="flex gap-1">
+                <button
+                  class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+                  (click)="pageUp(page)"
+                >
+                  <app-icon class="size-7" icon="arrow-up"></app-icon>
+                </button>
+                <button
+                  class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+                  (click)="pageDown(page)"
+                >
+                  <app-icon class="size-7" icon="arrow-down"></app-icon>
+                </button>
+              </div>
+
               <button
                 class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-                (click)="pageUp(page)"
+                (click)="pageRemove(page)"
               >
-                <app-icon class="size-7" icon="arrow-up"></app-icon>
-              </button>
-              <button
-                class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-                (click)="pageDown(page)"
-              >
-                <app-icon class="size-7" icon="arrow-down"></app-icon>
+                <app-icon class="size-7" icon="X"></app-icon>
               </button>
             </div>
+          }
 
-            <button
-              class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-              (click)="pageRemove(page)"
-            >
-              <app-icon class="size-7" icon="X"></app-icon>
-            </button>
-          </div>
-        }
+          @if (page.index > 0) {
+            <div class="absolute bottom-1 left-1 right-1 flex gap-2">
+              <button
+                class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+                (click)="addTitlePage(page.index)"
+              >
+                <app-icon
+                  class="size-5 inline-block"
+                  icon="plus-circle"
+                ></app-icon>
+                <span class="ml-1">Titre</span>
+              </button>
 
-        @if (page.index > 0) {
-          <div class="absolute bottom-1 left-1 right-1 flex gap-2">
-            <button
-              class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-              (click)="addTitlePage(page.index)"
-            >
-              <app-icon
-                class="size-5 inline-block"
-                icon="plus-circle"
-              ></app-icon>
-              <span class="ml-1">Titre</span>
-            </button>
+              <button
+                class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+                (click)="addStandardPage(page.index)"
+              >
+                <app-icon
+                  class="size-5 inline-block"
+                  icon="plus-circle"
+                ></app-icon>
+                <span class="ml-1">Standard</span>
+              </button>
 
-            <button
-              class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-              (click)="addStandardPage(page.index)"
-            >
-              <app-icon
-                class="size-5 inline-block"
-                icon="plus-circle"
-              ></app-icon>
-              <span class="ml-1">Standard</span>
-            </button>
-
-            <button
-              class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-              (click)="addBestiaryPage(page.index)"
-            >
-              <app-icon
-                class="size-5 inline-block"
-                icon="plus-circle"
-              ></app-icon>
-              <span class="ml-1">Bestiaire</span>
-            </button>
-          </div>
-        }
-      </div>
+              <button
+                class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+                (click)="addBestiaryPage(page.index)"
+              >
+                <app-icon
+                  class="size-5 inline-block"
+                  icon="plus-circle"
+                ></app-icon>
+                <span class="ml-1">Bestiaire</span>
+              </button>
+            </div>
+          }
+        </div>
+      }
     </div>
   </div>
 }

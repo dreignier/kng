@@ -59,6 +59,21 @@ export class CodexGeneratorPageComponent implements OnInit {
 		}
 	}
 
+	togglePrintMode() {
+		if (this.printMode) {
+			this.printMode = false
+			this.onScroll()
+		} else {
+			this.printMode = true
+			this.vsBefore = 0
+			this.vsAfter = 0
+			this.displayedPages = this.pages
+			for (const page of this.pages) {
+				page.layout()
+			}
+		}
+	}
+
 	fixIndex() {
 		for (let i = 0; i < this.pages.length; ++i) {
 			this.pages[i].index = i
@@ -74,6 +89,10 @@ export class CodexGeneratorPageComponent implements OnInit {
 
 	@HostListener('window:scroll')
 	onScroll() {
+		if (this.printMode) {
+			return
+		}
+
 		const screenTop = document.documentElement.scrollTop
 		const screenBottom = screenTop + window.innerHeight
 
