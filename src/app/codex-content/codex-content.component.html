@@ -1,38 +1,52 @@
-<div class="{{ direction }}">
-  @for (part of parts; track part.id) {
-    @if (part.component === "pnj") {
-      <div
-        [id]="part.id"
-        class="codex-npc origin-top-left"
-        [style.transform]="'scale(' + part.scale + ')'"
-        [style.margin-bottom]="part.mb + 'px'"
-      >
-        <app-npc [name]="part.text"></app-npc>
-      </div>
-    } @else if (part.component === "veh") {
-      <div
-        [id]="part.id"
-        class="codex-vehicle origin-top-left"
-        [style.transform]="'scale(' + part.scale + ')'"
-        [style.margin-bottom]="part.mb + 'px'"
-      >
-        <app-vehicle [name]="part.text"></app-vehicle>
-      </div>
-    } @else if (part.component === "equ") {
-      <div
-        [id]="part.id"
-        class="codex-equipment origin-top-left"
-        [style.transform]="'scale(' + part.scale + ')'"
-        [style.margin-bottom]="part.mb + 'px'"
-      >
-        <app-equipment [name]="part.text"></app-equipment>
-      </div>
-    } @else {
-      <div
-        [id]="part.id"
-        class="codex-content"
-        [innerHTML]="converter.makeHtml(part.text)"
-      ></div>
-    }
+<div class="flex flex-col gap-[20px]">
+  @for (section of sections; track section.id) {
+    <div class="flex gap-[20px]" [style.width]="section.width + 'px'">
+      @for (column of section.columns; track column.id) {
+        <div [style.width]="column.width + 'px'">
+          @for (part of column.parts; track part.id) {
+            @if (part.component === "pnj") {
+              <div class="flex justify-center">
+                <div
+                  [id]="part.id"
+                  class="codex-npc origin-top"
+                  [style.transform]="'scale(' + part.scale + ')'"
+                  [style.margin-bottom]="part.mb + 'px'"
+                >
+                  <app-npc [name]="part.text"></app-npc>
+                </div>
+              </div>
+            } @else if (part.component === "veh") {
+              <div class="flex justify-center">
+                <div
+                  [id]="part.id"
+                  class="codex-vehicle origin-top"
+                  [style.transform]="'scale(' + part.scale + ')'"
+                  [style.margin-bottom]="part.mb + 'px'"
+                >
+                  <app-vehicle [name]="part.text"></app-vehicle>
+                </div>
+              </div>
+            } @else if (part.component === "equ") {
+              <div class="flex justify-center">
+                <div
+                  [id]="part.id"
+                  class="codex-equipment origin-top"
+                  [style.transform]="'scale(' + part.scale + ')'"
+                  [style.margin-bottom]="part.mb + 'px'"
+                >
+                  <app-equipment [name]="part.text"></app-equipment>
+                </div>
+              </div>
+            } @else {
+              <div
+                [id]="part.id"
+                class="codex-content"
+                [innerHTML]="converter.makeHtml(part.text)"
+              ></div>
+            }
+          }
+        </div>
+      }
+    </div>
   }
 </div>

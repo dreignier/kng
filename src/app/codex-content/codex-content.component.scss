@@ -36,7 +36,46 @@
     }
   }
 
-  h1,
+  h1 {
+    text-align: center;
+    color: white;
+    background-color: #2e2a31;
+    min-height: 80px;
+    padding: 20px 0 20px 0;
+    margin: 10px 0 8px 0;
+    text-transform: uppercase;
+    font-size: 36px;
+    line-height: 40px;
+    font-family: "Segoe UI Bold", sans-serif;
+    font-weight: bold;
+    border: 5px solid var(--color);
+
+    clip-path: polygon(
+      5px 5px,
+      45% 5px,
+      calc(45% + 5px) 0,
+      calc(100% - 60px) 0,
+      calc(100% - 55px) 5px,
+      calc(100% - 30px) 5px,
+      calc(100% - 5px) 30px,
+      calc(100% - 5px) 35px,
+      100% 40px,
+      100% calc(100% - 20px),
+      calc(100% - 5px) calc(100% - 15px),
+      calc(100% - 5px) calc(100% - 5px),
+      30% calc(100% - 5px),
+      calc(30% - 5px) 100%,
+      60px 100%,
+      55px calc(100% - 5px),
+      35px calc(100% - 5px),
+      5px calc(100% - 35px),
+      5px calc(100% - 40px),
+      0 calc(100% - 45px),
+      0 15px,
+      5px 10px
+    );
+  }
+
   h2,
   h3,
   h4,
@@ -54,13 +93,13 @@
     }
   }
 
-  h1 {
+  h2 {
     font-weight: bold;
     font-size: 20px;
     text-align: center;
   }
 
-  h2 {
+  h3 {
     margin-left: 16px;
     font-family: "Segoe Regular", sans-serif;
     font-weight: bold;
@@ -69,7 +108,7 @@
   .panel {
     display: block;
     background-color: #42505a;
-    padding: 0 8px 0 8px;
+    padding: 8px 16px 16px 16px;
     color: white;
 
     h1 {

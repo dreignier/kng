@@ -15,39 +15,55 @@ type CodexContentPart = { component?: string; text: string; scale?: number; mb?:
 })
 export class CodexContentComponent {
 	@Input() width!: number;
-	@Input() direction: 'left' | 'right' = 'left';
-	parts: CodexContentPart[] = []
-	private scaleCache: Record<string, { scale: number; mb: number }> = {}
+	parts: Part[] = []
+	sections: Section[] = []
+	scaleCache: Record<string, { scale: number; mb: number }> = {}
 
 	converter = showdownConverter({
+		type: 'lang',
+		regex: /([a-zéàèîïëù.?!"' ])\n([a-zéàèîïëù"' ])/gi,
+		replace: '$1<span class="mr-2"><br>&nbsp;</span>$2'
+	}, {
 		type: 'output',
 		regex: /{{{[ \n]*([^}]+)[ \n]*}}}/g,
 		replace: '<div class="panel">$1</div>'
 	})
 
 	@Input() set content(content: string) {
+		this.sections = []
 		this.parts = []
 
-		if (!content.trim()) {
+		if (!content?.trim()) {
 			return
 		}
 
-		let index = 0
+		for (const sectionText of content.split(/____/g)) {
+			const section = new Section('codex-section-' + this.sections.length, this.width)
 
-		for (const match of Array.from(content.matchAll(/\[([a-z]{3}):([^\]]+)\]/gmi))) {
-			this.createTextPart(content.slice(index, match.index).trim())
-			this.createComponentPart(match[1].toLowerCase(), match[2].trim(), this.parts.length)
-			index = match.index + match[0].length
+			for (const columnText of sectionText.split(/\|\|\|\|/g)) {
+				const column = new Column(section.columns.length, section)
+
+				let index = 0
+				for (const match of Array.from(columnText.matchAll(/\[([a-z]{3}):([^\]]+)\]/gmi))) {
+					column.parts.push(new Part(column.parts.length, column, columnText.slice(index, match.index).trim()))
+					column.parts.push(new Part(column.parts.length, column, match[2].trim(), match[1].toLowerCase()))
+					index = match.index + match[0].length
+				}
+
+				column.parts.push(new Part(column.parts.length, column, columnText.slice(index).trim()))
+				section.columns.push(column)
+				this.parts.push(...column.parts)
+			}
+
+			this.sections.push(section)
 		}
 
-		this.createTextPart(content.slice(index).trim())
-
-		for (let i = 0; i < this.parts.length; ++i) {
-			if (this.parts[i].component) {
-				const cache = this.scaleCache[this.parts[i].id]
+		for (const part of this.parts) {
+			if (part.component) {
+				const cache = this.scaleCache[part.cacheId(part.column.width)]
 				if (cache) {
-					this.parts[i].scale = cache.scale
-					this.parts[i].mb = cache.mb
+					part.scale = cache.scale
+					part.mb = cache.mb
 				}
 			}
 		}
@@ -55,39 +71,71 @@ export class CodexContentComponent {
 		this.layout()
 	}
 
-	createTextPart(text: string) {
-		this.parts.push({ text, id: this.partId(this.parts.length, text) })
-	}
-
-	createComponentPart(component: string, text: string, index: number) {
-		this.parts.push({ component, text, id: this.partId(index, text, component), scale: 1, mb: 0 })
-	}
-
-	partId(index: number, text: string, component?: string) {
-		return text + '-' + index + (component ? '-' + component : '')
-	}
-
 	layout() {
 		setTimeout(() => {
-			if (!this.width) {
-				return
-			}
-
 			for (const part of this.parts) {
 				if (part.component && part.scale === 1) {
 					const width = part.component === 'pnj' ? 793 : 362
 
-					if (width < this.width) {
+					if (width < part.column.width) {
+						part.scale = 1
+						part.mb = 16
+						this.scaleCache[part.cacheId(part.column.width)] = { scale: part.scale, mb: part.mb }
 						continue
 					}
 
-					part.scale = this.width / width
+					part.scale = part.column.width / width
 					const height = document.getElementById(part.id)!.offsetHeight
 					part.mb = (-height * (1 - part.scale)) + 16
 
-					this.scaleCache[part.id] = { scale: part.scale, mb: part.mb }
+					this.scaleCache[part.cacheId(part.column.width)] = { scale: part.scale, mb: part.mb }
 				}
 			}
 		}, 10)
+	}
+}
+
+class Section  {
+	columns: Column[] = []
+
+	constructor(
+		public id: string,
+		public width: number
+	) {}
+}
+
+class Column {
+	parts: Part[] = []
+	constructor(
+		public _id: number,
+		public section: Section
+	) {}
+
+	get id() {
+		return this.section.id + '-' + this._id
+	}
+
+	get width() {
+		return this.section.width / this.section.columns.length
+	}
+}
+
+class Part {
+	scale = 1
+	mb = 16
+
+	constructor(
+		public _id: number,
+		public column: Column,
+		public text: string,
+		public component?: string
+	) {}
+
+	get id() {
+		return this.column.id + '-' + this._id + '-' + (this.component || 'TXT') + '-' + this.text
+	}
+
+	cacheId(width: number) {
+		return this.component + '-' + this.text + '-' + width
 	}
 }

@@ -1,7 +1,7 @@
 import { Component, HostListener, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { AutocompleteLibModule } from 'angular-ng-autocomplete'
-import { isString } from 'lodash'
+import { isString, omit } from 'lodash'
 import { ColorPickerModule } from 'ngx-color-picker'
 import { CodexContentComponent } from '../../codex-content/codex-content.component'
 import { DatabaseService } from '../../database.service'
@@ -30,8 +30,33 @@ export class CodexGeneratorPageComponent implements OnInit {
 	constructor(
 		readonly db: DatabaseService
 	) {
-		this.pages = [new CoverPage(), this.summary]
+		this.load()
+
+		if (!this.pages.length) {
+			this.pages = [new CoverPage(), this.summary]
+		}
+
 		this.fixIndex()
+
+		setInterval(() => this.save(), 5000)
+	}
+
+	save() {
+		const json = JSON.stringify(this.pages.map(p => p.toPlain()), null, 2)
+		localStorage.setItem('codex', json)
+	}
+
+	load() {
+		try {
+			const json = localStorage.getItem('codex')
+			if (json) {
+				const plain = JSON.parse(json)
+				this.pages = plain.map((p: any) => this.fromPlain(p))
+				this.summary = this.pages[1]
+			}
+		} catch (e) {
+			console.error(e)
+		}
 	}
 
 	fixIndex() {
@@ -92,7 +117,7 @@ export class CodexGeneratorPageComponent implements OnInit {
 	}
 
 	npcFilter(items: Npc[], query: string) {
-    return items.filter(e => e.name.toLowerCase().includes(query.toLowerCase()));
+    return items.filter(e => e.name.toLowerCase().includes(query.toLowerCase()))
   }
 
 	addBestiaryPage(index: number) {
@@ -133,6 +158,19 @@ export class CodexGeneratorPageComponent implements OnInit {
 	isStandardPage(page: Page) {
 		return page instanceof StandardPage
 	}
+
+	fromPlain(plain: any) {
+		const klass = <keyof typeof constructors> plain.klass
+
+		if (!constructors[klass]) {
+			throw new Error(`Unknown class ${klass}`)
+		}
+
+		const page = new (constructors[klass])(this.db)
+		page.fromPlain(omit(plain, 'klass'))
+
+		return page
+	}
 }
 
 const HEIGHT = 1122.52
@@ -158,6 +196,19 @@ class Page {
 
 	content() {
 		return document.getElementById(`content-${this.id}`)!
+	}
+
+	toPlain(): any {
+		const result = <any> { ...this, klass: this.constructor.name }
+
+		delete result.id
+		delete result.index
+
+		return result
+	}
+
+	fromPlain(plain: any) {
+		Object.assign(this, plain)
 	}
 }
 
@@ -187,10 +238,7 @@ class TitlePage extends Page {
 }
 
 class StandardPage extends Page {
-	header = ''
-	subTitle = ''
-	column1 = ''
-	column2 = ''
+	text = ''
 
 	constructor() {
 		super()
@@ -217,47 +265,26 @@ class BestiaryPage extends Page {
 		super()
 
 		this.title = 'Bestiaire'
-		this.description = `Ceci est un texte d'exemple pour vous montrer ce qui est possible de faire.
+		this.description = ''
 
-# Ceci est un titre
+		this.quote = ''
+		this.author = ''
+	}
 
-## Ceci est un sous titre
+	override toPlain() {
+		const result = super.toPlain()
 
----
+		delete result.db
+		delete result.npc
+		delete result.npcScale
+		delete result.npcMarginBottom
 
->>Ce texte est centré<<
+		return result
+	}
 
-*Ce texte est en italique*
-
-**Ce texte est en gras**
-
-__Ce texte est souligné__
-
-~~Ce texte est barré~~
-
-==Ce texte est gros==
-
-===Ce texte est encore plus gros===
-
-====Ce texte est le plus gros possible====
-
-@@Ce texte est un lien@@
-
->>**Il est possible de combiner les effets**<<
-
-Vous pouvez faire des listes :
-* **N'hésitez** pas à __utiliser__ les *effets*
-* Cela fonctionne même au ==milieu des phrases==
-* Vous pouvez aussi surelever du texte avec ^^cet effet^^
-
-Les listes peuvent aussi être numérotées :
-1. Si vous avez besoin d'aide, n'hésitez pas à demander sur le serveur discord de Knight
-2. Des personnes vous aiderons
-3. **__Bonne écriture !__**
-`
-
-		this.quote = 'NE PERDEZ JAMAIS ====ESPOIR==== FACE À ====L\'ANATHÈME===='
-		this.author = 'GUIDE DU KNIGHT'
+	override fromPlain(plain: any) {
+		super.fromPlain(plain)
+		this.setNpcName(this.npcName)
 	}
 
 	setNpcName(name: string) {
@@ -266,23 +293,24 @@ Les listes peuvent aussi être numérotées :
 	}
 
 	setNpc(npc?: Npc) {
-		this.npc = npc
-		this.color = this.npc?.color || '#40bd97'
+		if (npc !== this.npc) {
+			this.npc = npc
+			this.color = this.npc?.color || '#40bd97'
+			this.layout()
+		}
 	}
 
 	onNpcNameChange(name: string) {
-		this.setNpcName(name)
-		this.layout()
+		this.setNpc(this.db.findNpc(name))
 	}
 
 	onNpcSelected(npc: Npc | string) {
 		if (isString(npc)) {
 			this.setNpcName(npc)
 		} else {
+			this.npcName = npc.name
 			this.setNpc(npc)
 		}
-
-		this.layout()
 	}
 
 	npcComponent() {
@@ -341,4 +369,12 @@ Les listes peuvent aussi être numérotées :
 			this.npcMarginBottom = -(npcComponentHeight * (1 - this.npcScale))
 		}, 10)
 	}
+}
+
+const constructors = {
+	CoverPage,
+	SummaryPage,
+	TitlePage,
+	StandardPage,
+	BestiaryPage
 }

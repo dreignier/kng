@@ -148,57 +148,14 @@
           <label
             class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
           >
-            Entête de la page
+            Contenu de la page
           </label>
           <textarea
-            class="text-[#2e2a31] pl-1 h-[85px]"
+            class="text-[#2e2a31] pl-1 flex-grow"
             placeholder="Entête de la page"
-            [(ngModel)]="page.header"
+            [(ngModel)]="page.text"
             (ngModelChange)="page.onChange()"
           ></textarea>
-
-          <label
-            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-          >
-            Sous titre de la page
-          </label>
-          <input
-            class="text-[#2e2a31] h-[30px] pl-1"
-            type="text"
-            placeholder="Sous titre de la page"
-            [(ngModel)]="page.subTitle"
-            (ngModelChange)="page.onChange()"
-          />
-
-          <div class="flex flex-grow gap-2">
-            <div class="flex flex-col flex-grow">
-              <label
-                class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-              >
-                Colonne gauche
-              </label>
-              <textarea
-                class="text-[#2e2a31] pl-1 flex-grow"
-                placeholder="Colonne gauche"
-                [(ngModel)]="page.column1"
-                (ngModelChange)="page.onChange()"
-              ></textarea>
-            </div>
-
-            <div class="flex flex-col flex-grow">
-              <label
-                class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-              >
-                Colonne droite
-              </label>
-              <textarea
-                class="text-[#2e2a31] pl-1 flex-grow"
-                placeholder="Colonne droite"
-                [(ngModel)]="page.column2"
-                (ngModelChange)="page.onChange()"
-              ></textarea>
-            </div>
-          </div>
         }
 
         @if (isTitlePage(page)) {
@@ -273,7 +230,7 @@
               (inputChanged)="page.onNpcNameChange($event)"
               (selected)="page.onNpcSelected($event)"
               [focusFirst]="true"
-              placeholder="Nom"
+              placeholder="Nom du PNJ"
             ></ng-autocomplete>
             <button
               class="size-[30px] min-w-[30] flex items-center justify-center border border-white bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white"
@@ -400,30 +357,9 @@
 
           <div class="mx-[1.75cm]">
             <app-codex-content
-              [content]="page.header"
-              [width]="661"
+              [content]="page.text"
+              [width]="660"
             ></app-codex-content>
-
-            @if (page.subTitle) {
-              <div
-                class="text-center text-white bg-[#2e2a31] min-h-[80px] py-5 mt-5 mb-2 uppercase text-4xl segoe-ui-bold font-bold npc-name"
-              >
-                {{ page.subTitle }}
-              </div>
-            }
-
-            <div class="flex gap-[20px]" [id]="'text-' + page.id">
-              <app-codex-content
-                class="w-[320px]"
-                [content]="page.column1"
-                [width]="320"
-              ></app-codex-content>
-              <app-codex-content
-                class="w-[320px]"
-                [content]="page.column2"
-                [width]="320"
-              ></app-codex-content>
-            </div>
           </div>
 
           @if (page.title) {
@@ -454,7 +390,7 @@
 
           <div class="mx-[1.75cm]">
             <div
-              class="text-center text-white bg-[#2e2a31] min-h-[80px] py-5 mt-10 mb-2 uppercase text-4xl segoe-ui-bold font-bold npc-name"
+              class="text-center text-white bg-[#2e2a31] min-h-[80px] py-5 mt-10 mb-2 uppercase text-4xl segoe-ui-bold font-bold page-sub-title"
               [class.elite]="page.elite"
               [class.incarnation]="page.incarnation"
             >
