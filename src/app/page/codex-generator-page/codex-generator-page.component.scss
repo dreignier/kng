@@ -44,22 +44,21 @@
 
 .corner {
   content: "";
-  background-color: var(--color);
   position: absolute;
   height: 120px;
   width: 120px;
   top: 0;
+  background: radial-gradient(circle, #00000000 0px, #00000066 100%),
+    var(--color);
 
   &.corner-left {
     left: 0;
     clip-path: polygon(0 0, 100% 0, 0 100%);
-    box-shadow: inset 25px 25px 25px 0 #00000044;
   }
 
   &.corner-right {
     right: 0;
     clip-path: polygon(100% 0, 0 0, 100% 100%);
-    box-shadow: inset -25px 25px 25px 0 #00000044;
   }
 }
 

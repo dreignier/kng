@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core'
+import { Component, Input, OnInit } from '@angular/core'
 import { EquipmentComponent } from '../equipment/equipment.component'
 import { NpcComponent } from '../npc/npc.component'
 import { showdownConverter } from '../util'
@@ -13,11 +13,13 @@ type CodexContentPart = { component?: string; text: string; scale?: number; mb?:
   templateUrl: './codex-content.component.html',
   styleUrl: './codex-content.component.scss'
 })
-export class CodexContentComponent {
+export class CodexContentComponent implements OnInit {
 	@Input() width!: number;
 	parts: Part[] = []
 	sections: Section[] = []
 	scaleCache: Record<string, { scale: number; mb: number }> = {}
+	_content = ''
+	initialized = false
 
 	converter = showdownConverter({
 		type: 'lang',
@@ -29,7 +31,20 @@ export class CodexContentComponent {
 		replace: '<div class="panel">$1</div>'
 	})
 
+	ngOnInit(): void {
+		this.initialized = true
+
+		if (this._content) {
+			this.content = this._content
+		}
+	}
+
 	@Input() set content(content: string) {
+		if (!this.initialized) {
+			this._content = content
+			return
+		}
+
 		this.sections = []
 		this.parts = []
 

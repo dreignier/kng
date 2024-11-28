@@ -12,9 +12,23 @@
 
 ::ng-deep .codex-content {
   color: #2e2a31;
-  line-height: 1;
+  line-height: 1.1;
   font-size: 0.75rem;
   font-family: "Segoe Regular", sans-serif;
+
+  em {
+    font-family: "Segoe UI Italic", sans-serif;
+  }
+
+  strong {
+    font-family: "Segoe UI Bold", sans-serif;
+    font-weight: normal;
+  }
+
+  em strong,
+  strong em {
+    font-family: "Segoe UI Bold Italic", sans-serif;
+  }
 
   hr {
     border-color: var(--color);
@@ -138,6 +152,7 @@
   ul {
     margin-left: 15px;
     margin-bottom: 10px;
+    line-height: 1.1;
 
     &:last-child {
       margin-bottom: 0;

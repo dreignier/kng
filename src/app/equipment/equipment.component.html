@@ -31,11 +31,13 @@
         >
           {{ equipment.name }}
         </div>
-        <div
-          class="type bg-secondary text-center ml-3 mr-[46px] uppercase text-[10px] relative flex-shrink-0"
-        >
-          {{ equipment.type }}
-        </div>
+        @if (equipment.type) {
+          <div
+            class="type bg-secondary text-center mr-[30px] min-h-[13px] px-[17px] uppercase text-[10px] relative flex-shrink-0"
+          >
+            {{ equipment.type }}
+          </div>
+        }
       </div>
 
       <div
@@ -88,14 +90,14 @@
         >
           @if (rule.name) {
             <div
-              class="flex flex-col items-center justify-center segoe-ui-bold text-center w-[70px] min-w-[70px] py-0 px-[10px] hyphens-auto break-words text-wrap"
+              class="flex flex-col items-center justify-center segoe-ui-bold text-center w-[72px] min-w-[72px] py-0 px-[10px] hyphens-auto break-words text-wrap"
             >
               {{ rule.name }}
             </div>
           }
 
           @if (isDescriptiveRule(rule)) {
-            <div class="bg-primary py-0 px-[3px] flex-grow">
+            <div class="bg-primary pt-0 pb-0.5 px-[3px] flex-grow">
               @if (rule.important || rule.cost) {
                 <p class="segoe-ui-bold italic font-bold text-base mb-[2px]">
                   @if (rule.important) {
