@@ -16,6 +16,22 @@
   font-size: 0.75rem;
   font-family: "Segoe Regular", sans-serif;
 
+  img {
+    float: left;
+    margin-right: 8px;
+  }
+
+  em img {
+    float: right;
+    margin-left: 8px;
+  }
+
+  center img {
+    float: none;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+
   em {
     font-family: "Segoe UI Italic", sans-serif;
   }
@@ -39,6 +55,10 @@
   p {
     margin-bottom: 10px;
     text-align: justify;
+
+    &:empty {
+      margin-bottom: 0;
+    }
 
     &:last-child {
       margin-bottom: 0;

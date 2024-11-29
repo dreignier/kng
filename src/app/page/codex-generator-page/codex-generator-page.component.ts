@@ -403,7 +403,7 @@ Le texte situé après sera dans une autre colonne.`
 	if (equipment) {
 		this.text += `Vous pouvez insérer un équipement dans votre page en faisant ceci :
 
-[equ:accélérateur]
+[equ:${db.equipments[0].name}]
 
 `
 	}
@@ -412,7 +412,7 @@ Le texte situé après sera dans une autre colonne.`
 	if (vehicle) {
 		this.text += `Et vous pouvez insérez un véhicule dans votre texte comme ceci :
 
-[veh:gros truc]
+[veh:${db.vehicles[0].name}]
 
 `
 	}
