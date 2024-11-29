@@ -258,6 +258,7 @@ class Page {
 	index: number = 0
 	title: string = ''
 	color: string = '#40bd97'
+	klassName: string = 'Page'
 
 	onChange() {
 		this.layout()
@@ -274,7 +275,7 @@ class Page {
 	}
 
 	toPlain(): any {
-		const result = <any> { ...this, klass: this.constructor.name }
+		const result = <any> { ...this, klass: this.klassName }
 
 		delete result.id
 		delete result.index
@@ -289,6 +290,7 @@ class Page {
 }
 
 class CoverPage extends Page {
+	override klassName = 'CoverPage'
 	author: string = ''
 
 	constructor() {
@@ -299,6 +301,7 @@ class CoverPage extends Page {
 }
 
 class SummaryPage extends Page {
+	override klassName = 'SummaryPage'
 	elements: { title: string, level: number, page: number }[][] = []
 	includeNpc = false
 	columnWidth = 660
@@ -343,6 +346,8 @@ class SummaryPage extends Page {
 }
 
 class TitlePage extends Page {
+	override klassName = 'TitlePage'
+
 	constructor() {
 		super()
 		this.title = 'Titre de la page'
@@ -351,6 +356,7 @@ class TitlePage extends Page {
 }
 
 class StandardPage extends Page {
+	override klassName = 'StandardPage'
 	text = ''
 
 	constructor(db: DatabaseService) {
@@ -422,6 +428,7 @@ Le texte situé après sera dans une autre colonne.`
 }
 
 class BestiaryPage extends Page {
+	override klassName = 'BestiaryPage'
 	npcName: string = ''
 	npcScale = 1
 	npcMarginBottom = 0
