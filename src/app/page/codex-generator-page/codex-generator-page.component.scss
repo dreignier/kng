@@ -101,6 +101,7 @@
 
 .page-sub-title {
   border: 5px solid var(--color);
+  position: relative;
 
   clip-path: polygon(
     5px 5px,
@@ -127,6 +128,52 @@
     5px 10px
   );
 
+  &.incarnation .npc-name {
+    text-shadow:
+      -1px -1px 15px var(--color),
+      -1px 1px 15px var(--color),
+      1px 1px 15px var(--color),
+      1px -1px 15px var(--color);
+  }
+
+  &.incarnation,
+  &.elite {
+    margin-bottom: 25px;
+  }
+
+  &.incarnation {
+    clip-path: polygon(
+      5px 5px,
+      45% 5px,
+      calc(45% + 5px) 0,
+      calc(100% - 60px) 0,
+      calc(100% - 55px) 5px,
+      calc(100% - 30px) 5px,
+      calc(100% - 5px) 30px,
+      calc(100% - 5px) 35px,
+      100% 40px,
+      100% calc(100% - 20px),
+      calc(100% - 5px) calc(100% - 15px),
+      calc(100% - 5px) calc(100% - 5px),
+      486px calc(100% - 5px),
+      486px calc(100% + 16px),
+      481px calc(100% + 21px),
+      360px calc(100% + 21px),
+      355px calc(100% + 16px),
+      355px calc(100% - 5px),
+      30% calc(100% - 5px),
+      calc(30% - 5px) 100%,
+      60px 100%,
+      55px calc(100% - 5px),
+      35px calc(100% - 5px),
+      5px calc(100% - 35px),
+      5px calc(100% - 40px),
+      0 calc(100% - 45px),
+      0 15px,
+      5px 10px
+    );
+  }
+
   &.elite {
     background: repeating-linear-gradient(
       135deg,
@@ -135,16 +182,97 @@
       black 4px,
       #2e2a31 6px
     );
-    box-shadow: 0 0 10px 10px #2e2a31 inset;
+    box-shadow: 0 0 10px 12px #2e2a31 inset;
+
+    clip-path: polygon(
+      5px 5px,
+      45% 5px,
+      calc(45% + 5px) 0,
+      calc(100% - 60px) 0,
+      calc(100% - 55px) 5px,
+      calc(100% - 30px) 5px,
+      calc(100% - 5px) 30px,
+      calc(100% - 5px) 35px,
+      100% 40px,
+      100% calc(100% - 20px),
+      calc(100% - 5px) calc(100% - 15px),
+      calc(100% - 5px) calc(100% - 5px),
+      645px calc(100% - 5px),
+      645px calc(100% + 16px),
+      640px calc(100% + 21px),
+      590px calc(100% + 21px),
+      585px calc(100% + 16px),
+      585px calc(100% - 5px),
+      30% calc(100% - 5px),
+      calc(30% - 5px) 100%,
+      60px 100%,
+      55px calc(100% - 5px),
+      35px calc(100% - 5px),
+      5px calc(100% - 35px),
+      5px calc(100% - 40px),
+      0 calc(100% - 45px),
+      0 15px,
+      5px 10px
+    );
   }
 
-  &.incarnation {
-    text-shadow:
-      -1px -1px 15px var(--color),
-      -1px 1px 15px var(--color),
-      1px 1px 15px var(--color),
-      1px -1px 15px var(--color);
+  &.incarnation.elite {
+    clip-path: polygon(
+      5px 5px,
+      45% 5px,
+      calc(45% + 5px) 0,
+      calc(100% - 60px) 0,
+      calc(100% - 55px) 5px,
+      calc(100% - 30px) 5px,
+      calc(100% - 5px) 30px,
+      calc(100% - 5px) 35px,
+      100% 40px,
+      100% calc(100% - 20px),
+      calc(100% - 5px) calc(100% - 15px),
+      calc(100% - 5px) calc(100% - 5px),
+      645px calc(100% - 5px),
+      645px calc(100% + 16px),
+      640px calc(100% + 21px),
+      590px calc(100% + 21px),
+      585px calc(100% + 16px),
+      585px calc(100% - 5px),
+      486px calc(100% - 5px),
+      486px calc(100% + 16px),
+      481px calc(100% + 21px),
+      360px calc(100% + 21px),
+      355px calc(100% + 16px),
+      355px calc(100% - 5px),
+      30% calc(100% - 5px),
+      calc(30% - 5px) 100%,
+      60px 100%,
+      55px calc(100% - 5px),
+      35px calc(100% - 5px),
+      5px calc(100% - 35px),
+      5px calc(100% - 40px),
+      0 calc(100% - 45px),
+      0 15px,
+      5px 10px
+    );
   }
+}
+
+.npc-elite,
+.npc-incarnation {
+  position: absolute;
+  background-color: var(--color);
+  color: white;
+  font-family: "Segoe UI Bold", sans-serif;
+  text-transform: uppercase;
+  padding: 0 10px 2px 10px;
+  bottom: -26px;
+}
+
+.npc-elite {
+  left: 580px;
+}
+
+.npc-incarnation {
+  left: 350px;
 }
 
 .cover-title {
@@ -154,6 +282,7 @@
   font-size: 100px;
   text-align: center;
   padding: 100px 20px 0 20px;
+  text-transform: uppercase;
 
   &.cover-title-smaller {
     font-size: 80px;

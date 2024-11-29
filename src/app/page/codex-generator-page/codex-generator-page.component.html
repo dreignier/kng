@@ -472,11 +472,27 @@
 
           <div class="mx-[1.75cm]">
             <div
-              class="text-center text-white bg-[#2e2a31] min-h-[80px] py-5 mt-10 mb-2 uppercase text-4xl segoe-ui-bold font-bold page-sub-title"
+              class="flex justify-between text-white bg-[#2e2a31] min-h-[80px] p-5 mt-10 mb-2 page-sub-title"
               [class.elite]="page.elite"
               [class.incarnation]="page.incarnation"
             >
-              {{ page.npc?.name }}
+              <span
+                class="flex-grow text-center uppercase text-4xl segoe-ui-bold font-bold npc-name"
+              >
+                {{ page.npc?.name }}
+              </span>
+
+              @if (page.elite) {
+                <div class="npc-elite">
+                  <span class="segoe-ui-bold uppercase">Élite</span>
+                </div>
+              }
+
+              @if (page.incarnation) {
+                <div class="npc-incarnation">
+                  <span class="segoe-ui-bold uppercase">Incarnation</span>
+                </div>
+              }
             </div>
 
             @if (page.twoColumns) {
