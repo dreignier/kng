@@ -14,7 +14,8 @@ type CodexContentPart = { component?: string; text: string; scale?: number; mb?:
   styleUrl: './codex-content.component.scss'
 })
 export class CodexContentComponent implements OnInit {
-	@Input() width!: number;
+	@Input() width!: number
+	@Input() dark = false
 	parts: Part[] = []
 	sections: Section[] = []
 	scaleCache: Record<string, { scale: number; mb: number }> = {}

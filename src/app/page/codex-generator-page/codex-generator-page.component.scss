@@ -23,10 +23,15 @@
   overflow: hidden;
   margin-bottom: 30px;
   background-color: white;
-  color: black;
+  color: #2e2a31;
   clear: both;
   page-break-after: always;
   position: relative;
+
+  &.dark {
+    background-color: #32333b;
+    color: white;
+  }
 }
 
 .page-number {
