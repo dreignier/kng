@@ -5,6 +5,7 @@ import { isString, omit } from 'lodash'
 import { ColorPickerModule } from 'ngx-color-picker'
 import { CodexContentComponent } from '../../codex-content/codex-content.component'
 import { DatabaseService } from '../../database.service'
+import { DialogService } from '../../dialog/dialog.service'
 import { IconComponent } from '../../icon/icon.component'
 import Npc from '../../model/npc'
 import { NpcComponent } from '../../npc/npc.component'
@@ -28,7 +29,8 @@ export class CodexGeneratorPageComponent implements OnInit {
 	vsTotal = 0
 
 	constructor(
-		readonly db: DatabaseService
+		readonly db: DatabaseService,
+		private dialog: DialogService
 	) {
 		this.load()
 
@@ -185,10 +187,12 @@ export class CodexGeneratorPageComponent implements OnInit {
 	}
 
 	pageRemove(page: Page) {
-		this.pages = this.pages.filter(p => p !== page)
-		this.vsTotal = this.pages.length * CONTAINER_HEIGHT
-		this.fixIndex()
-		this.onScroll()
+		this.dialog.confirm(`Voulez vous vraiment supprimer cette page ?`).subscribe(() => {
+			this.pages = this.pages.filter(p => p !== page)
+			this.vsTotal = this.pages.length * CONTAINER_HEIGHT
+			this.fixIndex()
+			this.onScroll()
+		})
 	}
 
 	npcFilter(items: Npc[], query: string) {
@@ -302,7 +306,7 @@ class CoverPage extends Page {
 
 class SummaryPage extends Page {
 	override klassName = 'SummaryPage'
-	elements: { title: string, level: number, page: number }[][] = []
+	elements: { title: string, level: number, page: number, color: string }[][] = []
 	includeNpc = false
 	columnWidth = 660
 
@@ -312,25 +316,25 @@ class SummaryPage extends Page {
 	}
 
 	generate(pages: Page[]) {
-		const elements: { title: string, level: number, page: number }[] = []
+		const elements: { title: string, level: number, page: number, color: string }[] = []
 
 		for (const page of pages) {
 			if (page instanceof TitlePage) {
-				elements.push({ title: page.title, level: 0, page: page.index })
+				elements.push({ title: page.title, level: 0, page: page.index, color: page.color })
 			} else if (page instanceof StandardPage) {
 				for (const match of Array.from(page.text.matchAll(/^# (.*)$/gm))) {
-					elements.push({ title: match[1], level: 1, page: page.index })
+					elements.push({ title: match[1], level: 1, page: page.index, color: page.color })
 				}
 			} else if (page instanceof BestiaryPage) {
 				if (this.includeNpc && page.npcName) {
-					elements.push({ title: page.npcName, level: 1, page: page.index })
+					elements.push({ title: page.npcName, level: 1, page: page.index, color: page.color })
 				}
 			}
 		}
 
 		this.elements = []
-		for (let i = 0; i < elements.length; i += 30) {
-			this.elements.push(elements.slice(i, i + 30))
+		for (let i = 0; i < elements.length; i += 35) {
+			this.elements.push(elements.slice(i, i + 35))
 		}
 
 		this.columnWidth = (660 - (20 * (this.elements.length - 1))) / this.elements.length
@@ -561,7 +565,7 @@ class BestiaryPage extends Page {
 			}
 
 			this.npcMarginBottom = -(npcComponentHeight * (1 - this.npcScale))
-		}, 10)
+		}, 50)
 	}
 }
 

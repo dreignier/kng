@@ -459,15 +459,16 @@
 
           <div class="mx-[1.75cm] h-[990px] flex gap-5">
             @for (column of page.elements; track $index) {
-              <div>
+              <div class="text-xs">
                 @for (
                   element of column;
                   track element.title + "-" + element.level + "-" + element.page
                 ) {
                   <div
-                    class="my-1 h-[25px] flex justify-stretch"
-                    [style.margin-left]="element.level * 20 + 'px'"
-                    [style.width]="page.columnWidth - element.level * 20 + 'px'"
+                    class="my-1 h-[25px] flex justify-stretch summary-line w-[320px]"
+                    [style.padding-left]="5 + element.level * 20 + 'px'"
+                    [style.width]="page.columnWidth + 'px'"
+                    [style.--color]="element.color"
                   >
                     <span
                       class="text-ellipsis text-nowrap overflow-hidden h-[25px]"
@@ -475,7 +476,7 @@
                       {{ element.title }}
                     </span>
                     <span
-                      class="flex-grow border-b border-solid border-black relative bottom-[6px] mx-1"
+                      class="flex-grow border-b border-solid border-black relative bottom-[12px] mx-1"
                     >
                       &nbsp;
                     </span>
