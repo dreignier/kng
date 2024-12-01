@@ -132,6 +132,11 @@ export class CodexGeneratorPageComponent implements OnInit {
 		this.summary.generate(this.pages)
 	}
 
+	toggleSecondLevel() {
+		this.summary.includeSecondLevel = !this.summary.includeSecondLevel
+		this.summary.generate(this.pages)
+	}
+
 	fixIndex() {
 		for (let i = 0; i < this.pages.length; ++i) {
 			this.pages[i].index = i
@@ -263,6 +268,7 @@ class Page {
 	title: string = ''
 	color: string = '#40bd97'
 	klassName: string = 'Page'
+	dark = false
 
 	onChange() {
 		this.layout()
@@ -276,6 +282,10 @@ class Page {
 
 	content() {
 		return document.getElementById(`content-${this.id}`)!
+	}
+
+	toggleDarkMode() {
+		this.dark = !this.dark
 	}
 
 	toPlain(): any {
@@ -308,6 +318,7 @@ class SummaryPage extends Page {
 	override klassName = 'SummaryPage'
 	elements: { title: string, level: number, page: number, color: string }[][] = []
 	includeNpc = false
+	includeSecondLevel = false
 	columnWidth = 660
 
 	constructor() {
@@ -322,12 +333,33 @@ class SummaryPage extends Page {
 			if (page instanceof TitlePage) {
 				elements.push({ title: page.title, level: 0, page: page.index, color: page.color })
 			} else if (page instanceof StandardPage) {
-				for (const match of Array.from(page.text.matchAll(/^# (.*)$/gm))) {
-					elements.push({ title: match[1], level: 1, page: page.index, color: page.color })
+				for (const match of Array.from(page.text.matchAll(/^([#]+) ?(.*)$/gm))) {
+					if (match[1].length === 2 && !this.includeSecondLevel) {
+						continue
+					}
+
+					elements.push({ title: match[2], level: match[1].length, page: page.index, color: page.color })
 				}
 			} else if (page instanceof BestiaryPage) {
 				if (this.includeNpc && page.npcName) {
 					elements.push({ title: page.npcName, level: 1, page: page.index, color: page.color })
+				}
+			}
+		}
+
+
+		if (elements.length) {
+			const minLevel = Math.min(...elements.map(e => e.level))
+			if (minLevel !== 0) {
+				for (const element of elements) {
+					element.level -= minLevel
+				}
+			}
+
+			if (elements[0].level !== 0) {
+				const shift = elements[0].level
+				for (let i = 0; i < elements.length && elements[i].level !== 0; ++i) {
+					elements[i].level -= shift
 				}
 			}
 		}

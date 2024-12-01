@@ -10,10 +10,6 @@
   margin-bottom: 16px;
 }
 
-::ng-deep .dark .codex-content {
-  color: white;
-}
-
 ::ng-deep .codex-content {
   color: #2e2a31;
   line-height: 1.1;
@@ -149,7 +145,7 @@
     padding: 8px 16px 16px 16px;
     color: white;
 
-    h1 {
+    h2 {
       text-align: center;
       font-family: "Segoe Regular", sans-serif;
       font-weight: bold;
@@ -204,4 +200,8 @@
       font-size: 40px;
     }
   }
+}
+
+::ng-deep .dark .codex-content {
+  color: white;
 }

@@ -50,35 +50,35 @@ export function fixColor(color: string) {
 export function showdownConverter(...showdownExtensions: ShowdownExtension[]) {
 	const extensions: ShowdownExtension[] = [{
 		type: 'lang',
-		regex: />>([^<]+)<</g,
+		regex: />>([^<\n]+)<</g,
 		replace: '<center>$1</center>'
 	}, {
 		type: 'lang',
-		regex: /@@([^@]+)@@/g,
+		regex: /@@([^@\n]+)@@/g,
 		replace: '<span class="link">$1</span>'
 	}, {
 		type: 'lang',
-		regex: /~~([^~]+)~~/g,
+		regex: /~~([^~\n]+)~~/g,
 		replace: '<del>$1</del>'
 	}, {
 		type: 'lang',
-		regex: /\^\^([^\^]+)\^\^/g,
+		regex: /\^\^([^\^\n]+)\^\^/g,
 		replace: '<sup>$1</sup>'
 	}, {
 		type: 'lang',
-		regex: /__([^_]+)__/g,
+		regex: /__([^_\n]+)__/g,
 		replace: '<ins>$1</ins>'
 	}, {
 		type: 'lang',
-		regex: /====([^=]+)====/g,
+		regex: /====([^=\n]+)====/g,
 		replace: '<big class="biggest">$1</big>'
 	}, {
 		type: 'lang',
-		regex: /===([^=]+)===/g,
+		regex: /===([^=\n]+)===/g,
 		replace: '<big class="bigger">$1</big>'
 	}, {
 		type: 'lang',
-		regex: /==([^=]+)==/g,
+		regex: /==([^=\n]+)==/g,
 		replace: '<big>$1</big>'
 	}].concat(<any> showdownExtensions)
 
