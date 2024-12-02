@@ -52,6 +52,7 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 		this.dbSubscription = this.db.change.subscribe(() => {
 			this.save()
 			this.load()
+			this.fixIndex()
 		})
 	}
 
