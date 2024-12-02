@@ -50,7 +50,7 @@
 
 <div id="vs-start" [style.height]="vsBefore + 'px'" class="print:hidden"></div>
 
-@for (page of displayedPages; track page) {
+@for (page of displayedPages; track page.id) {
   <div
     class="flex mx-4 print:mx-0 {{
       printMode ? 'justify-center' : 'justify-between'

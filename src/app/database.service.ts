@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { EventEmitter, Injectable } from '@angular/core'
 import { ADVANCED, BANDE, CAPACITIES, COLORS, COLOSSE, EFFECTS, HOSTILE, PATRON, PATRON_COLOSSE, RARE, SALOPARD, STANDARD } from './constants'
 import Capacity from './model/capacity'
 import Effect from './model/effect'
@@ -51,34 +51,13 @@ export class DatabaseService {
 	capacities: DbCapacity[] = []
 	effects: DbEffect[] = []
 	colors: string[] = COLORS
+	change = new EventEmitter()
 
 	constructor() {
-		let json = localStorage.getItem('list')
-
-		if (json) {
-			const data = JSON.parse(json)
-			this.npcs = data.map((e: any) => new Npc(e))
-			this.sortNpcs()
-		}
-
-		json = localStorage.getItem('equipmentList')
-		if (json) {
-			const data = JSON.parse(json)
-			this.equipments = data.map((e: any) => new Equipment(e))
-			this.sortEquipments()
-		}
-
-		json = localStorage.getItem('vehicleList')
-		if (json) {
-			const data = JSON.parse(json)
-			this.vehicles = data.map((e: any) => new Vehicle(e))
-		}
-
-		json = localStorage.getItem('newsList')
-		if (json) {
-			const data = JSON.parse(json)
-			this.news = data.map((e: any) => new News(e))
-		}
+		this.loadNpcs()
+		this.loadEquipments()
+		this.loadVehicles()
+		this.loadNews()
 
 		for (const capacity of CAPACITIES) {
 			const c = new DbCapacity()
@@ -103,20 +82,78 @@ export class DatabaseService {
 			}
 		}
 
+		this.capacities.sort((a, b) => a.index.localeCompare(b.index))
+		this.effects.sort((a, b) => a.index.localeCompare(b.index))
+
+		window.addEventListener('storage', event => {
+			if (event.key === 'list') {
+				this.loadNpcs()
+			} else if (event.key === 'equipmentList') {
+				this.loadEquipments()
+			} else if (event.key === 'vehicleList') {
+				this.loadVehicles()
+			} else if (event.key === 'newsList') {
+				this.loadNews()
+			}
+
+			this.change.emit()
+		});
+	}
+
+	loadNpcs() {
+		const json = localStorage.getItem('list')
+		if (json) {
+			const data = JSON.parse(json)
+			this.npcs = data.map((e: any) => new Npc(e))
+			this.sortNpcs()
+		}
+
 		for (const npc of this.npcs) {
 			this.updateFromNpc(npc)
+		}
+
+		this.capacities.sort((a, b) => a.index.localeCompare(b.index))
+		this.effects.sort((a, b) => a.index.localeCompare(b.index))
+	}
+
+	loadEquipments() {
+		const json = localStorage.getItem('equipmentList')
+		if (json) {
+			const data = JSON.parse(json)
+			this.equipments = data.map((e: any) => new Equipment(e))
+			this.sortEquipments()
 		}
 
 		for (const equipment of this.equipments) {
 			this.updateFromEquipment(equipment)
 		}
 
-		this.sortNpcs()
-		this.sortEquipments()
-		this.sortVehicles()
-
-		this.capacities.sort((a, b) => a.index.localeCompare(b.index))
 		this.effects.sort((a, b) => a.index.localeCompare(b.index))
+	}
+
+	loadVehicles() {
+		const json = localStorage.getItem('vehicleList')
+		if (json) {
+			const data = JSON.parse(json)
+			this.vehicles = data.map((e: any) => new Vehicle(e))
+			this.sortVehicles()
+		}
+	}
+
+	loadNews() {
+		const json = localStorage.getItem('newsList')
+		if (json) {
+			const data = JSON.parse(json)
+			this.news = data.map((e: any) => new News(e))
+		}
+	}
+
+	saveCodex(data: any) {
+		localStorage.setItem('codex', JSON.stringify(data))
+	}
+
+	loadCodex() {
+		return localStorage.getItem('codex')
 	}
 
 	findNpc(name: string) {

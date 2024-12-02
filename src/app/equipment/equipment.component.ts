@@ -1,5 +1,6 @@
-import { Component, Input } from '@angular/core'
+import { Component, Input, OnDestroy } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
+import { Subscription } from 'rxjs'
 import { DatabaseService } from '../database.service'
 import Equipment, { AttackRule, DescriptiveRule, DroneRule, ModuleRule, Rule } from '../model/equipment'
 
@@ -10,8 +11,9 @@ import Equipment, { AttackRule, DescriptiveRule, DroneRule, ModuleRule, Rule } f
   templateUrl: './equipment.component.html',
   styleUrl: './equipment.component.scss'
 })
-export class EquipmentComponent {
+export class EquipmentComponent implements OnDestroy {
 	@Input() equipment?: Equipment
+	private subscription?: Subscription
 
 	primaryColors: Record<string, string> = {
 		standard: '#bee3f5',
@@ -55,8 +57,18 @@ export class EquipmentComponent {
 		readonly db: DatabaseService
 	) {}
 
+	ngOnDestroy(): void {
+		this.subscription?.unsubscribe()
+	}
+
 	@Input() set name(name: string) {
 		this.equipment = this.db.findEquipment(name)
+
+		if (!this.subscription) {
+			this.subscription = this.db.change.subscribe(() => {
+				this.equipment = this.db.findEquipment(name)
+			})
+		}
 	}
 
 	primary(level?: string) {

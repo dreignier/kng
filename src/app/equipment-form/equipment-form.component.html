@@ -365,7 +365,7 @@
             Effets
           </label>
           <div class="col-span-12 grid grid-cols-4 gap-1 mb-1">
-            @for (effect of rule.effects; track effect) {
+            @for (effect of rule.effects; track effect.name) {
               <div class="flex flex-row">
                 <ng-autocomplete
                   class="autocomplete flex-grow"

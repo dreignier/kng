@@ -1,8 +1,9 @@
-import { Component, HostListener, OnInit } from '@angular/core'
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { AutocompleteLibModule } from 'angular-ng-autocomplete'
 import { isString, omit } from 'lodash'
 import { ColorPickerModule } from 'ngx-color-picker'
+import { Subscription } from 'rxjs'
 import { CodexContentComponent } from '../../codex-content/codex-content.component'
 import { DatabaseService } from '../../database.service'
 import { DialogService } from '../../dialog/dialog.service'
@@ -18,7 +19,7 @@ import { arrayDown, arrayUp } from '../../util'
   styleUrls: ['./codex-generator-page.component.scss'],
 	imports: [IconComponent, NpcComponent, FormsModule, ColorPickerModule, AutocompleteLibModule, CodexContentComponent]
 })
-export class CodexGeneratorPageComponent implements OnInit {
+export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 	pages: Page[] = []
 	summary = new SummaryPage()
 	displayedPages: Page[] = []
@@ -27,6 +28,7 @@ export class CodexGeneratorPageComponent implements OnInit {
 	vsBefore = 0
 	vsAfter = 0
 	vsTotal = 0
+	dbSubscription: Subscription
 
 	constructor(
 		readonly db: DatabaseService,
@@ -46,16 +48,24 @@ export class CodexGeneratorPageComponent implements OnInit {
 			this.summary.generate(this.pages)
 			this.save()
 		}, 5000)
+
+		this.dbSubscription = this.db.change.subscribe(() => {
+			this.save()
+			this.load()
+		})
+	}
+
+	ngOnDestroy(): void {
+		this.dbSubscription.unsubscribe()
 	}
 
 	save() {
-		const json = JSON.stringify(this.pages.map(p => p.toPlain()))
-		localStorage.setItem('codex', json)
+		this.db.saveCodex(this.pages.map(p => p.toPlain()))
 	}
 
 	load(data?: any) {
 		try {
-			const json = data || localStorage.getItem('codex')
+			const json = data || this.db.loadCodex()
 			if (json) {
 				const plain = JSON.parse(json)
 				this.pages = plain.map((p: any) => this.fromPlain(p))

@@ -2,7 +2,6 @@
 
 ## Créateur de Codex :
 
-- Page sombre
 - Exemple d'encart dans le texte par défaut
 - Plusieurs exemples pour la page standard...
 - Capacités d'armures. Ou encadré générique

@@ -1,4 +1,5 @@
-import { Component, Input } from '@angular/core'
+import { Component, Input, OnDestroy } from '@angular/core'
+import { Subscription } from 'rxjs'
 import { ASPECTS_LABELS } from '../constants'
 import { DatabaseService } from '../database.service'
 import Npc from '../model/npc'
@@ -10,15 +11,26 @@ import Npc from '../model/npc'
   templateUrl: './npc.component.html',
   styleUrl: './npc.component.scss'
 })
-export class NpcComponent {
+export class NpcComponent implements OnDestroy {
 	@Input() npc?: Npc
 	aspects = ASPECTS_LABELS
+	private subscription?: Subscription
 
 	constructor(
-		readonly db: DatabaseService,
+		readonly db: DatabaseService
 	) {}
 
 	@Input() set name(name: string) {
 		this.npc = this.db.findNpc(name)
+
+		if (!this.subscription) {
+			this.subscription = this.db.change.subscribe(() => {
+				this.npc = this.db.findNpc(name)
+			})
+		}
+	}
+
+	ngOnDestroy(): void {
+		this.subscription?.unsubscribe()
 	}
 }
