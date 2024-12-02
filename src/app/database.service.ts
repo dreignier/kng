@@ -54,11 +54,6 @@ export class DatabaseService {
 	change = new EventEmitter()
 
 	constructor() {
-		this.loadNpcs()
-		this.loadEquipments()
-		this.loadVehicles()
-		this.loadNews()
-
 		for (const capacity of CAPACITIES) {
 			const c = new DbCapacity()
 			c.parse(capacity)
@@ -81,6 +76,11 @@ export class DatabaseService {
 				this.capacities.push(capacity)
 			}
 		}
+
+		this.loadNpcs()
+		this.loadEquipments()
+		this.loadVehicles()
+		this.loadNews()
 
 		this.capacities.sort((a, b) => a.index.localeCompare(b.index))
 		this.effects.sort((a, b) => a.index.localeCompare(b.index))
