@@ -6,4 +6,3 @@
 - Plusieurs exemples pour la page standard...
 - Capacités d'armures. Ou encadré générique
 - émergarment comme dans la Geste pour faire des références
-- Largeur pour les images ?
