@@ -31,6 +31,9 @@ textarea {
   clear: both;
   page-break-after: always;
   position: relative;
+  background-repeat: no-repeat;
+  background-position: center;
+  flex-shrink: 0;
 
   &.dark {
     background-color: #32333b;

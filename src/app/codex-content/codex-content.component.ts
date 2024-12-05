@@ -24,12 +24,32 @@ export class CodexContentComponent implements OnInit {
 
 	converter = showdownConverter({
 		type: 'lang',
-		regex: /([a-zéàèîïëù.?!"' ])\n([a-zéàèîïëù"' ])/gi,
+		regex: /([a-zéàèîïëù.?!"' «»])\n([a-zéàèîïëù"' «»])/gi,
 		replace: '$1<span class="mr-2"><br>&nbsp;</span>$2'
+	}, {
+		type: 'output',
+		regex: /{{{{[ \n]*([^}]+)[ \n]*}}}}/gi,
+		replace: '<div class="panel panel-alt">$1</div>'
 	}, {
 		type: 'output',
 		regex: /{{{[ \n]*([^}]+)[ \n]*}}}/g,
 		replace: '<div class="panel">$1</div>'
+	}, {
+		type: 'lang',
+		regex: />>>([^<>\n]+)>>>/g,
+		replace: '<span class="codex-margin-right">$1</span>'
+	}, {
+		type: 'lang',
+		regex: /<<<([^<>\n]+)<<</g,
+		replace: '<span class="codex-margin-left">$1</span>'
+	}, {
+		type: 'output',
+		regex: /\(\(\(\([ \n]*([^)]+)[ \n]*\)\)\)\)/g,
+		replace: '<div class="badge badge-big"><span>$1</span></div>'
+	}, {
+		type: 'output',
+		regex: /\(\(\([ \n]*([^)]+)[ \n]*\)\)\)/g,
+		replace: '<div class="badge"><span>$1</span></div>'
 	})
 
 	ngOnInit(): void {
@@ -53,11 +73,56 @@ export class CodexContentComponent implements OnInit {
 			return
 		}
 
-		for (const sectionText of content.split(/____/g)) {
+		for (let sectionText of content.split(/____/g)) {
 			const section = new Section('codex-section-' + this.sections.length, this.width)
 
-			for (const columnText of sectionText.split(/\|\|\|\|/g)) {
+			if (sectionText.startsWith('vvv') || sectionText.startsWith('VVV')) {
+				section.bottom = true
+				sectionText = sectionText.slice(3)
+			}
+
+			for (let columnText of sectionText.split(/\|\|\|\|/g)) {
 				const column = new Column(section.columns.length, section)
+
+				columnText = columnText.replace(/\[\[\[([^\]]+)\]\]\]/g, (_, text: string) => {
+					let header = ''
+					let result = ''
+					let first = true
+					let fixed = false
+
+					if (text.startsWith('=')) {
+						fixed = true
+						text = text.slice(1)
+					}
+
+					for (const row of text.split('---')) {
+						const cells = row.split('||')
+
+						if (first && cells.length === 1) {
+							header = `<div class="table-header">${cells[0]}</div>`
+							continue
+						}
+
+						result += '<tr>'
+
+						for (let cell of cells) {
+							result += '<td'
+
+							if (cell.trim().startsWith(':')) {
+								result += ' class="cell-panel"'
+								cell = cell.trim().slice(1)
+							}
+
+							result += '>' + cell + '</td>'
+						}
+
+						result += '</tr>'
+
+						first = false
+					}
+
+					return header + `<table ${fixed ? 'class="codex-fixed"' : ''} >` + result + '</table>'
+				})
 
 				let index = 0
 				for (const match of Array.from(columnText.matchAll(/\[([a-z]{3}):([^\]]+)\]/gmi))) {
@@ -91,6 +156,12 @@ export class CodexContentComponent implements OnInit {
 		setTimeout(() => {
 			for (const part of this.parts) {
 				if (part.component && part.scale === 1) {
+					const element = document.getElementById(part.id)
+
+					if (!element) {
+						continue
+					}
+
 					const width = part.component === 'pnj' ? 793 : 362
 
 					if (width < part.column.width) {
@@ -100,8 +171,8 @@ export class CodexContentComponent implements OnInit {
 						continue
 					}
 
-					part.scale = part.column.width / width
-					const height = document.getElementById(part.id)!.offsetHeight
+					part.scale = Math.round(((part.column.width / width) + Number.EPSILON) * 100) / 100
+					const height = element.offsetHeight
 					part.mb = (-height * (1 - part.scale)) + 16
 
 					this.scaleCache[part.cacheId(part.column.width)] = { scale: part.scale, mb: part.mb }
@@ -113,6 +184,7 @@ export class CodexContentComponent implements OnInit {
 
 class Section  {
 	columns: Column[] = []
+	bottom = false
 
 	constructor(
 		public id: string,

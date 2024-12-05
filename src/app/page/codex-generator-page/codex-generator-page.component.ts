@@ -323,7 +323,7 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 }
 
 const HEIGHT = 1122.52
-const PADDING_BOTTOM = 48
+const PADDING_BOTTOM = 40
 const CONTAINER_HEIGHT = HEIGHT + 30
 
 class Page {
@@ -334,6 +334,7 @@ class Page {
 	color: string = '#40bd97'
 	klassName: string = 'Page'
 	dark = false
+	background = ''
 
 	onChange() {
 		this.layout()
@@ -388,6 +389,7 @@ class CoverPage extends Page {
 		super()
 		this.title = 'Codex Fan Made'
 		this.color = '#ffffff'
+		this.dark = true
 	}
 
 	override deletable() {
@@ -533,6 +535,7 @@ class TitlePage extends Page {
 		super()
 		this.title = 'Titre de la page'
 		this.color = '#ffffff'
+		this.dark = true
 	}
 }
 
@@ -719,6 +722,7 @@ class BestiaryPage extends Page {
 
 			const npcComponentHeight = npcComponent.clientHeight
 			this.npcScale -= overflow / npcComponentHeight
+			this.npcScale = Math.round(((this.npcScale) + Number.EPSILON) * 100) / 100
 
 			if (this.twoColumns) {
 				const descriptionComponentHeight = this.descriptionComponent().clientHeight

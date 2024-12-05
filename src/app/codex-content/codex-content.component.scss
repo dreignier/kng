@@ -10,26 +10,70 @@
   margin-bottom: 16px;
 }
 
+.section-bottom {
+  position: absolute;
+  left: 1.75cm;
+  right: 1.75cm;
+  bottom: 40px;
+}
+
 ::ng-deep .codex-content {
   color: #2e2a31;
-  line-height: 1.1;
+  line-height: 1.3;
   font-size: 0.75rem;
   font-family: "Segoe Regular", sans-serif;
 
-  img {
+  .badge {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    background-color: var(--color);
+    border-radius: 50%;
+    font-family: "Segoe UI Bold", sans-serif;
+    font-weight: normal;
+    font-size: 1rem;
+
+    &.badge-big {
+      width: 80px;
+      height: 80px;
+      font-size: 1.2rem;
+    }
+  }
+
+  .codex-margin-left {
+    position: absolute;
+    left: 10px;
+    width: 45px;
+    line-height: 1.1;
+  }
+
+  .codex-margin-right {
+    position: absolute;
+    right: 10px;
+    width: 45px;
+    line-height: 1.1;
+  }
+
+  img,
+  .badge {
     float: left;
     margin-right: 8px;
   }
 
-  .text-right img {
+  .text-right img,
+  .text-right .badge {
     float: right;
     margin-left: 8px;
+    margin-right: 0;
   }
 
-  center img {
+  center img,
+  center .badge {
     float: none;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    margin: 8px 0 8px 0;
   }
 
   em {
@@ -151,6 +195,10 @@
       font-family: "Segoe Regular", sans-serif;
       font-weight: bold;
     }
+
+    &.panel-alt {
+      background-color: var(--color);
+    }
   }
 
   .link {
@@ -173,7 +221,6 @@
   ul {
     margin-left: 15px;
     margin-bottom: 10px;
-    line-height: 1.1;
 
     &:last-child {
       margin-bottom: 0;
@@ -190,16 +237,87 @@
   }
 
   big {
-    color: var(--color);
     font-family: "Segoe UI Bold", sans-serif;
-    font-size: 20px;
 
-    &.bigger {
-      font-size: 28px;
+    &.colorized {
+      color: var(--color);
     }
 
-    &.biggest {
-      font-size: 40px;
+    &.bigger-1 {
+      font-size: 24px;
+    }
+
+    &.bigger-2 {
+      font-size: 36px;
+    }
+
+    &.bigger-3 {
+      font-size: 48px;
+    }
+
+    &.bigger-4 {
+      font-size: 60px;
+    }
+
+    &.bigger-5 {
+      font-size: 72px;
+    }
+
+    &.bigger-6 {
+      font-size: 84px;
+    }
+
+    &.bigger-7 {
+      font-size: 96px;
+    }
+
+    &.bigger-8 {
+      font-size: 108px;
+    }
+
+    &.bigger-9 {
+      font-size: 120px;
+    }
+
+    &.bigger-10 {
+      font-size: 132px;
+    }
+  }
+
+  .table-header {
+    background-color: #2e2a31;
+    font-family: "Segoe UI Bold", sans-serif;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 1rem;
+  }
+
+  table {
+    background-color: var(--color);
+    color: white;
+    width: 100%;
+    border: 2px;
+
+    &.codex-fixed {
+      table-layout: fixed;
+    }
+
+    td {
+      font-family: "Segoe UI Bold", sans-serif;
+      padding: 4px;
+      text-align: center;
+      vertical-align: center;
+
+      &.cell-panel {
+        background-color: #42505a;
+        color: white;
+        font-family: "Segoe UI Regular", sans-serif;
+        padding: 2px 4px;
+        vertical-align: top;
+        text-align: left;
+        border: 2px solid var(--color);
+      }
     }
   }
 }

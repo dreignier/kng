@@ -48,7 +48,7 @@ export function fixColor(color: string) {
 }
 
 export function showdownConverter(...showdownExtensions: ShowdownExtension[]) {
-	const extensions: ShowdownExtension[] = [{
+	const extensions: ShowdownExtension[] = showdownExtensions.concat([{
 		type: 'lang',
 		regex: />>([^<\n]+)<</g,
 		replace: '<center>$1</center>'
@@ -74,17 +74,13 @@ export function showdownConverter(...showdownExtensions: ShowdownExtension[]) {
 		replace: '<ins>$1</ins>'
 	}, {
 		type: 'lang',
-		regex: /====([^=\n]+)====/g,
-		replace: '<big class="biggest">$1</big>'
+		regex: /=(=+)([^=\n]+)(=+)=/g,
+		replace: (match: string, p1: string, p2: string) => `<big class="colorized bigger-${p1.length}">${p2}</big>`
 	}, {
 		type: 'lang',
-		regex: /===([^=\n]+)===/g,
-		replace: '<big class="bigger">$1</big>'
-	}, {
-		type: 'lang',
-		regex: /==([^=\n]+)==/g,
-		replace: '<big>$1</big>'
-	}].concat(<any> showdownExtensions)
+		regex: /!(!+)([^!\n]+)(!+)!/g,
+		replace: (match: string, p1: string, p2: string) => `<big class="bigger-${p1.length}">${p2}</big>`
+	}])
 
 	return new Converter({ extensions })
 }
