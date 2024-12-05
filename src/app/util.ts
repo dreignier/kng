@@ -54,6 +54,10 @@ export function showdownConverter(...showdownExtensions: ShowdownExtension[]) {
 		replace: '<center>$1</center>'
 	}, {
 		type: 'lang',
+		regex: />>([^<>\n]+)>>/g,
+		replace: '<div class="text-right">$1</center>'
+	}, {
+		type: 'lang',
 		regex: /@@([^@\n]+)@@/g,
 		replace: '<span class="link">$1</span>'
 	}, {

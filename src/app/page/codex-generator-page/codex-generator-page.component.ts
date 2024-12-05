@@ -41,11 +41,11 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 		}
 
 		this.fixIndex()
-		this.summary.generate(this.pages)
+		this.generateSummary()
 		this.save()
 
 		setInterval(() => {
-			this.summary.generate(this.pages)
+			this.generateSummary()
 			this.save()
 		}, 5000)
 
@@ -103,7 +103,7 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 				this.load(reader.result)
 				this.vsTotal = this.pages.length * CONTAINER_HEIGHT
 				this.fixIndex()
-				this.summary.generate(this.pages)
+				this.generateSummary()
 
 				if (!this.printMode) {
 					this.onScroll()
@@ -140,12 +140,32 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 
 	toggleSummaryNpc() {
 		this.summary.includeNpc = !this.summary.includeNpc
-		this.summary.generate(this.pages)
+		this.generateSummary()
 	}
 
 	toggleSecondLevel() {
 		this.summary.includeSecondLevel = !this.summary.includeSecondLevel
-		this.summary.generate(this.pages)
+		this.generateSummary()
+	}
+
+	generateSummary() {
+		this.pages = this.pages.filter(p => !(p instanceof SummarySecondaryPage))
+		const secondarySummaryPages = this.summary.generate(this.pages)
+		this.pages.splice(2, 0, ...secondarySummaryPages)
+		this.fixIndex()
+		this.vsTotal = this.pages.length * CONTAINER_HEIGHT
+	}
+
+	set summaryColor(color: string) {
+		this.summary.color = color
+
+		for (let i = 2; i < this.pages.length && this.pages[i] instanceof SummarySecondaryPage; ++i) {
+			this.pages[i].color = color
+		}
+	}
+
+	get summaryColor() {
+		return this.summary.color
 	}
 
 	fixIndex() {
@@ -191,21 +211,47 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 	}
 
 	pageUp(page: Page) {
-		arrayUp(this.pages, page, 1)
+		if (!page.movable() || !this.pages[page.index - 1]?.movable()) {
+			return
+		}
+
+		arrayUp(this.pages, page)
+		this.generateSummary()
 		this.fixIndex()
 		this.onScroll()
 	}
 
 	pageDown(page: Page) {
+		if (!page.movable() || !this.pages[page.index + 1]?.movable()) {
+			return
+		}
+
 		arrayDown(this.pages, page)
+		this.generateSummary()
 		this.fixIndex()
 		this.onScroll()
 	}
 
+	reset() {
+		this.dialog.confirm(`Voulez vous vraiment réinitialiser le codex ? Le codex en cours sera définitivement perdu si vous ne l'avez pas sauvegardé.`).subscribe(() => {
+			this.pages = [new CoverPage(), this.summary]
+			this.generateSummary()
+			this.vsTotal = this.pages.length * CONTAINER_HEIGHT
+			this.fixIndex()
+			this.onScroll()
+
+		})
+	}
+
 	pageRemove(page: Page) {
+		if (!page.deletable()) {
+			return
+		}
+
 		this.dialog.confirm(`Voulez vous vraiment supprimer cette page ?`).subscribe(() => {
 			this.pages = this.pages.filter(p => p !== page)
 			this.vsTotal = this.pages.length * CONTAINER_HEIGHT
+			this.generateSummary()
 			this.fixIndex()
 			this.onScroll()
 		})
@@ -228,6 +274,10 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 	}
 
 	addPage(index: number, page: Page) {
+		if (!this.pages[index].canInsertAfter()) {
+			return
+		}
+
 		this.pages.splice(index + 1, 0, page)
 		this.vsTotal = this.pages.length * CONTAINER_HEIGHT
 		this.fixIndex()
@@ -244,6 +294,10 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 
 	isSummaryPage(page: Page) {
 		return page instanceof SummaryPage
+	}
+
+	isSummarySecondaryPage(page: Page) {
+		return page instanceof SummarySecondaryPage
 	}
 
 	isTitlePage(page: Page) {
@@ -285,6 +339,18 @@ class Page {
 		this.layout()
 	}
 
+	deletable() {
+		return true
+	}
+
+	movable() {
+		return true
+	}
+
+	canInsertAfter() {
+		return true
+	}
+
 	layout() {}
 
 	element() {
@@ -323,6 +389,18 @@ class CoverPage extends Page {
 		this.title = 'Codex Fan Made'
 		this.color = '#ffffff'
 	}
+
+	override deletable() {
+		return false
+	}
+
+	override movable() {
+		return false
+	}
+
+	override canInsertAfter() {
+		return false
+	}
 }
 
 class SummaryPage extends Page {
@@ -331,10 +409,23 @@ class SummaryPage extends Page {
 	includeNpc = false
 	includeSecondLevel = false
 	columnWidth = 660
+	secondaryPages = 0
 
 	constructor() {
 		super()
 		this.title = 'Sommaire'
+	}
+
+	override deletable() {
+		return false
+	}
+
+	override movable() {
+		return false
+	}
+
+	override canInsertAfter() {
+		return !this.secondaryPages
 	}
 
 	generate(pages: Page[]) {
@@ -345,7 +436,7 @@ class SummaryPage extends Page {
 				elements.push({ title: page.title, level: 0, page: page.index, color: page.color })
 			} else if (page instanceof StandardPage) {
 				for (const match of Array.from(page.text.matchAll(/^([#]+) ?(.*)$/gm))) {
-					if (match[1].length === 2 && !this.includeSecondLevel) {
+					if (match[1].length > 2 || (match[1].length === 2 && !this.includeSecondLevel)) {
 						continue
 					}
 
@@ -380,7 +471,26 @@ class SummaryPage extends Page {
 			this.elements.push(elements.slice(i, i + 35))
 		}
 
+		const secondaryPages: SummarySecondaryPage[] = []
+		for (let i = 2; i < this.elements.length; i += 2) {
+			const page = new SummarySecondaryPage()
+			page.elements = this.elements.slice(i, i + 2)
+			page.color = this.color
+			page.dark = this.dark
+			page.columnWidth = (660 - (20 * (page.elements.length - 1))) / page.elements.length
+			secondaryPages.push(page)
+		}
+		this.elements = this.elements.slice(0, 2)
+
 		this.columnWidth = (660 - (20 * (this.elements.length - 1))) / this.elements.length
+
+		this.secondaryPages = secondaryPages.length
+
+		if (this.secondaryPages) {
+			secondaryPages[secondaryPages.length - 1].last = true
+		}
+
+		return secondaryPages
 	}
 
 	override toPlain() {
@@ -389,6 +499,30 @@ class SummaryPage extends Page {
 		delete result.elements
 
 		return result
+	}
+}
+
+class SummarySecondaryPage extends Page {
+	override klassName = 'SummarySecondaryPage'
+	elements: { title: string, level: number, page: number, color: string }[][] = []
+	columnWidth = 660
+	last = false
+
+	constructor() {
+		super()
+		this.title = 'Sommaire'
+	}
+
+	override deletable() {
+		return false
+	}
+
+	override movable() {
+		return false
+	}
+
+	override canInsertAfter() {
+		return this.last
 	}
 }
 
@@ -481,7 +615,6 @@ class BestiaryPage extends Page {
 	npcMarginBottom = 0
 	description: string = ''
 	quote: string = ''
-	author: string = ''
 	incarnation = false
 	elite = false
 	twoColumns = false
@@ -497,8 +630,8 @@ class BestiaryPage extends Page {
 
 **Tactique :** N'hésitez pas à __utiliser__ et à *__combiner__* les effets.`
 
-		this.quote = '>>*====« ====Votre ====ESPOIR==== est votre meilleure arme.==== »====*<<'
-		this.author = 'ARTHUR'
+		this.quote = `>>*====« ====Votre ====ESPOIR==== est votre meilleure arme.==== »====*<<
+		>>— ARTHUR>>`
 
 		if (this.db.npcs[0]) {
 			this.setNpcName(this.db.npcs[0].name)
@@ -520,7 +653,6 @@ class BestiaryPage extends Page {
 		this.title = ''
 		this.description = ''
 		this.quote = ''
-		this.author = ''
 		this.npc = undefined
 		this.npcName = ''
 
@@ -617,5 +749,6 @@ const constructors = {
 	SummaryPage,
 	TitlePage,
 	StandardPage,
-	BestiaryPage
+	BestiaryPage,
+	SummarySecondaryPage
 }

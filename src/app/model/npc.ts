@@ -387,11 +387,9 @@ export default class Npc extends Entity {
       levels.some(tag => c.tags.includes(tag))
     )
 
-    shuffle(result)
-
 		const set = new Set<string>();
 
-    return result.filter(e => {
+    return shuffle(result).filter(e => {
       const raw = e.raw();
 
       if (set.has(raw)) {
