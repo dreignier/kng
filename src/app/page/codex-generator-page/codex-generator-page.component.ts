@@ -29,6 +29,33 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 	vsAfter = 0
 	vsTotal = 0
 	dbSubscription: Subscription
+	helpers = [
+		{ icon: 'bold', help: '**{0}**', default: 'Texte en gras' },
+		{ icon: 'italic', help: '*{0}*', default: 'Texte en italique' },
+		{ icon: 'underline', help: '__{0}__', default: 'Texte souligné' },
+		{ icon: 'strike', help: '~~{0}~~', default: 'Texte barré' },
+		{ icon: 'sup', help: '^^{0}^^', default: 'Texte surélevé' },
+		{ icon: 'h1', help: '\n\n# {0}\n\n', default: 'Titre de niveau 1' },
+		{ icon: 'h2', help: '\n\n## {0}\n\n', default: 'Titre de niveau 2' },
+		{ icon: 'h3', help: '\n\n### {0}\n\n', default: 'Titre de niveau 3' },
+		{ icon: 'sparkles', help: '=={0}==', default: 'Texte en couleur' },
+		{ icon: 'sparkles', help: '==={0}===', default: 'Texte en couleur plus gros' },
+		{ icon: 'sparkles', help: '===={0}====', default: 'Texte en couleur encore plus gros' },
+		{ icon: 'link', help: '@@{0}@@', default: 'Lien' },
+		{ icon: 'align-center', help: '>>{0}<<', default: 'Texte centré' },
+		{ icon: 'align-right', help: '>>{0}>>', default: 'Texte aligné à droite' },
+		{ icon: 'ul', help: '\n* {0}', default: 'Liste' },
+		{ icon: 'ol', help: '\n1. {0}', default: 'Liste numérotée' },
+		{ icon: 'column', help: '\n\n||||\n\n', default: 'Nouvelle colonne' },
+		{ icon: 'section', help: '\n\n____\n\n', default: 'Nouvelle section' },
+		{ icon: 'panel', help: '\n\n{{{\n\n##Titre\n\n{0}\n}}}\n\n', default: 'Contenu de l\'encadré' },
+		{ icon: 'panel', help: '\n\n{{{{\n\n##Titre\n\n{0}\n}}}}\n\n', default: 'Contenu de l\'encadré' },
+		{ icon: 'margin-left', help :'<<<{0}<<<', default: 'LdB – p. XX', title: 'Émargement gauche' },
+		{ icon: 'margin-right', help :'>>>{0}>>>', default: 'LdB – p. XX', title: 'Émargement droite' },
+		{ icon: 'badge', help: '((({0})))', default: '100', title: 'Badge' },
+		{ icon: 'badge', help: '(((({0}))))', default: '100', title: 'Gros badge' },
+		{ icon: 'table', help: '\n\n[[[=\nTitre du tableau\n---\nColonne 1 || Colonne 2 || Colonne 3\n---\n: Valeur 1 ||: Valeur 2 ||: Valeur 3\n]]]\n\n', default: 'Tableau'}
+	]
 
 	constructor(
 		readonly db: DatabaseService,
@@ -121,6 +148,23 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 
 		reader.readAsText(file)
 		input.value = ''
+	}
+
+	helper(element: HTMLTextAreaElement, help: { icon: string, help: string, default: string }) {
+		const start = element.selectionStart
+		const end = element.selectionEnd
+		const text = element.value
+		const before = text.substring(0, start)
+		const after = text.substring(end, text.length)
+		const selected = text.substring(start, end)
+		let helpText = help.help.replace('{0}', selected.trim() ? selected : help.default)
+
+		element.value = before + helpText + after
+		element.selectionStart = start + helpText.length
+		element.selectionEnd = start + helpText.length
+		element.focus()
+
+		element.dispatchEvent(new Event('input', { bubbles: true }))
 	}
 
 	togglePrintMode() {
