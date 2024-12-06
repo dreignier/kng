@@ -75,11 +75,11 @@ export function showdownConverter(...showdownExtensions: ShowdownExtension[]) {
 	}, {
 		type: 'lang',
 		regex: /=(=+)([^=\n]+)(=+)=/g,
-		replace: (match: string, p1: string, p2: string) => `<big class="colorized bigger-${p1.length}">${p2}</big>`
+		replace: (match: string, p1: string, p2: string) => `<big class="colorized bigger-${p1.length - 1}">${p2}</big>`
 	}, {
 		type: 'lang',
 		regex: /!(!+)([^!\n]+)(!+)!/g,
-		replace: (match: string, p1: string, p2: string) => `<big class="bigger-${p1.length}">${p2}</big>`
+		replace: (match: string, p1: string, p2: string) => `<big class="bigger-${p1.length - 1}">${p2}</big>`
 	}])
 
 	return new Converter({ extensions })
