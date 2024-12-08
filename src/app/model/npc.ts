@@ -1,5 +1,5 @@
 import { isString, shuffle } from 'lodash'
-import { ALLIE, ARMORED, BANDE, BETE, CHAIR, COLOSSE, COURTE, DAME, DERIVED_VALUES_LABELS, GRID, HEROS, HOSTILE, INITIE, LOINTAINE, LONGUE, MACHINE, MASQUE, MOYENNE, ORGANIC, PATRON, PATRON_COLOSSE, RECRUE, ROBOT, SALOPARD } from '../constants'
+import { ALLIE, ARMORED, ASPECTS_LABELS, BANDE, BETE, CHAIR, COLOSSE, COURTE, DAME, DERIVED_VALUES_LABELS, GRID, HEROS, HOSTILE, INITIE, LOINTAINE, LONGUE, MACHINE, MASQUE, MOYENNE, ORGANIC, PATRON, PATRON_COLOSSE, RECRUE, ROBOT, SALOPARD } from '../constants'
 import { DatabaseService } from '../database.service'
 import Aspect from './aspect'
 import Capacity from './capacity'
@@ -60,22 +60,23 @@ export default class Npc extends Entity {
 	}
 
 	export() {
-		const data = JSON.parse(JSON.stringify(this));
+		const data = JSON.parse(JSON.stringify(this))
 
     for (const aspect of data.aspects) {
-      delete aspect.id;
+      aspect.id
+			aspect.name = ASPECTS_LABELS[aspect.id]
     }
 
     if (this.type === BANDE) {
-      delete data.weapons;
-      delete data.armor;
-      delete data.resilience;
-      delete data.initiative;
+      delete data.weapons
+      delete data.armor
+      delete data.resilience
+      delete data.initiative
     } else {
-      delete data.outbreak;
+      delete data.outbreak
     }
 
-    return data;
+    return data
 	}
 
 	hasValues() {
