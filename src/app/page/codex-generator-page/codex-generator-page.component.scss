@@ -32,7 +32,8 @@ textarea {
   page-break-after: always;
   position: relative;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center center;
+  background-size: cover;
   flex-shrink: 0;
 
   &.dark {

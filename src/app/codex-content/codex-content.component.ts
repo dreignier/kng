@@ -24,7 +24,64 @@ export class CodexContentComponent implements OnInit {
 
 	converter = showdownConverter({
 		type: 'lang',
-		regex: /([a-zéàèîïëù.?!"' «»])\n([a-zéàèîïëù"' «»])/gi,
+		regex: /\[\[\[([^\]]+)\]\]\]/g,
+		replace: (match: string, text: string) => {
+			let result = ''
+			let first = true
+			let style = ''
+
+			if (text.startsWith('=')) {
+				style = 'codex-fixed'
+				text = text.slice(1)
+			} else if (text.startsWith('>')) {
+				style = 'table-right'
+				text = text.slice(1)
+			} else if (text.startsWith('<')) {
+				style = 'table-center'
+				text = text.slice(1)
+			}
+
+			const rows = text.split('---').map(row => row.split('||'))
+			const columns = rows.reduce((max, row) => Math.max(max, row.length), 0)
+
+			for (const row of rows) {
+				result += '<tr>'
+
+				for (let cell of row) {
+					result += '<td'
+
+					if (first && row.length === 1) {
+						result += ` colspan="${columns}" class="table-header"`
+					} else {
+						const match = cell.match(/^\n*([\:0-9]+)/)
+
+						if (match?.[1]) {
+							if (match[1].includes(':')) {
+								result += ' class="cell-panel"'
+							}
+
+							const colspan = Number(match[1].replace(':', ''))
+							if (colspan > 1) {
+								result += ` colspan="${colspan}"`
+							}
+
+							cell = cell.slice(match[0].length)
+						}
+					}
+
+					result += '>' + this.converter.makeHtml(cell) + '</td>'
+				}
+
+				result += '</tr>'
+
+				first = false
+			}
+
+			return `<table class="${style}" >` + result + '</table>'
+		}
+	}, {
+		type: 'lang',
+		regex: /([a-zéàèîïëù.?!"' «»*=_\-])\n([a-zéàèîïëù"' «»*=_\-])/gi,
 		replace: '$1<span class="mr-2"><br>&nbsp;</span>$2'
 	}, {
 		type: 'output',
@@ -83,46 +140,6 @@ export class CodexContentComponent implements OnInit {
 
 			for (let columnText of sectionText.split(/\|\|\|\|/g)) {
 				const column = new Column(section.columns.length, section)
-
-				columnText = columnText.replace(/\[\[\[([^\]]+)\]\]\]/g, (_, text: string) => {
-					let header = ''
-					let result = ''
-					let first = true
-					let fixed = false
-
-					if (text.startsWith('=')) {
-						fixed = true
-						text = text.slice(1)
-					}
-
-					for (const row of text.split('---')) {
-						const cells = row.split('||')
-
-						if (first && cells.length === 1) {
-							header = `<div class="table-header">${cells[0]}</div>`
-							continue
-						}
-
-						result += '<tr>'
-
-						for (let cell of cells) {
-							result += '<td'
-
-							if (cell.trim().startsWith(':')) {
-								result += ' class="cell-panel"'
-								cell = cell.trim().slice(1)
-							}
-
-							result += '>' + cell + '</td>'
-						}
-
-						result += '</tr>'
-
-						first = false
-					}
-
-					return header + `<table ${fixed ? 'class="codex-fixed"' : ''} >` + result + '</table>'
-				})
 
 				let index = 0
 				for (const match of Array.from(columnText.matchAll(/\[([a-z]{3}):([^\]]+)\]/gmi))) {

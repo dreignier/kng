@@ -74,6 +74,7 @@
   center .badge {
     float: none;
     margin: 8px 0 8px 0;
+    clear: both;
   }
 
   em {
@@ -288,20 +289,38 @@
     background-color: #2e2a31;
     color: white;
     font-family: "Segoe UI Bold", sans-serif;
-    text-align: center;
     text-transform: uppercase;
     letter-spacing: 2px;
     font-size: 1rem;
+
+    p {
+      text-align: center;
+    }
   }
 
   table {
     background-color: var(--color);
     color: white;
-    width: 100%;
     border: 2px;
+    float: left;
+    margin: 0 8px 8px 0;
 
     &.codex-fixed {
       table-layout: fixed;
+      float: none;
+      width: 100%;
+      margin: 8px 0 8px 0;
+    }
+
+    &.table-center {
+      margin: 8px auto 8px auto;
+      float: none;
+      clear: both;
+    }
+
+    &.table-right {
+      float: right;
+      margin: 0 0 8px 8px;
     }
 
     td {

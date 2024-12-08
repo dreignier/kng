@@ -41,6 +41,10 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 		{ icon: 'sparkles', help: '=={0}==', default: 'Texte en couleur' },
 		{ icon: 'sparkles', help: '==={0}===', default: 'Texte en couleur plus gros' },
 		{ icon: 'sparkles', help: '===={0}====', default: 'Texte en couleur encore plus gros' },
+		{ icon: 'sparkles', help: '============{0}============', default: 'Texte en couleur le plus gros possible' },
+		{ icon: 'zoom-out', help: '!!!{0}!!!', default: 'Gros texte' },
+		{ icon: 'zoom-out', help: '!!!!{0}!!!!', default: 'Texte encore plus gros' },
+		{ icon: 'zoom-out', help: '!!!!!!!!!!!!{0}!!!!!!!!!!!!', default: 'Texte le plus gros possible' },
 		{ icon: 'link', help: '@@{0}@@', default: 'Lien' },
 		{ icon: 'align-center', help: '>>{0}<<', default: 'Texte centré' },
 		{ icon: 'align-right', help: '>>{0}>>', default: 'Texte aligné à droite' },
@@ -48,19 +52,39 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 		{ icon: 'ol', help: '\n1. {0}', default: 'Liste numérotée' },
 		{ icon: 'column', help: '\n\n||||\n\n', default: 'Nouvelle colonne' },
 		{ icon: 'section', help: '\n\n____\n\n', default: 'Nouvelle section' },
+		{ icon: 'section', help: '\n\n____vvv\n\n', default: 'Nouvelle section en pieds de page' },
 		{ icon: 'panel', help: '\n\n{{{\n\n##Titre\n\n{0}\n}}}\n\n', default: 'Contenu de l\'encadré' },
 		{ icon: 'panel', help: '\n\n{{{{\n\n##Titre\n\n{0}\n}}}}\n\n', default: 'Contenu de l\'encadré' },
 		{ icon: 'margin-left', help :'<<<{0}<<<', default: 'LdB – p. XX', title: 'Émargement gauche' },
 		{ icon: 'margin-right', help :'>>>{0}>>>', default: 'LdB – p. XX', title: 'Émargement droite' },
 		{ icon: 'badge', help: '((({0})))', default: '100', title: 'Badge' },
 		{ icon: 'badge', help: '(((({0}))))', default: '100', title: 'Gros badge' },
-		{ icon: 'table', help: '\n\n[[[=\nTitre du tableau\n---\nColonne 1 || Colonne 2 || Colonne 3\n---\n: Valeur 1 ||: Valeur 2 ||: Valeur 3\n]]]\n\n', default: 'Tableau'}
+		{ icon: 'table', help: '\n\n[[[\nLigne 1 ||: Valeur 1\n---\nLigne 2 ||: Valeur 2\n---\nLigne 3 ||: Valeur 3\n]]]\n\n', default: 'Tableau' },
+		{ icon: 'table', help: '\n\n[[[<\nLigne 1 ||: Valeur 1\n---\nLigne 2 ||: Valeur 2\n---\nLigne 3 ||: Valeur 3\n]]]\n\n', default: 'Tableau' },
+		{ icon: 'table', help: '\n\n[[[>\nLigne 1 ||: Valeur 1\n---\nLigne 2 ||: Valeur 2\n---\nLigne 3 ||: Valeur 3\n]]]\n\n', default: 'Tableau' },
+		{ icon: 'table', help: '\n\n[[[=\nTitre du tableau\n---\nColonne 1 || Colonne 2 || Colonne 3\n---\n: Valeur 1 ||: Valeur 2 ||: Valeur 3\n]]]\n\n', default: 'Tableau' },
+		{ icon: 'img', help: '![{0}](https://kng.magusgeek.com/assets/favicon-32x32.png)', default: 'Image' },
+		{ icon: 'equipment', help: '[equ:{0}]', default: 'Équipement', title: 'Équipement' },
+		{ icon: 'vehicle', help: '[veh:{0}]', default: 'Véhicule', title: 'Véhicule' },
+		{ icon: 'npc', help: '[pnj:{0}]', default: 'PNJ', title: 'PNJ' },
 	]
 
 	constructor(
 		readonly db: DatabaseService,
 		private dialog: DialogService
 	) {
+		if (this.db.npcs?.length) {
+			this.helpers.find(h => h.icon === 'npc')!.help = `[pnj:${this.db.npcs[0].name}]`
+		}
+
+		if (this.db.equipments?.length) {
+			this.helpers.find(h => h.icon === 'equipment')!.help = `[equ:${this.db.equipments[0].name}]`
+		}
+
+		if (this.db.vehicles?.length) {
+			this.helpers.find(h => h.icon === 'vehicle')!.help = `[veh:${this.db.vehicles[0].name}]`
+		}
+
 		this.load()
 
 		if (!this.pages.length) {

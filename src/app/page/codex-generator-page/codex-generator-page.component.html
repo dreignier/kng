@@ -306,6 +306,19 @@
             Contenu de la page
           </label>
           <div class="flex flex-grow">
+            <div
+              class="flex flex-col flex-wrap gap-[2px] w-[60px] h-[840px] flex-shrink-0"
+            >
+              @for (help of helpers; track help.help) {
+                <button
+                  [title]="help.title || help.default"
+                  class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white hover:border-white"
+                  (click)="helper(standardContent, help)"
+                >
+                  <app-icon class="size-7" [icon]="help.icon"></app-icon>
+                </button>
+              }
+            </div>
             <textarea
               #standardContent
               class="text-[#2e2a31] pl-1 flex-grow"
@@ -313,17 +326,6 @@
               [(ngModel)]="page.text"
               (ngModelChange)="page.onChange()"
             ></textarea>
-            <div class="flex flex-col gap-1">
-              @for (help of helpers; track help.icon) {
-                <button
-                  [title]="help.title || help.default"
-                  class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-                  (click)="helper(standardContent, help)"
-                >
-                  <app-icon class="size-7" [icon]="help.icon"></app-icon>
-                </button>
-              }
-            </div>
           </div>
         }
 
