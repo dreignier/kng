@@ -81,7 +81,7 @@ export class CodexContentComponent implements OnInit {
 		}
 	}, {
 		type: 'lang',
-		regex: /([a-zéàèîïëù.?!"' «»*=_\-])\n([a-zéàèîïëù"' «»*=_\-])/gi,
+		regex: /([a-zéàèîïëù.?!"' «»])\n([a-zéàèîïëù"' «»])/gi,
 		replace: '$1<span class="mr-2"><br>&nbsp;</span>$2'
 	}, {
 		type: 'output',

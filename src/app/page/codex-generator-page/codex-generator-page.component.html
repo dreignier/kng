@@ -307,15 +307,15 @@
           </label>
           <div class="flex flex-grow">
             <div
-              class="flex flex-col flex-wrap gap-[2px] w-[60px] h-[840px] flex-shrink-0"
+              class="flex flex-col flex-wrap gap-[1.75px] w-[22px] h-[840px] flex-shrink-0"
             >
               @for (help of helpers; track help.help) {
                 <button
                   [title]="help.title || help.default"
-                  class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white hover:border-white"
+                  class="size-[21px] flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white hover:border-white"
                   (click)="helper(standardContent, help)"
                 >
-                  <app-icon class="size-7" [icon]="help.icon"></app-icon>
+                  <app-icon class="size-[21px]" [icon]="help.icon"></app-icon>
                 </button>
               }
             </div>
