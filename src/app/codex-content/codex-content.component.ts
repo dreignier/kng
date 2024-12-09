@@ -48,25 +48,15 @@ export class CodexContentComponent implements OnInit {
 				result += '<tr>'
 
 				for (let cell of row) {
+					cell = cell.trim()
+
 					result += '<td'
 
 					if (first && row.length === 1) {
 						result += ` colspan="${columns}" class="table-header"`
-					} else {
-						const match = cell.match(/^\n*([\:0-9]+)/)
-
-						if (match?.[1]) {
-							if (match[1].includes(':')) {
-								result += ' class="cell-panel"'
-							}
-
-							const colspan = Number(match[1].replace(':', ''))
-							if (colspan > 1) {
-								result += ` colspan="${colspan}"`
-							}
-
-							cell = cell.slice(match[0].length)
-						}
+					} else if (cell.startsWith(':')) {
+						result += ' class="cell-panel"'
+						cell = cell.slice(1)
 					}
 
 					result += '>' + this.converter.makeHtml(cell) + '</td>'
