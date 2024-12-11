@@ -483,7 +483,7 @@ class SummaryPage extends Page {
 
 	constructor() {
 		super()
-		this.title = 'Sommaire'
+		this.title = 'Table des matières'
 	}
 
 	override deletable() {
@@ -569,6 +569,11 @@ class SummaryPage extends Page {
 		delete result.elements
 
 		return result
+	}
+
+	override fromPlain(data: any) {
+		super.fromPlain(data)
+		this.title = 'Table des matières'
 	}
 }
 
@@ -701,8 +706,7 @@ class BestiaryPage extends Page {
 
 **Tactique :** N'hésitez pas à __utiliser__ et à *__combiner__* les effets.`
 
-		this.quote = `>>*====« ====Votre ====ESPOIR==== est votre meilleure arme.==== »====*<<
-		>>— ARTHUR>>`
+		this.quote = `>>*====« ====Votre ====ESPOIR==== est votre meilleure arme.==== »====*<<\n>>— ARTHUR>>`
 
 		if (this.db.npcs[0]) {
 			this.setNpcName(this.db.npcs[0].name)

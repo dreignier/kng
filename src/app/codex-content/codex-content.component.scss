@@ -286,10 +286,10 @@
   }
 
   table {
-    background-color: var(--color);
     color: white;
     float: left;
     margin: 0 8px 8px 0;
+    border-collapse: collapse;
 
     .table-header {
       background-color: #2e2a31;
@@ -307,10 +307,6 @@
       p {
         text-align: center;
       }
-    }
-
-    td {
-      border: 2px;
     }
 
     &.codex-fixed {
@@ -332,6 +328,8 @@
     }
 
     td {
+      border: 2px solid var(--color);
+      background-color: var(--color);
       font-family: "Segoe UI Bold", sans-serif;
       padding: 4px;
       text-align: center;
