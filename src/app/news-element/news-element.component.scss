@@ -208,12 +208,44 @@
     font-family: "Segoe UI Bold", sans-serif;
     font-size: 20px;
 
-    &.bigger {
+    &.bigger-1 {
       font-size: 28px;
     }
 
-    &.biggest {
+    &.bigger-2 {
       font-size: 36px;
+    }
+
+    &.bigger-3 {
+      font-size: 44px;
+    }
+
+    &.bigger-4 {
+      font-size: 52px;
+    }
+
+    &.bigger-5 {
+      font-size: 60px;
+    }
+
+    &.bigger-6 {
+      font-size: 68px;
+    }
+
+    &.bigger-7 {
+      font-size: 76px;
+    }
+
+    &.bigger-8 {
+      font-size: 84px;
+    }
+
+    &.bigger-9 {
+      font-size: 92px;
+    }
+
+    &.bigger-10 {
+      font-size: 100px;
     }
   }
 }

@@ -16,8 +16,8 @@
     class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
     (click)="download()"
   >
-    <app-icon class="size-5 inline-block" icon="export"></app-icon>
-    <span class="ml-1">Télécharger</span>
+    <app-icon class="size-5 inline-block" icon="save"></app-icon>
+    <span class="ml-1">Sauvegarder</span>
   </button>
 
   <input #file type="file" (change)="upload($event)" class="hidden" />
@@ -25,8 +25,8 @@
     class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
     (click)="file.click()"
   >
-    <app-icon class="size-5 inline-block" icon="import"></app-icon>
-    <span class="ml-1">Importer</span>
+    <app-icon class="size-5 inline-block" icon="folder-open"></app-icon>
+    <span class="ml-1">Ouvrir</span>
   </button>
 
   <button

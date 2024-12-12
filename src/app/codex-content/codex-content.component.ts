@@ -211,7 +211,7 @@ class Column {
 	}
 
 	get width() {
-		return this.section.width / this.section.columns.length
+		return (this.section.width - (this.section.columns.length - 1) * 20) / this.section.columns.length
 	}
 }
 
