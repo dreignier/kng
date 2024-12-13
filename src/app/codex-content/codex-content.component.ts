@@ -1,15 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core'
-import { EquipmentComponent } from '../equipment/equipment.component'
-import { NpcComponent } from '../npc/npc.component'
-import { showdownConverter } from '../util'
-import { VehicleComponent } from '../vehicle/vehicle.component'
-
-type CodexContentPart = { component?: string; text: string; scale?: number; mb?: number; id: string }
+import { CodexSectionComponent, Column, Part, Section } from '../codex-section/codex-section.component'
 
 @Component({
   selector: 'app-codex-content',
   standalone: true,
-  imports: [NpcComponent, EquipmentComponent, VehicleComponent],
+  imports: [CodexSectionComponent],
   templateUrl: './codex-content.component.html',
   styleUrl: './codex-content.component.scss'
 })
@@ -18,86 +13,10 @@ export class CodexContentComponent implements OnInit {
 	@Input() dark = false
 	parts: Part[] = []
 	sections: Section[] = []
+	bottomSections: Section[] = []
 	scaleCache: Record<string, { scale: number; mb: number }> = {}
 	_content = ''
 	initialized = false
-
-	converter = showdownConverter({
-		type: 'lang',
-		regex: /\[\[\[([^\]]+)\]\]\]/g,
-		replace: (match: string, text: string) => {
-			let result = ''
-			let first = true
-			let style = ''
-
-			if (text.startsWith('=')) {
-				style = 'codex-fixed'
-				text = text.slice(1)
-			} else if (text.startsWith('>')) {
-				style = 'table-right'
-				text = text.slice(1)
-			} else if (text.startsWith('<')) {
-				style = 'table-center'
-				text = text.slice(1)
-			}
-
-			const rows = text.split('---').map(row => row.split('||'))
-			const columns = rows.reduce((max, row) => Math.max(max, row.length), 0)
-
-			for (const row of rows) {
-				result += '<tr>'
-
-				for (let cell of row) {
-					cell = cell.trim()
-
-					result += '<td'
-
-					if (first && row.length === 1) {
-						result += ` colspan="${columns}" class="table-header"`
-					} else if (cell.startsWith(':')) {
-						result += ' class="cell-panel"'
-						cell = cell.slice(1)
-					}
-
-					result += '>' + this.converter.makeHtml(cell) + '</td>'
-				}
-
-				result += '</tr>'
-
-				first = false
-			}
-
-			return `<table class="${style}" >` + result + '</table>'
-		}
-	}, {
-		type: 'lang',
-		regex: /([a-zéàèîïëù.?!"' «»])\n([a-zéàèîïëù"' «»])/gi,
-		replace: '$1<span class="mr-2"><br>&nbsp;</span>$2'
-	}, {
-		type: 'output',
-		regex: /{{{{[ \n]*([^}]+)[ \n]*}}}}/gi,
-		replace: '<div class="panel panel-alt">$1</div>'
-	}, {
-		type: 'output',
-		regex: /{{{[ \n]*([^}]+)[ \n]*}}}/g,
-		replace: '<div class="panel">$1</div>'
-	}, {
-		type: 'lang',
-		regex: />>>([^<>\n]+)>>>/g,
-		replace: '<span class="codex-margin-right">$1</span>'
-	}, {
-		type: 'lang',
-		regex: /<<<([^<>\n]+)<<</g,
-		replace: '<span class="codex-margin-left">$1</span>'
-	}, {
-		type: 'output',
-		regex: /\(\(\(\([ \n]*([^)]+)[ \n]*\)\)\)\)/g,
-		replace: '<div class="badge badge-big"><span>$1</span></div>'
-	}, {
-		type: 'output',
-		regex: /\(\(\([ \n]*([^)]+)[ \n]*\)\)\)/g,
-		replace: '<div class="badge"><span>$1</span></div>'
-	})
 
 	ngOnInit(): void {
 		this.initialized = true
@@ -115,6 +34,7 @@ export class CodexContentComponent implements OnInit {
 
 		this.sections = []
 		this.parts = []
+		let bottom = false
 
 		if (!content?.trim()) {
 			return
@@ -124,8 +44,8 @@ export class CodexContentComponent implements OnInit {
 			const section = new Section('codex-section-' + this.sections.length, this.width)
 
 			if (sectionText.startsWith('vvv') || sectionText.startsWith('VVV')) {
-				section.bottom = true
 				sectionText = sectionText.slice(3)
+				bottom = true
 			}
 
 			for (let columnText of sectionText.split(/\|\|\|\|/g)) {
@@ -143,7 +63,11 @@ export class CodexContentComponent implements OnInit {
 				this.parts.push(...column.parts)
 			}
 
-			this.sections.push(section)
+			if (bottom) {
+				this.bottomSections.push(section)
+			} else {
+				this.sections.push(section)
+			}
 		}
 
 		for (const part of this.parts) {
@@ -186,51 +110,5 @@ export class CodexContentComponent implements OnInit {
 				}
 			}
 		}, 10)
-	}
-}
-
-class Section  {
-	columns: Column[] = []
-	bottom = false
-
-	constructor(
-		public id: string,
-		public width: number
-	) {}
-}
-
-class Column {
-	parts: Part[] = []
-	constructor(
-		public _id: number,
-		public section: Section
-	) {}
-
-	get id() {
-		return this.section.id + '-' + this._id
-	}
-
-	get width() {
-		return (this.section.width - (this.section.columns.length - 1) * 20) / this.section.columns.length
-	}
-}
-
-class Part {
-	scale = 1
-	mb = 16
-
-	constructor(
-		public _id: number,
-		public column: Column,
-		public text: string,
-		public component?: string
-	) {}
-
-	get id() {
-		return this.column.id + '-' + this._id + '-' + (this.component || 'TXT') + '-' + this.text
-	}
-
-	cacheId(width: number) {
-		return this.component + '-' + this.text + '-' + width
 	}
 }
