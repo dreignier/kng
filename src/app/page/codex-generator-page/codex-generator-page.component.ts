@@ -560,6 +560,22 @@ class SummaryPage extends Page {
 			secondaryPages[secondaryPages.length - 1].last = true
 		}
 
+		if (this.secondaryPages) {
+			for (const column of this.elements) {
+				for (const element of column) {
+					element.page += this.secondaryPages
+				}
+			}
+
+			for (const page of secondaryPages) {
+				for (const column of page.elements) {
+					for (const element of column) {
+						element.page += this.secondaryPages
+					}
+				}
+			}
+		}
+
 		return secondaryPages
 	}
 

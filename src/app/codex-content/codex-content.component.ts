@@ -33,6 +33,7 @@ export class CodexContentComponent implements OnInit {
 		}
 
 		this.sections = []
+		this.bottomSections = []
 		this.parts = []
 		let bottom = false
 
