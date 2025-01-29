@@ -6,6 +6,7 @@ import { ConstantsPageComponent } from './page/constants-page/constants-page.com
 import { EquipmentGeneratorPageComponent } from './page/equipment-generator-page/equipment-generator-page.component'
 import { NewsCreatorPageComponent } from './page/news-creator-page/news-creator-page.component'
 import { NpcGeneratorPageComponent } from './page/npc-generator-page/npc-generator-page.component'
+import { PcGeneratorPageComponent } from './page/pc-generator-page/pc-generator-page.component'
 import { VehicleGeneratorPageComponent } from './page/vehicle-generator-page/vehicle-generator-page.component'
 
 export const routes: Routes = [{
@@ -19,6 +20,8 @@ export const routes: Routes = [{
 		{ path: 'news', component: NewsCreatorPageComponent },
 		{ path: 'about', component: AboutPageComponent },
 		{ path: 'constants', component: ConstantsPageComponent },
-		{ path: 'codex', component: CodexGeneratorPageComponent }
+		{ path: 'codex', component: CodexGeneratorPageComponent },
+		{ path: 'pc', component: PcGeneratorPageComponent },
+		{ path: '**', redirectTo: 'npc' }
 	]
 }];
