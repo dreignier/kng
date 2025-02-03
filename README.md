@@ -2,6 +2,8 @@
 
 ## Générateur de PJ :
 
+- Save, import, export, as usual
+
 - Les paladins ne peuvent pas utiliser certains modules avant un certain seuil de gloire
 - Gérer les bonus de certains avantages (+x en espoir, +x en PS, etc...)
 - Gérer les bonus de certains OD ?

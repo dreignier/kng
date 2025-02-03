@@ -178,11 +178,87 @@ export class Character {
 		this.filterAchievements()
 	}
 
+	export() {
+		const result: any = {
+			identity: this.identity,
+			name: this.name,
+			description: this.description,
+			aspects: this.aspects.map(aspect => ({
+				name: aspect.name,
+				value: aspect.value,
+				characteristics: aspect.characteristics.map(characteristic => ({
+					name: characteristic.name,
+					value: characteristic.value
+				}))
+			})),
+			archetype: this._archetype?.name,
+			achievement: this._achievement?.name,
+			arcanas: this.arcanas.map(arcana => arcana?.name),
+			crest: this.crest,
+			perks: this.perks.map(perk => perk?.name),
+			flaw: this._flaw,
+			section: this._section?.name,
+			armor: this._armor?.name,
+			weapons: this.weapons.map(weapon => weapon?.name),
+			weaponUpgrades: this.weaponUpgrades.map(upgrades => upgrades.map(upgrade => upgrade?.name)),
+			modules: this.modules.map(module => module?.name),
+			heroicCapacities: this.heroicCapacities.map(capacity => capacity?.name),
+			minorMotivations: this.minorMotivations,
+			majorMotivation: this.majorMotivation
+		}
+
+		return result
+	}
+
+	import(data: any) {
+		this.identity = data.identity
+		this.name = data.name
+		this.description = data.description
+
+		for (let i = 0; i < this.aspects.length; i++) {
+			this.aspects[i].value = data.aspects[i].value
+
+			for (let j = 0; j < this.aspects[i].characteristics.length; j++) {
+				this.aspects[i].characteristics[j].value = data.aspects[i].characteristics[j].value
+			}
+		}
+
+		this._archetype = this.data.archetypes.find(archetype => archetype.name === data.archetype)
+		this._achievement = this.data.achievements.find(achievement => achievement.name === data.achievement)
+		this.arcanas = data.arcanas.map((name: string) => this.data.arcanas.find(arcana => arcana.name === name))
+		this.crest = data.crest
+		this.perks = data.perks.map((name: string) => this.data.perks.find(perk => perk.name === name))
+		this._flaw = data.flaw
+		this._section = this.data.sections.find(section => section.name === data.section)
+		this._armor = this.data.armors.find(armor => armor.name === data.armor)
+		this.weapons = data.weapons.map((name: string) => this.data.weapons.find(weapon => weapon.name === name))
+		this.weaponUpgrades = data.weaponUpgrades.map((upgrades: string[]) => upgrades.map((name: string) => this.data.upgrades.find(upgrade => upgrade.name === name)))
+		this.modules = data.modules.map((name: string) => this.data.modules.find(module => module.name === name))
+		this.heroicCapacities = data.heroicCapacities.map((name: string) => this.data.heroicCapacities.find(capacity => capacity.name === name))
+		this.minorMotivations = data.minorMotivations
+		this.majorMotivation = data.majorMotivation
+
+		this.computeAspects()
+		this.computePGWeaponModules()
+		this.filterAchievements()
+		this.filterArcanas()
+		this.filterPerks()
+		this.filterFlaws()
+		this.computeDerived()
+	}
+
+	clone() {
+		const character = new Character()
+		character.import(this.export())
+
+		return character
+	}
+
 	characteristics() {
 		return this.aspects.flatMap(aspect => aspect.characteristics)
 	}
 
-	generate() {
+	generate(options: GenerateOptions) {
 
 	}
 
@@ -703,6 +779,11 @@ export class Aspect {
 	max(overdrive = true) {
 		return Math.max(...this.characteristics.map(characteristic => characteristic.value + (overdrive ? characteristic.overdrive : 0)))
 	}
+}
+
+export class GenerateOptions {
+	public pg = 0
+	public xp = 0
 }
 
 export class Characteristic {

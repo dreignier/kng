@@ -1,6 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core'
 import { ADVANCED, BANDE, CAPACITIES, COLORS, COLOSSE, EFFECTS, HOSTILE, PATRON, PATRON_COLOSSE, RARE, SALOPARD, STANDARD } from './constants'
 import Capacity from './model/capacity'
+import { Character } from './model/character'
 import Effect from './model/effect'
 import Equipment, { AttackRule } from './model/equipment'
 import News from './model/news'
@@ -48,6 +49,7 @@ export class DatabaseService {
 	equipments: Equipment[] = []
 	vehicles: Vehicle[] = []
 	news: News[] = []
+	characters: Character[] = []
 	capacities: DbCapacity[] = []
 	effects: DbEffect[] = []
 	colors: string[] = COLORS
@@ -81,6 +83,7 @@ export class DatabaseService {
 		this.loadEquipments()
 		this.loadVehicles()
 		this.loadNews()
+		this.loadCharacters()
 
 		this.capacities.sort((a, b) => a.index.localeCompare(b.index))
 		this.effects.sort((a, b) => a.index.localeCompare(b.index))
@@ -114,6 +117,21 @@ export class DatabaseService {
 
 		this.capacities.sort((a, b) => a.index.localeCompare(b.index))
 		this.effects.sort((a, b) => a.index.localeCompare(b.index))
+	}
+
+	loadCharacters() {
+		const json = localStorage.getItem('characters')
+		if (json) {
+			const data = JSON.parse(json)
+			this.characters = data.map((e: any) => {
+				const character = new Character()
+				character.import(e)
+
+				return character
+			})
+		}
+
+		this.characters = this.characters.sort((a, b) => a.name.localeCompare(b.name))
 	}
 
 	loadEquipments() {
@@ -170,6 +188,10 @@ export class DatabaseService {
 
 	findNews(name: string) {
 		return this.news.find(e => e.name.toLowerCase().trim() === name.toLowerCase().trim())
+	}
+
+	findCharacter(name: string) {
+		return this.characters.find(e => e.name.toLowerCase().trim() === name.toLowerCase().trim())
 	}
 
 	updateColor(color: string) {
@@ -241,6 +263,21 @@ export class DatabaseService {
 		this.effects.sort((a, b) => a.index.localeCompare(b.index))
 	}
 
+	saveCharacter(character: Character) {
+		const data = character.export()
+
+		const index = this.characters.findIndex(e => e.name.toLowerCase() === data.name.toLowerCase())
+
+		if (index === -1) {
+			this.characters.push(character)
+		} else {
+			this.characters[index] = character
+		}
+
+		this.sortCharacters()
+		this.saveCharacters()
+	}
+
 	saveEquipment(equipment: Equipment) {
 		const data = new Equipment(equipment)
 		const index = this.equipments.findIndex(e => e.name.toLowerCase() === data.name.toLowerCase())
@@ -276,6 +313,11 @@ export class DatabaseService {
 	deleteNpc(npc: Npc) {
 		this.npcs = this.npcs.filter(e => e.name.toLowerCase() !== npc.name.toLowerCase())
 		this.saveNpcs()
+	}
+
+	deleteCharacter(character: Character) {
+		this.characters = this.characters.filter(e => e.name.toLowerCase() !== character.name.toLowerCase())
+		this.saveCharacters()
 	}
 
 	deleteEquipment(equipment: Equipment) {
@@ -381,6 +423,14 @@ export class DatabaseService {
 		localStorage.setItem('list', JSON.stringify(this.npcs.map(e => e.export())))
 	}
 
+	sortCharacters() {
+		this.characters = this.characters.sort((a, b) => a.name.localeCompare(b.name))
+	}
+
+	saveCharacters() {
+		localStorage.setItem('characters', JSON.stringify(this.characters.map(e => e.export())))
+	}
+
 	saveEquipments() {
 		localStorage.setItem('equipmentList', JSON.stringify(this.equipments))
 	}
@@ -409,9 +459,31 @@ export class DatabaseService {
 		this.effects.sort((a, b) => a.index.localeCompare(b.index))
 	}
 
+	importCharacters(characters: Character[], strategy: 'rename' | 'ignore' | 'replace') {
+		if (strategy === 'rename') {
+			for (const character of characters) {
+				if (this.findCharacter(character.name)) {
+					character.name += ' bis'
+				}
+			}
+		} else if (strategy === 'ignore') {
+			characters = characters.filter(e => !this.findCharacter(e.name))
+		}
+
+		this.characters = this.characters.concat(characters)
+
+		this.sortCharacters()
+		this.saveCharacters()
+	}
+
 	exportNpcs(names: Set<string>) {
 		const npcs = this.npcs.filter(e => names.has(e.name)).map(e => e.export())
 		return JSON.stringify(npcs)
+	}
+
+	exportCharacters(names: Set<string>) {
+		const characters = this.characters.filter(e => names.has(e.name)).map(e => e.export())
+		return JSON.stringify(characters)
 	}
 
 	exportEquipments(names: Set<string>) {
