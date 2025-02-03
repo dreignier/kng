@@ -84,3 +84,7 @@ export function showdownConverter(...showdownExtensions: ShowdownExtension[]) {
 
 	return new Converter({ extensions })
 }
+
+export function fuc(str: string) {
+	return str.charAt(0).toUpperCase() + str.slice(1)
+}

@@ -1,1 +1,424 @@
-<p>pc-generator-page works!</p>
+<div class="2xl:flex 2xl:flex-row 2xl:justify-between">
+  <div class="m-3 flex-grow grid grid-cols-12 gap-1 bg-[#2e2a31] p-2 pt-0">
+    <button
+      class="col-span-12 mb-4 mt-2 h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+    >
+      <app-icon class="size-5 inline-block" icon="beaker"></app-icon>
+      <span class="ml-1">Compléter aléatoirement</span>
+    </button>
+
+    <div class="col-span-12 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Nom
+      </label>
+      <input
+        type="text"
+        [(ngModel)]="character.name"
+        class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap"
+      />
+    </div>
+
+    <div class="col-span-2 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Archétype
+      </label>
+      <select
+        [(ngModel)]="character.archetype"
+        class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap"
+      >
+        <option [ngValue]="undefined"></option>
+        @for (archetype of character.data.archetypes; track archetype.name) {
+          @if (archetype.available) {
+            <option [ngValue]="archetype">{{ archetype.name }}</option>
+          }
+        }
+      </select>
+    </div>
+
+    @for (arcana of character.arcanas; let index = $index; track index) {
+      <div class="col-span-2 flex flex-col">
+        <label
+          class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+        >
+          Arcane {{ index + 1 }}
+        </label>
+        <select
+          [ngModel]="character.arcanas[index]"
+          (ngModelChange)="character.setArcana(index, $event)"
+          class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap"
+        >
+          <option [ngValue]="undefined"></option>
+          @for (arcana of character.data.arcanas; track arcana.name) {
+            @if (arcana.available || arcana === character.arcanas[index]) {
+              <option [ngValue]="arcana">
+                {{ arcana.number }} {{ arcana.name }}
+              </option>
+            }
+          }
+        </select>
+      </div>
+    }
+
+    <div class="col-span-1"></div>
+    @for (aspect of character.aspects; track aspect.name) {
+      <div class="col-span-2 flex flex-col">
+        <label
+          class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+        >
+          {{ aspect.name }}
+        </label>
+        <input
+          type="number"
+          [ngModel]="aspect.value"
+          (ngModelChange)="character.setAspect(aspect, $event)"
+          [min]="character.computed.minimums.get(aspect)!"
+          class="bg-white text-[#2e2a31] h-[30px] pl-1"
+        />
+
+        <hr class="mx-1 my-2 border border-white" />
+
+        @for (
+          characteristic of aspect.characteristics;
+          track characteristic.name
+        ) {
+          <label
+            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+          >
+            {{ characteristic.name }}
+          </label>
+          <input
+            type="number"
+            [ngModel]="characteristic.value"
+            (ngModelChange)="
+              character.setCharacteristic(characteristic, $event)
+            "
+            [min]="character.computed.minimums.get(characteristic)!"
+            [max]="aspect.value"
+            class="bg-white text-[#2e2a31] h-[30px] pl-1"
+          />
+        }
+      </div>
+    }
+    <div class="col-span-1"></div>
+
+    <div class="col-span-12 text-[#d3181f]">
+      @if (character.computed.errorAspects.length) {
+        <p>
+          Il manque moins un point d'aspect à dépenser dans les aspects suivants
+          :
+          {{ character.computed.errorAspects.join(", ") }}
+        </p>
+      }
+
+      @if (character.computed.errorCharacteristics.length) {
+        <p>
+          Il manque au moins un point de caractéristique à dépenser dans les
+          caractéristiques suivantes :
+          {{ character.computed.errorCharacteristics.join(", ") }}
+        </p>
+      }
+    </div>
+
+    @for (perk of character.perks; let index = $index; track index) {
+      <div class="col-span-3 flex flex-col">
+        <label
+          class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+        >
+          Avantage {{ index + 1 }}
+        </label>
+        <select
+          [ngModel]="character.perks[index]"
+          (ngModelChange)="character.setPerk(index, $event)"
+          class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap"
+        >
+          <option [ngValue]="undefined"></option>
+          @if (character.perks[index]) {
+            <option [ngValue]="character.perks[index]">
+              {{ character.perks[index]!.name }}
+            </option>
+          }
+          @for (perk of character.data.perks; track perk.name) {
+            @if (!character.perks.includes(perk)) {
+              <option [ngValue]="perk">{{ perk.name }}</option>
+            }
+          }
+        </select>
+      </div>
+    }
+
+    <div class="col-span-3 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Inconvénient
+      </label>
+      <select
+        [(ngModel)]="character.flaw"
+        class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap"
+      >
+        <option [ngValue]="undefined"></option>
+        @for (flaw of character.data.flaws; track flaw) {
+          <option [ngValue]="flaw">{{ flaw }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="col-span-3 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Haut fait
+      </label>
+      <select
+        [(ngModel)]="character.achievement"
+        class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap"
+      >
+        <option [ngValue]="undefined"></option>
+        @for (
+          achievement of character.data.achievements;
+          track achievement.name
+        ) {
+          @if (achievement.available) {
+            <option [ngValue]="achievement">{{ achievement.name }}</option>
+          }
+        }
+      </select>
+    </div>
+
+    <div class="col-span-3 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Armure
+      </label>
+      <select
+        [(ngModel)]="character.armor"
+        class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap"
+      >
+        <option [ngValue]="undefined"></option>
+        @for (armor of character.data.armors; track armor.name) {
+          <option [ngValue]="armor">{{ armor.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="col-span-3 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Section
+      </label>
+      <select
+        [(ngModel)]="character.section"
+        class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap"
+      >
+        <option [ngValue]="undefined"></option>
+        @for (section of character.data.sections; track section.name) {
+          <option [ngValue]="section">{{ section.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="col-span-3 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Blason
+      </label>
+      <select
+        [(ngModel)]="character.crest"
+        class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap"
+      >
+        <option [ngValue]="undefined"></option>
+        @for (crest of character.data.crests; track crest) {
+          <option [ngValue]="crest">{{ crest }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="col-span-12 flex flex-col items-center gap-2">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Armes
+      </label>
+
+      @for (
+        weapon of character.weapons;
+        let weaponIndex = $index;
+        track weaponIndex
+      ) {
+        <div class="w-full grid grid-cols-4 gap-1">
+          <div class="flex">
+            <select
+              [ngModel]="character.weapons[weaponIndex]"
+              (ngModelChange)="character.setWeapon(weaponIndex, $event)"
+              class="bg-white text-[#2e2a31] h-[30px] pl-1 flex-grow text-ellipsis overflow-hidden text-nowrap"
+            >
+              @if (weapon?.name === "Fusil Longbow") {
+                <option [ngValue]="weapon">Fusil Longbow</option>
+              } @else {
+                <option [ngValue]="undefined"></option>
+                @for (weapon of character.data.weapons; track weapon) {
+                  <option [ngValue]="weapon">
+                    {{ weapon.name }}. {{ weapon.level }}. {{ weapon.cost }}PG
+                  </option>
+                }
+              }
+            </select>
+
+            @if (weapon?.name !== "Fusil Longbow") {
+              <button
+                class="size-[30px] min-w-[30px] flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
+                (click)="character.removeWeapon(weaponIndex)"
+                tabindex="-1"
+              >
+                <app-icon class="size-5 block" icon="X"></app-icon>
+              </button>
+            }
+          </div>
+
+          @for (
+            upgrade of character.weaponUpgrades[weaponIndex];
+            let upgradeIndex = $index;
+            track upgradeIndex
+          ) {
+            <select
+              [ngModel]="character.weaponUpgrades[weaponIndex][upgradeIndex]"
+              (ngModelChange)="
+                character.setWeaponUpgrade(upgradeIndex, weapon!, $event)
+              "
+              class="bg-white text-[#2e2a31] h-[30px] pl-1 flex-grow text-ellipsis overflow-hidden text-nowrap"
+            >
+              <option [ngValue]="undefined"></option>
+              @for (upgrade of weapon!.upgrades; track upgrade) {
+                @if (
+                  upgrade ===
+                    character.weaponUpgrades[weaponIndex][upgradeIndex] ||
+                  !character.weaponUpgrades[weaponIndex].includes(upgrade)
+                ) {
+                  <option [ngValue]="upgrade">
+                    {{ upgrade.name }}. {{ upgrade.cost }}PG
+                  </option>
+                }
+              }
+            </select>
+          }
+        </div>
+      }
+
+      <button
+        class="h-[30px] w-full border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+        (click)="character.newWeapon()"
+      >
+        <app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+        <span class="ml-1">Ajouter une arme</span>
+      </button>
+    </div>
+
+    <div class="col-span-6 grid grid-cols-2 gap-1 content-start mr-2">
+      <label
+        class="col-span-2 uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Modules
+      </label>
+
+      @for (module of character.modules; let index = $index; track index) {
+        <div class="flex">
+          <select
+            [ngModel]="character.modules[index]"
+            (ngModelChange)="character.setModule(index, $event)"
+            class="bg-white text-[#2e2a31] h-[30px] pl-1 flex-grow text-ellipsis overflow-hidden text-nowrap"
+          >
+            <option [ngValue]="undefined"></option>
+            @for (module of character.data.modules; track module) {
+              @if (module.available || module === character.modules[index]) {
+                <option [ngValue]="module">
+                  {{ module.name }}. {{ module.level }}. {{ module.cost }}PG
+                </option>
+              }
+            }
+          </select>
+
+          <button
+            class="size-[30px] min-w-[30px] flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
+            (click)="character.removeModule(index)"
+            tabindex="-1"
+          >
+            <app-icon class="size-5 block" icon="X"></app-icon>
+          </button>
+        </div>
+      }
+
+      <button
+        class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+        (click)="character.newModule()"
+      >
+        <app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+        <span class="ml-1">Ajouter un module</span>
+      </button>
+    </div>
+
+    <div class="col-span-6 grid grid-cols-2 gap-1 content-start">
+      <label
+        class="col-span-2 uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Capacités héroiques
+      </label>
+
+      @for (
+        capacity of character.heroicCapacities;
+        let index = $index;
+        track index
+      ) {
+        <div class="flex">
+          <select
+            [ngModel]="character.heroicCapacities[index]"
+            (ngModelChange)="character.setHeroicCapacities(index, $event)"
+            class="bg-white text-[#2e2a31] h-[30px] pl-1 flex-grow text-ellipsis overflow-hidden text-nowrap"
+          >
+            <option [ngValue]="undefined"></option>
+            @for (
+              heroicCapacity of character.data.heroicCapacities;
+              track heroicCapacity.name
+            ) {
+              @if (
+                heroicCapacity.available ||
+                heroicCapacity === character.heroicCapacities[index]
+              ) {
+                <option [ngValue]="heroicCapacity">
+                  {{ heroicCapacity.name }}. {{ heroicCapacity.cost }}XP
+                </option>
+              }
+            }
+          </select>
+
+          <button
+            class="size-[30px] min-w-[30px] flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
+            (click)="character.removeHeroicCapacity(index)"
+            tabindex="-1"
+          >
+            <app-icon class="size-5 block" icon="X"></app-icon>
+          </button>
+        </div>
+      }
+
+      <button
+        class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
+        (click)="character.newHeroicCapacity()"
+      >
+        <app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+        <span class="ml-1">Ajouter une capacité héroique</span>
+      </button>
+    </div>
+  </div>
+  <div
+    class="m-3 sm:flex sm:flex-col sm:items-center 2xl:block 2xl:flex-none w-[793px] text-xs segoe-ui origin-top-left bg-white text-[#2e2a31]"
+  >
+    {{ character.computed | json }}
+  </div>
+</div>
