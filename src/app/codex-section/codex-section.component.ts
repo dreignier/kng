@@ -19,8 +19,8 @@ export class CodexSectionComponent {
 		regex: /\[\[\[([^\]]+)\]\]\]/g,
 		replace: (match: string, text: string) => {
 			let result = ''
-			let first = true
 			let style = ''
+			let caption = ''
 
 			if (text.startsWith('=')) {
 				style = 'codex-fixed'
@@ -34,7 +34,12 @@ export class CodexSectionComponent {
 			}
 
 			const rows = text.split('---').map(row => row.split('||'))
-			const columns = rows.reduce((max, row) => Math.max(max, row.length), 0)
+
+			if (rows[0]?.length === 1) {
+				caption += '<caption class="table-header">' + this.converter.makeHtml(rows[0][0]) + '</caption>'
+			}
+
+			rows.shift()
 
 			for (const row of rows) {
 				result += '<tr>'
@@ -44,9 +49,13 @@ export class CodexSectionComponent {
 
 					result += '<td'
 
-					if (first && row.length === 1) {
-						result += ` colspan="${columns}" class="table-header"`
-					} else if (cell.startsWith(':')) {
+					const match = cell.match(/^([0-9]+)\|/)
+					if (match) {
+						result += ` colspan="${match[1]}"`
+						cell = cell.slice(match[0].length)
+					}
+
+					if (cell.startsWith(':')) {
 						result += ' class="cell-panel"'
 						cell = cell.slice(1)
 					}
@@ -55,16 +64,18 @@ export class CodexSectionComponent {
 				}
 
 				result += '</tr>'
-
-				first = false
 			}
 
-			return `<table class="${style}" >` + result + '</table>'
+			return `<table class="${style}" >` + caption + result + '</table>'
 		}
 	}, {
 		type: 'lang',
-		regex: /([a-zéàèîïëù.?!"' «»])\n([a-zéàèîïëù"' «»])/gi,
+		regex: /([a-z0-9éàèîïëù.?!"' «»])\n([a-zéàèîïëù"' «»])/gi,
 		replace: '$1<span class="mr-2"><br>&nbsp;</span>$2'
+	}, {
+		type: 'lang',
+		regex: /([a-z0-9éàèîïëù.?!"' «»\)])\n([=])/gi,
+		replace: '$1<br>$2'
 	}, {
 		type: 'output',
 		regex: /{{{{[ \n]*([^}]+)[ \n]*}}}}/gi,

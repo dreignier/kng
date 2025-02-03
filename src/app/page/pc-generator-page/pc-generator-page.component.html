@@ -1,5 +1,7 @@
-<div class="2xl:flex 2xl:flex-row 2xl:justify-between">
-  <div class="m-3 flex-grow grid grid-cols-12 gap-1 bg-[#2e2a31] p-2 pt-0">
+<div class="2xl:flex 2xl:flex-row gap-3 m-3">
+  <div
+    class="flex-grow grid grid-cols-12 gap-1 bg-[#2e2a31] p-2 pt-0 content-start"
+  >
     <button
       class="col-span-12 mb-4 mt-2 h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center"
     >
@@ -7,7 +9,20 @@
       <span class="ml-1">Compléter aléatoirement</span>
     </button>
 
-    <div class="col-span-12 flex flex-col">
+    <div class="col-span-6 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Identité
+      </label>
+      <input
+        type="text"
+        [(ngModel)]="character.identity"
+        class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap"
+      />
+    </div>
+
+    <div class="col-span-6 flex flex-col">
       <label
         class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
       >
@@ -18,6 +33,18 @@
         [(ngModel)]="character.name"
         class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap"
       />
+    </div>
+
+    <div class="col-span-12 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Description
+      </label>
+      <textarea
+        [(ngModel)]="character.description"
+        class="bg-white text-[#2e2a31] h-[80px] pl-1"
+      ></textarea>
     </div>
 
     <div class="col-span-2 flex flex-col">
@@ -104,24 +131,6 @@
       </div>
     }
     <div class="col-span-1"></div>
-
-    <div class="col-span-12 text-[#d3181f]">
-      @if (character.computed.errorAspects.length) {
-        <p>
-          Il manque moins un point d'aspect à dépenser dans les aspects suivants
-          :
-          {{ character.computed.errorAspects.join(", ") }}
-        </p>
-      }
-
-      @if (character.computed.errorCharacteristics.length) {
-        <p>
-          Il manque au moins un point de caractéristique à dépenser dans les
-          caractéristiques suivantes :
-          {{ character.computed.errorCharacteristics.join(", ") }}
-        </p>
-      }
-    </div>
 
     @for (perk of character.perks; let index = $index; track index) {
       <div class="col-span-3 flex flex-col">
@@ -240,6 +249,32 @@
       </select>
     </div>
 
+    <div class="col-span-8 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Motivations mineures
+      </label>
+      <input
+        type="text"
+        [(ngModel)]="character.minorMotivations"
+        class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap"
+      />
+    </div>
+
+    <div class="col-span-4 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Motivation majeure
+      </label>
+      <input
+        type="text"
+        [(ngModel)]="character.majorMotivation"
+        class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap"
+      />
+    </div>
+
     <div class="col-span-12 flex flex-col items-center gap-2">
       <label
         class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
@@ -264,9 +299,14 @@
               } @else {
                 <option [ngValue]="undefined"></option>
                 @for (weapon of character.data.weapons; track weapon) {
-                  <option [ngValue]="weapon">
-                    {{ weapon.name }}. {{ weapon.level }}. {{ weapon.cost }}PG
-                  </option>
+                  @if (
+                    weapon.available ||
+                    weapon === character.weapons[weaponIndex]
+                  ) {
+                    <option [ngValue]="weapon">
+                      {{ weapon.name }}. {{ weapon.level }}. {{ weapon.cost }}PG
+                    </option>
+                  }
                 }
               }
             </select>
@@ -290,19 +330,24 @@
             <select
               [ngModel]="character.weaponUpgrades[weaponIndex][upgradeIndex]"
               (ngModelChange)="
-                character.setWeaponUpgrade(upgradeIndex, weapon!, $event)
+                character.setWeaponUpgrade(upgradeIndex, weaponIndex, $event)
               "
               class="bg-white text-[#2e2a31] h-[30px] pl-1 flex-grow text-ellipsis overflow-hidden text-nowrap"
             >
               <option [ngValue]="undefined"></option>
-              @for (upgrade of weapon!.upgrades; track upgrade) {
+              @for (
+                availableUpgrade of weapon!.upgrades;
+                track availableUpgrade
+              ) {
                 @if (
-                  upgrade ===
-                    character.weaponUpgrades[weaponIndex][upgradeIndex] ||
-                  !character.weaponUpgrades[weaponIndex].includes(upgrade)
+                  weapon!.isAvailable(
+                    availableUpgrade,
+                    upgrade,
+                    character.weaponUpgrades[weaponIndex]
+                  )
                 ) {
-                  <option [ngValue]="upgrade">
-                    {{ upgrade.name }}. {{ upgrade.cost }}PG
+                  <option [ngValue]="availableUpgrade">
+                    {{ availableUpgrade.name }}. {{ availableUpgrade.cost }}PG
                   </option>
                 }
               }
@@ -415,10 +460,56 @@
         <span class="ml-1">Ajouter une capacité héroique</span>
       </button>
     </div>
+
+    @if (character.computed.errors.length || character.computed.pgError) {
+      <div
+        class="col-span-12 text-white bg-orange-500 border border-white mt-5 p-1 rounded flex flex-col gap-2"
+      >
+        @for (error of character.computed.errors; track error) {
+          <div class="flex items-center">
+            <app-icon
+              class="mr-2 p-1 bg-white rounded text-orange-500 size-8 inline-block"
+              icon="warning"
+            ></app-icon>
+            <span class="font-bold mr-2">{{ error.source }} :</span> Il reste
+            {{ error.value }} point{{ error.value > 1 ? "s" : "" }} à dépenser
+            parmi {{ error.targets.join(", ") }}
+          </div>
+        }
+
+        @if (character.computed.pgError) {
+          <div class="flex items-center">
+            <app-icon
+              class="mr-2 p-1 bg-white rounded text-orange-500 size-8 inline-block"
+              icon="warning"
+            ></app-icon>
+            Il reste {{ character.computed.pgError }}PG à dépenser dans
+            l'arsenal standard.
+          </div>
+        }
+      </div>
+    }
   </div>
   <div
-    class="m-3 sm:flex sm:flex-col sm:items-center 2xl:block 2xl:flex-none w-[793px] text-xs segoe-ui origin-top-left bg-white text-[#2e2a31]"
+    class="m-3 sm:flex sm:flex-col sm:items-center 2xl:block 2xl:flex-none w-[21cm] h-[29.7cm] text-xs segoe-ui origin-top-left bg-white text-[#2e2a31] page dark"
+    style="--color: #f25a1e"
   >
-    {{ character.computed | json }}
+    <div>
+      <div
+        class="text-center text-white min-h-[60px] pt-5 pb-4 mb-5 uppercase text-lg tracking-[12px] page-title page-title-right"
+      >
+        Personnage prétiré
+      </div>
+
+      <div class="mx-[1.75cm]">
+        <app-codex-content
+          [content]="markdown()"
+          [width]="660"
+          [dark]="true"
+        ></app-codex-content>
+      </div>
+
+      <div class="corner corner-left"></div>
+    </div>
   </div>
 </div>

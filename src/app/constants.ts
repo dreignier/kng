@@ -32,7 +32,7 @@ export const HOPE = "relique d'espoir";
 export const IMAGES = ['knife', 'gun', 'hammer', 'module', 'ai', 'armor', 'bam', 'boot', 'circuit', 'cybersec', 'fist', 'form', 'fortune', 'glove', 'heart', 'ironman', 'jet', 'labcoat', 'luck', 'peoples', 'shield', 'shield2', 'star', 'table', 'bang', 'bolt', 'energy', 'eye', 'fire', 'gear', 'gears', 'grenade', 'learning', 'magazine', 'mindmap', 'network', 'physics', 'sniper']
 export const CARACTERISTICS_LABELS = [
 	['déplacement', 'force', 'endurance'],
-	['hargne', 'combat', 'insinct'],
+	['hargne', 'combat', 'instinct'],
 	['tir', 'savoir', 'technique'],
 	['aura', 'parole', 'sang-froid'],
 	['discrétion', 'dextérité', 'perception']
@@ -1342,7 +1342,7 @@ export const SECTIONS = [
 	'Griffon | Masque | Moto steed | Jouteur',
 	'Korrigan | Masque | Relais satellite niv. 1, Drone d\'espionnage, Caméraman | Toujours un doute',
 	'Ogre | Bête | Déplacement silencieux niv. 1, Fumigène, Vue alternative niv. 1 | Marqué par les ténèbres',
-	'Tarasque | Bête | Lame de bras niv. 1, Attaque sur casque niv. 1, Saut niv. 1| Fou dangereux',
+	'Tarasque | Bête | Lame de bras niv. 1, Attaque sur casque niv. 1, Saut niv. 1 | Fou dangereux',
 	'Aucune section'
 ]
 
@@ -1490,7 +1490,7 @@ export const WEAPONS = [
 	"Fusil UV | avancé | 40 | distance | deux mains | Canon long, Canon raccourci, Chargeur et balles grappes, Chargeur et munitions explosives, Jumelage, Munitions drones, Munitions hyper vélocité, Munitions IEM, Munitions non létales, Munitions subsoniques, Pointeur laser, Structure alpha",
 	"Canon UV | rare | 80 | distance | lourde | Canon long, Canon raccourci, Chambre double, Chargeur et balles grappes, Chargeur et munitions explosives, Lunette intelligente, Munitions drones, Munitions IEM, Munitions non létales, Munitions subsoniques, Pointeur laser, Protection d'arme, Structure alpha",
 	"Lance de lumière | avancé | 60 | contact | deux mains | Arabesques iridescentes, Arme azurine, Arme rouge sang, Armure gravée, Blason du chevalier, Bouclier gravé, Chêne sculpté, Chromée avec lignes lumineuses et colorées, Code du Knight gravé, Crâne rieur gravé, Faucheuse gravée, Flammes stylisées, Griffures gravées, Masque brisé sculpté, Rouages cassés gravés, Sillons formant des lignes et des flèches, Agressive, Allégée, Barbelée, Connectée, Électrifiée, Indestructible, Jumelle, Protectrice, Sur mesure, Sœur",
-	"Fusil Longbow | standard | 0 | distance | deux mains | Effets suppl., Profile de base, Suppression lourd, -2PE par effet de liste, Canon long, Canon raccourci, Chambre double, Chargeur et balles grappes, Chargeur et munitions explosives, Interface de guidage, Lunette intelligente, Munitions drones, Munitions IEM, Munitions non létales, Munitions subsoniques, Pointeur laser, Protection d'arme, Structure alpha"
+	"Fusil Longbow | standard | 0 | distance | lourde | Effets suppl., Profile de base, Suppression lourd, -2PE par effet de liste, Canon long, Canon raccourci, Chambre double, Chargeur et balles grappes, Chargeur et munitions explosives, Interface de guidage, Lunette intelligente, Munitions drones, Munitions IEM, Munitions non létales, Munitions subsoniques, Pointeur laser, Protection d'arme, Structure alpha"
 ]
 
 export const MODULES = [

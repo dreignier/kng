@@ -2,8 +2,12 @@
 
 ## Générateur de PJ :
 
-- Récupérer les améliorations d'armes
-  - Faire des améliorations spécifiques pour le longbow, le révolver lourd et le lance missile
-- Récupérer les capacités héroiques
-- Permettre de donner un nom à ce pauvre PJ
-- Aucune séction : points libres
+- Les paladins ne peuvent pas utiliser certains modules avant un certain seuil de gloire
+- Gérer les bonus de certains avantages (+x en espoir, +x en PS, etc...)
+- Gérer les bonus de certains OD ?
+
+- Faire le générateur aléatoire
+- Guider l'aléatoire
+- Prendre en compte les slots des modules
+- Gérer les modules de prestige
+- Gérer une arme de prestige
