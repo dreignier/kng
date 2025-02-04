@@ -13,6 +13,7 @@ export class ComputedCharacter {
 	public xp = 0
 	public pg = 0
 	public initiative = 0
+	public initiativeDices = 3
 	public defense = 0
 	public reaction = 0
 	public pgError = 0
@@ -37,6 +38,10 @@ export class Data {
 	public heroicCapacities: HeroicCapacity[] = []
 	public upgrades: Upgrade[] = []
 	public longbow!: Weapon
+
+	perk(name: string) {
+		return this.arcanas.map(a => a.perk).find(perk => perk.name === name)
+	}
 }
 
 export class Character {
@@ -149,7 +154,7 @@ export class Character {
 			return new Achievement(
 				name,
 				aspects.split(' OU ').map(name => this.aspect(name)!),
-				requirements.split(' OU ').map(value => (this.aspect(value) || this.characteristic(value))!),
+				requirements?.trim() ? requirements.split(' OU ').map(value => (this.aspect(value) || this.characteristic(value))!) : [],
 				forbiddens?.trim() ? forbiddens.split(' ET ').map(name => this.data.archetypes.find(archetype => archetype.name === name)!) : []
 			)
 		})
@@ -265,7 +270,7 @@ export class Character {
 		for (const errors of this.computed.errors) {
 			for (const name of errors.targets) {
 				const aspect = this.aspect(name)
-				if (aspect && !result.includes(aspect)) {
+				if (aspect && !result.includes(aspect) && aspect.value < this.maxAspect(aspect)) {
 					result.push(aspect)
 				}
 			}
@@ -274,13 +279,13 @@ export class Character {
 		return result
 	}
 
-	errorCharacteristcs() {
+	errorCharacteristics() {
 		const result: Characteristic[] = []
 
 		for (const errors of this.computed.errors) {
 			for (const name of errors.targets) {
 				const characteristic = this.characteristic(name)
-				if (characteristic && !result.includes(characteristic)) {
+				if (characteristic && !result.includes(characteristic) && characteristic.value < characteristic.aspect.value) {
 					result.push(characteristic)
 				}
 			}
@@ -292,7 +297,7 @@ export class Character {
 	generate(options: GenerateOptions) {
 		// Archetype
 		if (!this._archetype) {
-			const archetypes = this.data.archetypes.filter(archetype => archetype.available)
+			const archetypes = options.filterArchetypes(this.data.archetypes.filter(archetype => archetype.available))
 			this.archetype = sample(archetypes)!
 		}
 
@@ -307,7 +312,7 @@ export class Character {
 		// Aspects points
 		let aspects = this.errorAspects()
 		while (aspects.length) {
-			const aspect = sample(aspects)!
+			const aspect = options.chooseAspect(aspects) || sample(aspects)!
 			this.setAspect(aspect, aspect.value + 1)
 			aspects = this.errorAspects()
 		}
@@ -329,10 +334,25 @@ export class Character {
 			this.flaw = sample(this.data.flaws)!
 		}
 
+		// Distribute points
+		let characteristics = this.errorCharacteristics()
+		while (characteristics.length) {
+			const characteristic = options.chooseCharacteristic(characteristics) || sample(characteristics)!
+
+			this.setCharacteristic(characteristic, characteristic.value + 1)
+			characteristics = this.errorCharacteristics()
+		}
+
+
 		// Achievement
 		if (!this._achievement) {
-			const achievements = this.data.achievements.filter(achievement => achievement.available)
-			this.achievement = sample(achievements)!
+			const achievements = options.filterAchievements(this.data.achievements.filter(achievement => achievement.available && achievement.name !== 'Haut fait personnalisé'))
+
+			if (achievements.length) {
+				this.achievement = sample(achievements)!
+			} else {
+				this.achievement = this.data.achievements.find(achievement => achievement.name === 'Haut fait personnalisé')!
+			}
 		}
 
 		// Armor
@@ -342,7 +362,10 @@ export class Character {
 
 		// Section
 		if (!this._section) {
-			this.section = sample(this.data.sections)!
+			const sections = options.filterSections(this.data.sections)
+			const section = sample(sections)!
+
+			this.section = section
 		}
 
 		// Crest
@@ -350,20 +373,28 @@ export class Character {
 			this.crest = sample(this.data.crests)!
 		}
 
+		// Aspects points
+		aspects = this.errorAspects()
+		while (aspects.length) {
+			const aspect = options.chooseAspect(aspects) || sample(aspects)!
+			this.setAspect(aspect, aspect.value + 1)
+			aspects = this.errorAspects()
+		}
+
 		// Distribute points
-		let characteristics = this.errorCharacteristcs()
+		characteristics = this.errorCharacteristics()
 		while (characteristics.length) {
-			const characteristic = sample(characteristics)!
+			const characteristic = options.chooseCharacteristic(characteristics) || sample(characteristics)!
 			this.setCharacteristic(characteristic, characteristic.value + 1)
-			characteristics = this.errorCharacteristcs()
+			characteristics = this.errorCharacteristics()
 		}
 
 		// Weapons, modules, upgrades
-		while (this.computed.pgError) {
-			const before = this.computed.pgError
+		while (this.computed.pgError || this.computed.pg < options.pg) {
+			const availablePg = this.computed.pgError || (options.pg - this.computed.pg)
 
-			const weapons = this.data.weapons.filter(w => w.available && w.cost <= this.computed.pgError)
-			const modules = this.data.modules.filter(module => module.available && module.cost <= this.computed.pgError)
+			const weapons = options.filterWeapons(this.data.weapons.filter(w => w.available && w.cost <= availablePg))
+			const modules = options.filterModules(this.data.modules.filter(module => module.available && module.cost <= availablePg))
 			const upgrades: { weaponIndex: number; upgradeIndex: number; upgrade: Upgrade }[] = []
 			for (let i = 0; i < this.weapons.length; ++i) {
 				const weapon = this.weapons[i]
@@ -372,10 +403,12 @@ export class Character {
 						const upgrade = this.weaponUpgrades[i][j]
 						if (!upgrade) {
 							for (const upgrade of weapon.upgrades) {
-								if (!upgrade.ornementale && upgrade.cost <= this.computed.pgError && weapon.isAvailable(upgrade, undefined, this.weaponUpgrades[i])) {
+								if (!upgrade.ornementale && upgrade.cost <= availablePg && weapon.isAvailable(upgrade, undefined, this.weaponUpgrades[i])) {
 									upgrades.push({ weaponIndex: i, upgradeIndex: j, upgrade })
 								}
 							}
+
+							break
 						}
 					}
 				}
@@ -407,16 +440,63 @@ export class Character {
 
 			if (possibilities.length) {
 				sample(possibilities)!()
-			}
-
-			if (before === this.computed.pgError) {
+			} else {
 				break
 			}
 		}
 
-		// XP : distribute points
+		while (this.computed.xp < options.xp) {
+			const availableXp = options.xp - this.computed.xp
 
-		// PG : Weapons, modules, upgrades
+			let possibilities: { target: { name: string; value: number }; cost: number }[] = []
+
+			for (const aspect of this.aspects) {
+				if (aspect.value < this.maxAspect(aspect)) {
+					possibilities.push({ target: aspect, cost: aspect.value * 5 })
+				}
+
+				for (const characteristic of aspect.characteristics) {
+					if (characteristic.value < aspect.value) {
+						possibilities.push({ target: characteristic, cost: characteristic.value * 2 })
+					}
+				}
+			}
+
+			possibilities = possibilities.filter(p => p.cost <= availableXp)
+			while (possibilities.length) {
+				const target = options.chooseForXp(possibilities) || sample(possibilities)!
+
+				if (target.target instanceof Aspect) {
+					this.setAspect(target.target, target.target.value + 1)
+				} else {
+					this.setCharacteristic(target.target as Characteristic, target.target.value + 1)
+				}
+
+				if (this.computed.xp > options.xp) {
+					if (target.target instanceof Aspect) {
+						this.setAspect(target.target, target.target.value - 1)
+					} else {
+						this.setCharacteristic(target.target as Characteristic, target.target.value - 1)
+					}
+
+					possibilities = possibilities.filter(p => p !== target)
+				} else {
+					break
+				}
+			}
+
+			if (!possibilities.length) {
+				break
+			}
+		}
+	}
+
+	maxAspect(aspect: Aspect) {
+		if (aspect.name === 'Machine' && this._flaw === 'Brute') {
+			return 5
+		}
+
+		return this._flaw === 'Vétéran' ? 7 : 9
 	}
 
 	aspect(name: string) {
@@ -614,7 +694,7 @@ export class Character {
 
 	filterAchievements() {
 		for (const achievement of this.data.achievements) {
-			achievement.available = (this._archetype ? !achievement.forbiddens.includes(this._archetype) : true) && achievement.requirements.some(r => r.value >= 4)
+			achievement.available = (this._archetype ? !achievement.forbiddens.includes(this._archetype) : true) && (!achievement.requirements.length || achievement.requirements.some(r => r.value >= 4))
 		}
 	}
 
@@ -661,6 +741,26 @@ export class Character {
 		}
 	}
 
+	isModuleAvailable(module: Module, baseModules: Module[], currentModules: (Module | undefined)[]) {
+		if (baseModules.includes(module)) {
+			return false
+		}
+
+		if (!this.computed.availableLevels.includes(module.level)) {
+			return false
+		}
+
+		if (module.requirement && !currentModules.concat(baseModules).includes(module.requirement)) {
+			return false
+		}
+
+		if (this._armor?.name === 'Paladin' && this.computed.pg < 250 && /(saut |course |Déplacement silencieux )/i.test(module.name)) {
+			return false
+		}
+
+		return true
+	}
+
 	filterModules() {
 		const baseModules: Module[] = []
 		if (this._section) {
@@ -690,28 +790,22 @@ export class Character {
 					continue
 				}
 
-				if (!this.computed.availableLevels.includes(module.level) || (module.requirement && !baseModules.includes(module.requirement) && !this.modules.includes(module.requirement))) {
+				if (!this.isModuleAvailable(module, baseModules, this.modules)) {
 					this.modules[i] = undefined
 					change = true
 				}
 			}
 		} while (change)
 
-		const currentModules = [...baseModules, ...this.modules]
-
 		for (const module of this.data.modules) {
-			module.available = !currentModules.includes(module) && this.computed.availableLevels.includes(module.level)
-
-			if (module.available && module.requirement) {
-				module.available = currentModules.includes(module.requirement)
-			}
+			module.available = this.isModuleAvailable(module, baseModules, this.modules) && !this.modules.includes(module)
 		}
 
 		for (const characteristic of this.characteristics()) {
 			characteristic.overdrive = 0
 		}
 
-		for (const module of currentModules) {
+		for (const module of this.modules.concat(baseModules)) {
 			if (module?.overdrive) {
 				module.overdrive.overdrive += 1
 			}
@@ -852,11 +946,29 @@ export class Character {
 		this.filterAchievements()
 	}
 
+	hasPerk(name: string) {
+		return this.perks.includes(this.data.perk(name))
+	}
+
+	getCharacteristic(name: string) {
+		return this.characteristic(name)?.value || 0
+	}
+
+	getOverdrive(name: string) {
+		return this.characteristic(name)?.overdrive || 0
+	}
+
+	hasOverdrive(name: string, rank: number) {
+		return this.getOverdrive(name) >= rank
+	}
+
 	computeDerived() {
 		this.computed.defense = this.aspects[1].max()
 		this.computed.reaction = this.aspects[2].max()
 		this.computed.initiative = this.aspects[4].max()
 		this.computed.ps = 10 + this.aspects[0].max(false) * 6
+		this.computed.hope = 50
+		this.computed.initiativeDices = 3
 
 		if (this._armor) {
 			this.computed.armor = this._armor.armor
@@ -868,6 +980,35 @@ export class Character {
 					this.computed[module.upgrade.type] += module.upgrade.value
 				}
 			}
+		}
+
+		if (this.hasPerk('Forteresse spirituelle')) {
+			this.computed.hope += 5
+		}
+
+		if (this.hasPerk('Dur à cuir')) {
+			this.computed.ps += 5
+		}
+
+		if (this._flaw === 'Trop prudent') {
+			this.computed.initiativeDices -= 1
+		}
+
+		if (this.hasOverdrive('Endurance', 3)) {
+			this.computed.ps += 6
+		}
+
+		const instinctOd = this.getOverdrive('Instinct')
+		if (instinctOd >= 3) {
+			this.computed.initiative += instinctOd * 3
+		}
+
+		if (this.hasOverdrive('Aura', 5)) {
+			this.computed.defense += this.getCharacteristic('Aura')
+		}
+
+		if (this.hasOverdrive('Dextérité', 5)) {
+			this.computed.reaction = Math.max(this.computed.reaction, this.computed.defense)
 		}
 	}
 
@@ -941,6 +1082,159 @@ export class Aspect {
 export class GenerateOptions {
 	public pg = 0
 	public xp = 0
+	public priorities: (Aspect | undefined)[] = [undefined, undefined, undefined]
+	public heavyWeapons = false
+	public twoHandsWeapons = false
+	public oneHandWeapons = false
+	public contactWeapons = false
+	public distanceWeapons = false
+	public modules: string[] = []
+
+	priority(amount: number = 3) {
+		return this.priorities.filter(p => !!p).slice(0, amount)
+	}
+
+	filterArchetypes(archetypes: Archetype[]) {
+		const scores = new Map<Archetype, number>()
+		let max = 0
+
+		for (const archetype of archetypes) {
+			let score = 0
+
+			for (const p of this.priority()) {
+				for (const bonus of archetype.bonus) {
+					if (bonus.some(c => c.aspect === p)) {
+						score += 1
+					}
+				}
+			}
+
+			scores.set(archetype, score)
+			max = Math.max(max, score)
+		}
+
+		if (max) {
+			return archetypes.filter(archetype => scores.get(archetype) === max)
+		}
+
+		return archetypes
+	}
+
+	filterAchievements(achievements: Achievement[]) {
+		const p = this.priority(1)[0]
+
+		if (p) {
+			return achievements.filter(achievement => achievement.aspects.includes(p))
+		}
+
+		return achievements
+	}
+
+	filterSections(sections: Section[]) {
+		const p = this.priority(1)[0]
+
+		if (p) {
+			return sections.filter(section => section.aspect === p)
+		}
+
+		return sections
+	}
+
+	filterWeapons(weapons: Weapon[]) {
+		if (!this.heavyWeapons && !this.twoHandsWeapons && !this.oneHandWeapons && !this.contactWeapons && !this.distanceWeapons) {
+			return []
+		}
+
+		return weapons.filter(w => {
+			if (this.contactWeapons !== this.distanceWeapons) {
+				if (this.contactWeapons && w.type !== 'contact') {
+					return false
+				}
+
+				if (this.distanceWeapons && w.type !== 'distance') {
+					return false
+				}
+			}
+
+			if (!this.heavyWeapons && !this.twoHandsWeapons && !this.oneHandWeapons) {
+				return true
+			}
+
+			if (this.heavyWeapons && w.slots === 3) {
+				return true
+			}
+
+			if (this.twoHandsWeapons && w.slots === 2) {
+				return true
+			}
+
+			if (this.oneHandWeapons && w.slots === 1) {
+				return true
+			}
+
+			return false
+		})
+	}
+
+	filterModules(modules: Module[]) {
+		if (!this.modules.length) {
+			return []
+		}
+
+		const result = modules.filter(module => this.modules.includes(module.type))
+
+		if (modules.some(m => m.overdrive)) {
+			for (const a of this.priority()) {
+				const filtered = result.filter(m => !m.overdrive || m.overdrive.aspect === a)
+				if (filtered.some(m => m.overdrive)) {
+					return filtered
+				}
+			}
+		}
+
+		return result
+	}
+
+	chooseAspect(aspects: Aspect[]) {
+		for (const a of this.priority()) {
+			if (aspects.includes(a!)) {
+				return a
+			}
+		}
+
+		return sample(aspects)
+	}
+
+	chooseCharacteristic(characteristics: Characteristic[]) {
+		for (const a of this.priority()) {
+			const filtered = characteristics.filter(c => c.aspect === a)
+
+			if (filtered.length) {
+				// Return the higher characteristic than can be increased
+				return filtered.filter(c => c.value < c.aspect.value).reduce((a, b) => a.value > b.value ? a : b, filtered[0])
+			}
+		}
+
+		return sample(characteristics)
+	}
+
+	chooseForXp(possibilities: { target: { name: string; value: number }; cost: number }[]) {
+		for (const a of this.priority()) {
+			// Look for a characteristic
+			let filtered = possibilities.filter(p => p.target instanceof Characteristic && p.target.aspect === a)
+			if (filtered.length) {
+				return sample(filtered)
+			}
+
+			// Look for the aspect itself
+			filtered = possibilities.filter(p => p.target === a)
+			if (filtered.length) {
+				return sample(filtered)
+			}
+		}
+
+		return sample(possibilities)
+	}
 }
 
 export class Characteristic {

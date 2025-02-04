@@ -29,6 +29,7 @@ export class PcGeneratorPageComponent {
 	massImportStrategy: 'rename' | 'ignore' | 'replace' = 'rename'
 	massExportNames: Set<string> = new Set()
 	options = new GenerateOptions()
+	moduleFilters: string[] = []
 
 	constructor(
 		readonly db: DatabaseService,
@@ -36,6 +37,32 @@ export class PcGeneratorPageComponent {
 		readonly dialog: DialogService
 	) {
 		this.reset()
+
+		for (const module of this.character.data.modules) {
+			if (!this.moduleFilters.includes(module.type)) {
+				this.moduleFilters.push(module.type)
+			}
+		}
+	}
+
+	allModules() {
+		this.options.modules = [...this.moduleFilters]
+	}
+
+	allWeapons() {
+		this.options.heavyWeapons = true
+		this.options.twoHandsWeapons = true
+		this.options.oneHandWeapons = true
+		this.options.contactWeapons = true
+		this.options.distanceWeapons = true
+	}
+
+	removeAllWeapons() {
+		this.options.heavyWeapons = false
+		this.options.twoHandsWeapons = false
+		this.options.oneHandWeapons = false
+		this.options.contactWeapons = false
+		this.options.distanceWeapons = false
 	}
 
 	reset() {
@@ -225,7 +252,7 @@ VALEURS DÉRIVÉES
 ---
 >>**POINTS DE SANTÉ**<< || >>**DÉFENSE**<< || >>**RÉACTION**<< || >>**INITIATIVE**<< || >>**POINTS DE CONTACT**<< || >>**POINTS D'ESPOIR**<<
 ---
-: >>${c.computed.ps}<< ||: >>${c.computed.defense}<< ||: >>${c.computed.reaction}<< ||: >>${c.computed.initiative}<< ||: >>${c.aspects[3].value}<< ||: >>${c.computed.hope}<<
+: >>${c.computed.ps}<< ||: >>${c.computed.defense}<< ||: >>${c.computed.reaction}<< ||: >>${c.computed.initiative} + ${c.computed.initiativeDices}d6<< ||: >>${c.aspects[3].value}<< ||: >>${c.computed.hope}<<
 ]]]
 
 ==Équipement de base :== 3 nods de soin / 3 nods d'énergie / 3 nods d'armure / 5 grenades intelligentes / Marteau-épieu / Pistolet de service

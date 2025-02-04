@@ -760,6 +760,20 @@
 </app-modal>
 
 <app-modal #generateModal>
+  <!--
+		class GenerateOptions {
+			public pg = 0
+			public xp = 0
+			public priorities: Aspect[] = []
+			public heavyWeapons = false
+			public twoHandsWeapons = false
+			public oneHandWeapons = false
+			public contactWeapons = false
+			public distanceWeapons = false
+			public modules: string[] = []
+		}
+	-->
+
   <div class="grid grid-cols-2 gap-2">
     <div class="flex flex-col gap-1">
       <label
@@ -789,6 +803,134 @@
         class="bg-white text-[#2e2a31] h-[30px] pl-1"
         [(ngModel)]="options.pg"
       />
+    </div>
+
+    <div class="col-span-2 grid grid-cols-3 gap-2">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs block text-center mt-2 mb-1 col-span-3"
+      >
+        Aspects prioritaires
+      </label>
+      @for (aspect of options.priorities; track $index) {
+        <select
+          [(ngModel)]="options.priorities[$index]"
+          class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap"
+        >
+          <option [ngValue]="undefined"></option>
+          @for (aspect of character.aspects; track aspect.name) {
+            <option [ngValue]="aspect">{{ aspect.name }}</option>
+          }
+        </select>
+      }
+    </div>
+
+    <div class="col-span-2">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs block text-center mt-2 mb-1"
+      >
+        Filtres d'armes
+      </label>
+      <div class="flex">
+        <button
+          class="h-[28px] w-20 mt-2 border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center col-span-2"
+          (click)="allWeapons()"
+        >
+          <app-icon class="size-5 block" icon="plus-circle"></app-icon>
+          <span class="ml-1">Tous</span>
+        </button>
+        <button
+          class="h-[28px] w-20 mt-2 ml-2 border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center col-span-2"
+          (click)="removeAllWeapons()"
+        >
+          <app-icon class="size-5 block" icon="minus-circle"></app-icon>
+          <span class="ml-1">Aucun</span>
+        </button>
+      </div>
+      <div class="flex items-center">
+        <input
+          type="checkbox"
+          id="contactWeapons"
+          class="mr-2"
+          [(ngModel)]="options.contactWeapons"
+        />
+        <label for="contactWeapons" class="mb-0.5">Armes de contact</label>
+      </div>
+      <div class="flex items-center">
+        <input
+          type="checkbox"
+          id="distanceWeapons"
+          class="mr-2"
+          [(ngModel)]="options.distanceWeapons"
+        />
+        <label for="distanceWeapons" class="mb-0.5">Armes à distance</label>
+      </div>
+      <div class="flex items-center">
+        <input
+          type="checkbox"
+          id="oneHandWeapons"
+          class="mr-2"
+          [(ngModel)]="options.oneHandWeapons"
+        />
+        <label for="oneHandWeapons" class="mb-0.5">Armes à une main</label>
+      </div>
+      <div class="flex items-center">
+        <input
+          type="checkbox"
+          id="twoHandsWeapons"
+          class="mr-2"
+          [(ngModel)]="options.twoHandsWeapons"
+        />
+        <label for="twoHandsWeapons" class="mb-0.5">Armes à deux mains</label>
+      </div>
+      <div class="flex items-center">
+        <input
+          type="checkbox"
+          id="heavyWeapons"
+          class="mr-2"
+          [(ngModel)]="options.heavyWeapons"
+        />
+        <label for="heavyWeapons" class="mb-0.5">Armes lourdes</label>
+      </div>
+    </div>
+
+    <div class="col-span-2">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs block text-center mt-2 mb-1"
+      >
+        Filtres de modules
+      </label>
+      <div class="flex">
+        <button
+          class="h-[28px] w-20 mt-2 border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center col-span-2"
+          (click)="allModules()"
+        >
+          <app-icon class="size-5 block" icon="plus-circle"></app-icon>
+          <span class="ml-1">Tous</span>
+        </button>
+        <button
+          class="h-[28px] w-20 mt-2 ml-2 border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center col-span-2"
+          (click)="options.modules = []"
+        >
+          <app-icon class="size-5 block" icon="minus-circle"></app-icon>
+          <span class="ml-1">Aucun</span>
+        </button>
+      </div>
+      @for (filter of moduleFilters; track filter) {
+        <div class="flex items-center">
+          <input
+            type="checkbox"
+            class="mr-2"
+            [id]="filter"
+            [checked]="options.modules.includes(filter)"
+            (change)="
+              options.modules.includes(filter)
+                ? options.modules.splice(options.modules.indexOf(filter), 1)
+                : options.modules.push(filter)
+            "
+          />
+          <label [for]="filter" class="mb-0.5">{{ filter }}</label>
+        </div>
+      }
     </div>
 
     <button

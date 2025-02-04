@@ -1426,7 +1426,8 @@ export const ACHIEVEMENTS = [
 	'Sauveur | Masque OU Dame | Perception OU Sang-Froid',
 	'Survivant de la peste rouge | Chair | Endurance OU Hargne',
 	'Torturé dans les ténèbres | Chair | Endurance OU Force',
-	'Tueur de ténèbres | Masque | Discrétion OU Perception'
+	'Tueur de ténèbres | Masque | Discrétion OU Perception',
+	'Haut fait personnalisé | Chair OU Bête OU Machine OU Masque OU Dame'
 ]
 
 export const WEAPONS = [
