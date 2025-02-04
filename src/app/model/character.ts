@@ -297,7 +297,7 @@ export class Character {
 	generate(options: GenerateOptions) {
 		// Archetype
 		if (!this._archetype) {
-			const archetypes = options.filterArchetypes(this.data.archetypes.filter(archetype => archetype.available))
+			const archetypes = options.filterArchetypes(this.data.archetypes.filter(archetype => archetype.available && archetype.name !== 'Archétype libre'))
 			this.archetype = sample(archetypes)!
 		}
 
@@ -396,19 +396,22 @@ export class Character {
 			const weapons = options.filterWeapons(this.data.weapons.filter(w => w.available && w.cost <= availablePg))
 			const modules = options.filterModules(this.data.modules.filter(module => module.available && module.cost <= availablePg))
 			const upgrades: { weaponIndex: number; upgradeIndex: number; upgrade: Upgrade }[] = []
-			for (let i = 0; i < this.weapons.length; ++i) {
-				const weapon = this.weapons[i]
-				if (weapon) {
-					for (let j = 0; j < this.weaponUpgrades[i].length; ++j) {
-						const upgrade = this.weaponUpgrades[i][j]
-						if (!upgrade) {
-							for (const upgrade of weapon.upgrades) {
-								if (!upgrade.ornementale && upgrade.cost <= availablePg && weapon.isAvailable(upgrade, undefined, this.weaponUpgrades[i])) {
-									upgrades.push({ weaponIndex: i, upgradeIndex: j, upgrade })
-								}
-							}
 
-							break
+			if (options.weaponUpgrades) {
+				for (let i = 0; i < this.weapons.length; ++i) {
+					const weapon = this.weapons[i]
+					if (weapon) {
+						for (let j = 0; j < this.weaponUpgrades[i].length; ++j) {
+							const upgrade = this.weaponUpgrades[i][j]
+							if (!upgrade) {
+								for (const upgrade of weapon.upgrades) {
+									if (!upgrade.ornementale && upgrade.cost <= availablePg && weapon.isAvailable(upgrade, undefined, this.weaponUpgrades[i])) {
+										upgrades.push({ weaponIndex: i, upgradeIndex: j, upgrade })
+									}
+								}
+
+								break
+							}
 						}
 					}
 				}
@@ -1083,12 +1086,24 @@ export class GenerateOptions {
 	public pg = 0
 	public xp = 0
 	public priorities: (Aspect | undefined)[] = [undefined, undefined, undefined]
-	public heavyWeapons = false
-	public twoHandsWeapons = false
-	public oneHandWeapons = false
-	public contactWeapons = false
-	public distanceWeapons = false
-	public modules: string[] = []
+	public heavyWeapons = true
+	public twoHandsWeapons = true
+	public oneHandWeapons = true
+	public contactWeapons = true
+	public distanceWeapons = true
+	public weaponUpgrades = true
+	public modules: string[] = [
+		'Utilitaire',
+		'Tactique',
+		'Défense',
+		'Déplacement',
+		'Contact',
+		'Distance',
+		'Amélioration',
+		'Visée',
+		'Overdrive',
+		'Automatisé'
+	]
 
 	priority(amount: number = 3) {
 		return this.priorities.filter(p => !!p).slice(0, amount)
