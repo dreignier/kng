@@ -1,3 +1,4 @@
+import { sample } from 'lodash'
 import { ACHIEVEMENTS, ARCANAS, ARCHETYPES, ARMORS, ASPECTS_LABELS, CARACTERISTICS_LABELS, CRESTS, HEROIC_CAPACITIES, MODULES, SECTIONS, WEAPON_UPGRADES, WEAPONS } from '../constants'
 import { fuc } from '../util'
 
@@ -101,9 +102,9 @@ export class Character {
 		this.data.modules.sort((a, b) => a.name.localeCompare(b.name))
 
 		this.data.upgrades = WEAPON_UPGRADES.map(data => {
-			const [name, value] = data.split(' | ').map(value => value.trim())
+			const [name, value, ornementale] = data.split(' | ').map(value => value.trim())
 
-			return new Upgrade(name, Number(value))
+			return new Upgrade(name, Number(value), !!ornementale)
 		})
 
 		this.data.upgrades.sort((a, b) => a.name.localeCompare(b.name))
@@ -258,8 +259,164 @@ export class Character {
 		return this.aspects.flatMap(aspect => aspect.characteristics)
 	}
 
-	generate(options: GenerateOptions) {
+	errorAspects() {
+		const result: Aspect[] = []
 
+		for (const errors of this.computed.errors) {
+			for (const name of errors.targets) {
+				const aspect = this.aspect(name)
+				if (aspect && !result.includes(aspect)) {
+					result.push(aspect)
+				}
+			}
+		}
+
+		return result
+	}
+
+	errorCharacteristcs() {
+		const result: Characteristic[] = []
+
+		for (const errors of this.computed.errors) {
+			for (const name of errors.targets) {
+				const characteristic = this.characteristic(name)
+				if (characteristic && !result.includes(characteristic)) {
+					result.push(characteristic)
+				}
+			}
+		}
+
+		return result
+	}
+
+	generate(options: GenerateOptions) {
+		// Archetype
+		if (!this._archetype) {
+			const archetypes = this.data.archetypes.filter(archetype => archetype.available)
+			this.archetype = sample(archetypes)!
+		}
+
+		// Arcanas
+		for (let i = 0; i < this.arcanas.length; i++) {
+			if (!this.arcanas[i]) {
+				const arcanas = this.data.arcanas.filter(arcana => arcana.available)
+				this.setArcana(i, sample(arcanas)!)
+			}
+		}
+
+		// Aspects points
+		let aspects = this.errorAspects()
+		while (aspects.length) {
+			const aspect = sample(aspects)!
+			this.setAspect(aspect, aspect.value + 1)
+			aspects = this.errorAspects()
+		}
+
+		// Perks
+		for (let i = 0; i < this.perks.length; i++) {
+			if (!this.perks[i]) {
+				let perk = sample(this.data.perks)!
+				do {
+					perk = sample(this.data.perks)!
+				} while (this.perks.includes(perk))
+
+				this.setPerk(i, perk)
+			}
+		}
+
+		// Flaw
+		if (!this._flaw) {
+			this.flaw = sample(this.data.flaws)!
+		}
+
+		// Achievement
+		if (!this._achievement) {
+			const achievements = this.data.achievements.filter(achievement => achievement.available)
+			this.achievement = sample(achievements)!
+		}
+
+		// Armor
+		if (!this._armor) {
+			this.armor = sample(this.data.armors)!
+		}
+
+		// Section
+		if (!this._section) {
+			this.section = sample(this.data.sections)!
+		}
+
+		// Crest
+		if (!this.crest) {
+			this.crest = sample(this.data.crests)!
+		}
+
+		// Distribute points
+		let characteristics = this.errorCharacteristcs()
+		while (characteristics.length) {
+			const characteristic = sample(characteristics)!
+			this.setCharacteristic(characteristic, characteristic.value + 1)
+			characteristics = this.errorCharacteristcs()
+		}
+
+		// Weapons, modules, upgrades
+		while (this.computed.pgError) {
+			const before = this.computed.pgError
+
+			const weapons = this.data.weapons.filter(w => w.available && w.cost <= this.computed.pgError)
+			const modules = this.data.modules.filter(module => module.available && module.cost <= this.computed.pgError)
+			const upgrades: { weaponIndex: number; upgradeIndex: number; upgrade: Upgrade }[] = []
+			for (let i = 0; i < this.weapons.length; ++i) {
+				const weapon = this.weapons[i]
+				if (weapon) {
+					for (let j = 0; j < this.weaponUpgrades[i].length; ++j) {
+						const upgrade = this.weaponUpgrades[i][j]
+						if (!upgrade) {
+							for (const upgrade of weapon.upgrades) {
+								if (!upgrade.ornementale && upgrade.cost <= this.computed.pgError && weapon.isAvailable(upgrade, undefined, this.weaponUpgrades[i])) {
+									upgrades.push({ weaponIndex: i, upgradeIndex: j, upgrade })
+								}
+							}
+						}
+					}
+				}
+			}
+
+			const randomUpgrade = () => {
+				const upgrade = sample(upgrades)!
+				this.setWeaponUpgrade(upgrade.upgradeIndex, upgrade.weaponIndex, upgrade.upgrade)
+			}
+			const randomWeapon = () => {
+				this.newWeapon()
+				this.setWeapon(this.weapons.length - 1, sample(weapons)!)
+			}
+			const randomModule = () => {
+				this.newModule()
+				this.setModule(this.modules.length - 1, sample(modules)!)
+			}
+
+			const possibilities: (() => void)[] = []
+			if (weapons.length) {
+				possibilities.push(randomWeapon)
+			}
+			if (modules.length) {
+				possibilities.push(randomModule)
+			}
+			if (upgrades.length) {
+				possibilities.push(randomUpgrade)
+			}
+
+			if (possibilities.length) {
+				sample(possibilities)!()
+			}
+
+			if (before === this.computed.pgError) {
+				break
+			}
+		}
+
+		// XP : distribute points
+
+		// PG : Weapons, modules, upgrades
 	}
 
 	aspect(name: string) {
@@ -913,7 +1070,8 @@ export class HeroicCapacity {
 export class Upgrade {
 	constructor(
 		public name: string,
-		public cost: number
+		public cost: number,
+		public ornementale: boolean
 	) {}
 }
 
