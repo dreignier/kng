@@ -1,5 +1,5 @@
 import { sample } from 'lodash'
-import { ACHIEVEMENTS, ARCANAS, ARCHETYPES, ARMORS, ASPECTS_LABELS, CARACTERISTICS_LABELS, CRESTS, HEROIC_CAPACITIES, MODULES, SECTIONS, WEAPON_UPGRADES, WEAPONS } from '../constants'
+import { ACHIEVEMENTS, ARCANAS, ARCHETYPES, ARMORS, ASPECTS_LABELS, CARACTERISTICS_LABELS, CRESTS, HEROIC_CAPACITIES, MODULES, SECTIONS, WEAPON_UPGRADES, WEAPONS, XP_COST } from '../constants'
 import { fuc } from '../util'
 
 export class ComputedCharacter {
@@ -9,7 +9,6 @@ export class ComputedCharacter {
 	public ps = 0
 	public hope = 50
 	public errors: { source: string, targets: string[]; value: number }[] = []
-	public minimums: Map<{ name: string; value: number }, number> = new Map()
 	public xp = 0
 	public pg = 0
 	public initiative = 0
@@ -18,9 +17,18 @@ export class ComputedCharacter {
 	public reaction = 0
 	public pgError = 0
 	public availableLevels: ('Standard' | 'Avancé' | 'Rare')[] = ['Standard']
+	public historic: { source: string; steps: { target: string; value: number; xp?: number }[] }[] = []
+	public minimums = new Map<Value, number>()
 
-	incMinimum(key: { name: string; value: number }) {
-		this.minimums.set(key, (this.minimums.get(key) || 0) + 1)
+	addHistoric(source: string, target: string, value: number, xp?: number) {
+		let element = this.historic.find(element => element.source === source)
+
+		if (!element) {
+			element = { source, steps: [] }
+			this.historic.push(element)
+		}
+
+		element.steps.push({ target, value, xp })
 	}
 }
 
@@ -294,11 +302,30 @@ export class Character {
 		return result
 	}
 
+	dispatchAspectPoints(options: GenerateOptions) {
+		let aspects = this.errorAspects()
+		while (aspects.length) {
+			const aspect = options.chooseAspect(aspects) || sample(aspects)!
+			this.setAspect(aspect, aspect.value + 1)
+			aspects = this.errorAspects()
+		}
+	}
+
+	dispatchCharacteristicsPoints(options: GenerateOptions) {
+		let characteristics = this.errorCharacteristics()
+		while (characteristics.length) {
+			const characteristic = options.chooseCharacteristic(characteristics) || sample(characteristics)!
+			this.setCharacteristic(characteristic, characteristic.value + 1)
+			characteristics = this.errorCharacteristics()
+		}
+	}
+
 	generate(options: GenerateOptions) {
 		// Archetype
 		if (!this._archetype) {
 			const archetypes = options.filterArchetypes(this.data.archetypes.filter(archetype => archetype.available && archetype.name !== 'Archétype libre'))
 			this.archetype = sample(archetypes)!
+			this.dispatchCharacteristicsPoints(options)
 		}
 
 		// Arcanas
@@ -306,15 +333,10 @@ export class Character {
 			if (!this.arcanas[i]) {
 				const arcanas = this.data.arcanas.filter(arcana => arcana.available)
 				this.setArcana(i, sample(arcanas)!)
-			}
-		}
 
-		// Aspects points
-		let aspects = this.errorAspects()
-		while (aspects.length) {
-			const aspect = options.chooseAspect(aspects) || sample(aspects)!
-			this.setAspect(aspect, aspect.value + 1)
-			aspects = this.errorAspects()
+				this.dispatchAspectPoints(options)
+				this.dispatchCharacteristicsPoints(options)
+			}
 		}
 
 		// Perks
@@ -334,16 +356,6 @@ export class Character {
 			this.flaw = sample(this.data.flaws)!
 		}
 
-		// Distribute points
-		let characteristics = this.errorCharacteristics()
-		while (characteristics.length) {
-			const characteristic = options.chooseCharacteristic(characteristics) || sample(characteristics)!
-
-			this.setCharacteristic(characteristic, characteristic.value + 1)
-			characteristics = this.errorCharacteristics()
-		}
-
-
 		// Achievement
 		if (!this._achievement) {
 			const achievements = options.filterAchievements(this.data.achievements.filter(achievement => achievement.available && achievement.name !== 'Haut fait personnalisé'))
@@ -352,6 +364,7 @@ export class Character {
 				this.achievement = sample(achievements)!
 			} else {
 				this.achievement = this.data.achievements.find(achievement => achievement.name === 'Haut fait personnalisé')!
+				this.dispatchAspectPoints(options)
 			}
 		}
 
@@ -366,27 +379,13 @@ export class Character {
 			const section = sample(sections)!
 
 			this.section = section
+
+			this.dispatchAspectPoints(options)
 		}
 
 		// Crest
 		if (!this.crest) {
 			this.crest = sample(this.data.crests)!
-		}
-
-		// Aspects points
-		aspects = this.errorAspects()
-		while (aspects.length) {
-			const aspect = options.chooseAspect(aspects) || sample(aspects)!
-			this.setAspect(aspect, aspect.value + 1)
-			aspects = this.errorAspects()
-		}
-
-		// Distribute points
-		characteristics = this.errorCharacteristics()
-		while (characteristics.length) {
-			const characteristic = options.chooseCharacteristic(characteristics) || sample(characteristics)!
-			this.setCharacteristic(characteristic, characteristic.value + 1)
-			characteristics = this.errorCharacteristics()
 		}
 
 		// Weapons, modules, upgrades
@@ -451,7 +450,7 @@ export class Character {
 		while (this.computed.xp < options.xp) {
 			const availableXp = options.xp - this.computed.xp
 
-			let possibilities: { target: { name: string; value: number }; cost: number }[] = []
+			let possibilities: { target: Value; cost: number }[] = []
 
 			for (const aspect of this.aspects) {
 				if (aspect.value < this.maxAspect(aspect)) {
@@ -659,6 +658,7 @@ export class Character {
 		this.computed.xp += this.heroicCapacities[index]!.cost
 
 		this.filterHeroicCapacities()
+		this.computeAspects()
 	}
 
 	removeWeapon(index: number) {
@@ -818,132 +818,197 @@ export class Character {
 	}
 
 	computeAspects() {
+		this.computed.errors = []
+		this.computed.historic = []
+		this.computed.xp = 0
+
+		const bonuses: { source: string; targets: Value[]; value: number }[] = []
+		const newBonus = (source: string, targets: Value[], value: number) => bonuses.push({ source, targets, value })
+
+		if (this._archetype) {
+			for (const bonus of this._archetype.bonus) {
+				newBonus(this._archetype.name, bonus, 1)
+			}
+		}
+
+		for (const arcana of this.arcanas) {
+			if (arcana) {
+				if (arcana.aspect) {
+					newBonus(arcana.name, [arcana.aspect], 1)
+					newBonus(arcana.name, arcana.aspect.characteristics, 3)
+				} else if (arcana.name === 'Le Fou') {
+					newBonus(arcana.name, this.characteristics(), 6)
+				} else if (arcana.name === 'La Maison-Dieu') {
+					newBonus(arcana.name, this.aspects, 2)
+				}
+			}
+		}
+
+		if (this._achievement) {
+			newBonus(this._achievement.name, this._achievement.aspects, 1)
+		}
+
+		if (this._section?.aspect) {
+			if (this._section.aspect) {
+				newBonus(this._section.name, [this._section.aspect], 1)
+			}
+		}
+
+		for (const aspect of this.aspects) {
+			this.computed.minimums.set(aspect, 2)
+
+			for (const characteristic of aspect.characteristics) {
+				this.computed.minimums.set(characteristic, 1)
+			}
+		}
+
+		// Make sure unique bonuses and minimums are applied
+		for (const bonus of bonuses) {
+			if (bonus.targets.length === 1) {
+				const target = bonus.targets[0]
+				const minimum = this.computed.minimums.get(target)! + bonus.value
+				this.computed.minimums.set(target, minimum)
+				target.value = Math.max(target.value, minimum)
+			}
+		}
 		for (const characteristic of this.characteristics()) {
 			if (characteristic.value > characteristic.aspect.value) {
 				characteristic.value  = characteristic.aspect.value
 			}
 		}
 
-		const bonuses: { source: string; amount: number; targets: { name: string; value: number; }[] }[] = []
+		const virtuals = new Map<Value, number>()
+		const bonusHistoric: { bonus: { source: string; targets: Value[]; value: number }, targets: Value[] }[] = []
 
-		if (this._archetype) {
-			for (const bonus of this._archetype.bonus) {
-				bonuses.push({ source: this._archetype.name, amount: 1, targets: bonus })
+		const addHistoric = (bonus: { source: string; targets: Value[]; value: number }, target: Value, value: number) => {
+			let element = bonusHistoric.find(element => element.bonus === bonus)
+
+			if (!element) {
+				element = { bonus, targets: [] }
+				bonusHistoric.push(element)
+			}
+
+			for (let i = 0; i < value; ++i) {
+				element.targets.push(target)
 			}
 		}
-
-		const arcanas: Arcana[] = this.arcanas.filter(arcana => arcana) as Arcana[]
-		arcanas.sort((a, b) => {
-			if (a.name === 'Le Fou') {
-				return +1
-			} else if (a.name === 'La Maison-Dieu') {
-				return -1
-			}
-
-			if (b.name === 'Le Fou') {
-				return -1
-			} else if (b.name === 'La Maison-Dieu') {
-				return +1
-			}
-
-			return 0
-		})
-
-		for (const arcana of arcanas) {
-			if (arcana) {
-				if (arcana.aspect) {
-					bonuses.push({ source: arcana.name, amount: 1, targets: [arcana.aspect] })
-					bonuses.push({ source: arcana.name, amount: 3, targets: arcana.aspect.characteristics })
-				} else if (arcana.name === 'Le Fou') {
-					bonuses.push({ source: arcana.name, amount: 6, targets: this.characteristics() })
-				} else if (arcana.name === 'La Maison-Dieu') {
-					bonuses.push({ source: arcana.name, amount: 2, targets: this.aspects })
-				}
-			}
+		const incVirtual = (target: Value, value: number) => {
+			virtuals.set(target, virtuals.get(target)! + value)
 		}
+		const getAvailable = (target: Value) => {
+			const virtual = virtuals.get(target)!
 
-		if (this._achievement) {
-			bonuses.push({ source: this._achievement.name, amount: 1, targets: this._achievement.aspects })
-		}
-
-		if (this._section) {
-			if (this._section.aspect) {
-				bonuses.push({ source: this._section.name, amount: 1, targets: [this._section.aspect] })
-			} else {
-				bonuses.push({ source: 'Points libres', amount: 5, targets: this.characteristics() })
+			if (target instanceof Aspect) {
+				return target.value - virtual
 			}
+
+			return Math.min(target.value - virtual, virtuals.get((target as Characteristic).aspect)! - virtual)
 		}
 
 		for (const aspect of this.aspects) {
-			this.computed.minimums.set(aspect, 2)
+			virtuals.set(aspect, 2)
 			for (const characteristic of aspect.characteristics) {
-				this.computed.minimums.set(characteristic, 1)
+				virtuals.set(characteristic, 1)
 			}
 		}
 
 		for (const bonus of bonuses) {
-			if (bonus.targets.length === 1) {
-				this.computed.incMinimum(bonus.targets[0])
-			}
-		}
+			let value = bonus.value
 
-		for (const key of this.computed.minimums.keys()) {
-			const min = this.computed.minimums.get(key)!
-			if (key.value < min) {
-				key.value = min
-			}
-		}
+			for (const target of bonus.targets) {
+				let available = getAvailable(target)
 
-		this.computed.errors = []
+				if (available) {
+					available = Math.min(available, value)
 
-		const distributed = new Map<{ name: string; value: number }, number>()
-		for (const aspect of this.aspects) {
-			distributed.set(aspect, aspect.value - this.computed.minimums.get(aspect)!)
+					incVirtual(target, available)
+					addHistoric(bonus, target, available)
 
-			for (const characteristic of aspect.characteristics) {
-				distributed.set(characteristic, characteristic.value - this.computed.minimums.get(characteristic)!)
-			}
-		}
+					value -= available
+				}
 
-		const sortedDistributed = [...distributed.entries()].map(entry => ({ target: entry[0], value: entry[1] }))
-		sortedDistributed.sort((a, b) => b.value - a.value)
-
-		for (const bonus of bonuses.filter(b => b.targets.length > 1)) {
-			for (const distribitued of sortedDistributed) {
-				if (distribitued.value > 0 && bonus.targets.includes(distribitued.target)) {
-					if (distribitued.value >= bonus.amount) {
-						distribitued.value -= bonus.amount
-						bonus.amount = 0
-					} else {
-						bonus.amount -= distribitued.value
-						distribitued.value = 0
-					}
+				if (!value) {
+					break
 				}
 			}
 
-			sortedDistributed.sort((a, b) => b.value - a.value)
+			if (value) {
+				// Try to switch with a previous bonus
+				while (value) {
+					let before = value
+
+					for (const target of bonus.targets) {
+						for (const historic of bonusHistoric) {
+							if (historic.targets.length === 1 || historic.bonus === bonus || !historic.targets.includes(target)) {
+								continue
+							}
+
+							for (const otherTarget of historic.bonus.targets) {
+								if (otherTarget === target) {
+									continue
+								}
+
+								const available = getAvailable(otherTarget)
+								if (available) {
+									// Move one point to this target
+									incVirtual(otherTarget, 1)
+									historic.targets.splice(historic.targets.indexOf(target), 1)
+									historic.targets.push(otherTarget)
+
+									addHistoric(bonus, target, 1)
+
+									value -= 1
+									break
+								}
+							}
+
+							if (!value) {
+								break
+							}
+						}
+
+						if (!value) {
+							break
+						}
+					}
+
+					if (before === value) {
+						break
+					}
+				}
+
+				if (value) {
+					this.computed.errors.push({ source: bonus.source, targets: bonus.targets.map(t => t.name), value })
+				}
+			}
 		}
 
-		for (const bonus of bonuses.filter(b => b.targets.length > 1 && b.amount > 0)) {
-			this.computed.errors.push({ source: bonus.source, targets: bonus.targets.map(target => target.name), value: bonus.amount })
+		for (const historic of bonusHistoric) {
+			const values = new Map<Value, number>()
+			for (const target of historic.targets) {
+				values.set(target, (values.get(target) || 0) + 1)
+			}
+
+			for (const [target, value] of values) {
+				this.computed.addHistoric(historic.bonus.source, target.name, value)
+			}
 		}
 
-		let xp = 0
-		for (const distribitued of sortedDistributed) {
-			let current = distribitued.target.value
-			while (distribitued.value) {
-				xp += current * ((distribitued.target instanceof Aspect) ? 5 : 2)
-				distribitued.value -= 1
+		for (const target of (this.aspects as (Aspect | Characteristic)[]).concat(this.characteristics())) {
+			const overflow = target.value - virtuals.get(target)!
+			if (overflow) {
+				const cost = XP_COST[target.value - overflow][target.value] * (target instanceof Aspect ? 5 : 2)
+				this.computed.xp += cost
+				this.computed.addHistoric('Expérience', target.name, overflow, cost)
 			}
 		}
 
 		for (const capacity of this.heroicCapacities) {
 			if (capacity) {
-				xp += capacity.cost
+				this.computed.xp += capacity.cost
+				this.computed.addHistoric('Expérience', capacity.name, 0, capacity.cost)
 			}
 		}
-
-		this.computed.xp = xp
 
 		this.computeDerived()
 		this.filterAchievements()
@@ -1069,13 +1134,21 @@ export class Character {
 	}
 }
 
-export class Aspect {
+export class Value {
+	constructor(
+		public name: string,
+		public value: number
+	) {}
+}
+
+export class Aspect extends Value {
 	public characteristics: Characteristic[] = []
-	public value = 2
 
 	constructor(
-		public name: string
-	) {}
+		name: string
+	) {
+		super(name, 2)
+	}
 
 	max(overdrive = true) {
 		return Math.max(...this.characteristics.map(characteristic => characteristic.value + (overdrive ? characteristic.overdrive : 0)))
@@ -1233,7 +1306,7 @@ export class GenerateOptions {
 		return sample(characteristics)
 	}
 
-	chooseForXp(possibilities: { target: { name: string; value: number }; cost: number }[]) {
+	chooseForXp(possibilities: { target: Value; cost: number }[]) {
 		for (const a of this.priority()) {
 			// Look for a characteristic
 			let filtered = possibilities.filter(p => p.target instanceof Characteristic && p.target.aspect === a)
@@ -1252,14 +1325,15 @@ export class GenerateOptions {
 	}
 }
 
-export class Characteristic {
-	public value = 1
+export class Characteristic extends Value {
 	public overdrive = 0
 
 	constructor(
-		public name: string,
+		name: string,
 		public aspect: Aspect
-	) {}
+	) {
+		super(name, 1)
+	}
 }
 
 export class Archetype {

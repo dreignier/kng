@@ -490,6 +490,35 @@
         }
       </div>
     }
+
+    @if (character.computed.historic.length) {
+      <div
+        class="col-span-12 text-white bg-blue-500 border border-white mt-5 p-1 rounded flex flex-col gap-2"
+      >
+        <div class="flex item-center">
+          <app-icon
+            class="mr-2 p-1 bg-white rounded text-blue-500 size-8 inline-block"
+            icon="info"
+          ></app-icon>
+          <span class="font-bold text-lg">
+            Répartitions des points d'aspects et de caractéristiques :
+          </span>
+        </div>
+
+        @for (historic of character.computed.historic; track historic.source) {
+          <div>
+            <span class="font-bold mr-1">{{ historic.source }} : </span>
+            @for (step of historic.steps; track step.target) {
+              @if (step.value) {
+                {{ step.value }} point{{ step.value > 1 ? "s " : "" }}
+                en
+              }
+              {{ step.target }}{{ step.xp ? " (" + step.xp + "XP)" : "" }}.
+            }
+          </div>
+        }
+      </div>
+    }
   </div>
   <div
     class="m-3 sm:flex sm:flex-col sm:items-center 2xl:block 2xl:flex-none print:m-0"
