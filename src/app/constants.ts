@@ -37,6 +37,7 @@ export const CARACTERISTICS_LABELS = [
 	['aura', 'parole', 'sang-froid'],
 	['discrétion', 'dextérité', 'perception']
 ]
+export const ALL_CARACTERISTICS_LABELS = CARACTERISTICS_LABELS.flat()
 
 export const COLORS = [
 	'#f25a1e', // Bête

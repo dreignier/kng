@@ -1,5 +1,5 @@
 import { sample } from 'lodash'
-import { ACHIEVEMENTS, ARCANAS, ARCHETYPES, ARMORS, ASPECTS_LABELS, CARACTERISTICS_LABELS, CRESTS, HEROIC_CAPACITIES, MODULES, SECTIONS, WEAPON_UPGRADES, WEAPONS, XP_COST } from '../constants'
+import { ACHIEVEMENTS, ALL_CARACTERISTICS_LABELS, ARCANAS, ARCHETYPES, ARMORS, ASPECTS_LABELS, CARACTERISTICS_LABELS, CRESTS, HEROIC_CAPACITIES, MODULES, SECTIONS, WEAPON_UPGRADES, WEAPONS, XP_COST } from '../constants'
 import { fuc } from '../util'
 
 export class ComputedCharacter {
@@ -241,7 +241,6 @@ export class Character {
 		this._achievement = this.data.achievements.find(achievement => achievement.name === data.achievement)
 		this.arcanas = data.arcanas.map((name: string) => this.data.arcanas.find(arcana => arcana.name === name))
 		this.crest = data.crest
-		this.perks = data.perks.map((name: string) => this.data.perks.find(perk => perk.name === name))
 		this._flaw = data.flaw
 		this._section = this.data.sections.find(section => section.name === data.section)
 		this._armor = this.data.armors.find(armor => armor.name === data.armor)
@@ -259,6 +258,8 @@ export class Character {
 		this.filterPerks()
 		this.filterFlaws()
 		this.computeDerived()
+
+		this.perks = data.perks.map((name: string) => this.data.perks.find(perk => perk.name === name))
 	}
 
 	clone() {
@@ -904,6 +905,9 @@ export class Character {
 
 			return Math.min(target.value - virtual, virtuals.get((target as Characteristic).aspect)! - virtual)
 		}
+		const sortTargets = (targets: Value[]) => {
+			return [...targets].sort((a, b) => b.value - a.value)
+		}
 
 		for (const aspect of this.aspects) {
 			virtuals.set(aspect, 2)
@@ -915,7 +919,7 @@ export class Character {
 		for (const bonus of bonuses) {
 			let value = bonus.value
 
-			for (const target of bonus.targets) {
+			for (const target of sortTargets(bonus.targets)) {
 				let available = getAvailable(target)
 
 				if (available) {
@@ -943,7 +947,7 @@ export class Character {
 								continue
 							}
 
-							for (const otherTarget of historic.bonus.targets) {
+							for (const otherTarget of sortTargets(historic.bonus.targets)) {
 								if (otherTarget === target) {
 									continue
 								}
@@ -1008,6 +1012,22 @@ export class Character {
 				this.computed.xp += capacity.cost
 				this.computed.addHistoric('Expérience', capacity.name, 0, capacity.cost)
 			}
+		}
+
+		for (const historic of this.computed.historic) {
+			historic.steps.sort((a, b) => {
+				let aIndex = ASPECTS_LABELS.indexOf(a.target)
+				if (aIndex === -1) {
+					aIndex = ALL_CARACTERISTICS_LABELS.indexOf(a.target)
+				}
+
+				let bIndex = ASPECTS_LABELS.indexOf(b.target)
+				if (bIndex === -1) {
+					bIndex = ALL_CARACTERISTICS_LABELS.indexOf(b.target)
+				}
+
+				return aIndex - bIndex
+			})
 		}
 
 		this.computeDerived()

@@ -2,9 +2,6 @@
 
 ## Générateur de PJ :
 
-- Corriger le calcul de l'expérience qui fant n'importe quoi
-  - Obligé de "construire" l'historique des dépenses ?
-- Bug : avantages pas sauvegardés / chargés ?
 - Changer le fonctionnement des points libres
 - Gérer correctement les modules tourelles
 - Permettre de nommer l'archétype et le haut fait personnalisé
