@@ -65,6 +65,14 @@
           }
         }
       </select>
+      @if (character._archetype?.name === "Archétype libre") {
+        <input
+          type="text"
+          class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap mt-1"
+          [(ngModel)]="character.archetypeName"
+          placeholder="Nom de l'archétype"
+        />
+      }
     </div>
 
     @for (arcana of character.arcanas; let index = $index; track index) {
@@ -197,6 +205,14 @@
           }
         }
       </select>
+      @if (character._achievement?.name === "Haut fait personnalisé") {
+        <input
+          type="text"
+          class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap mt-1"
+          [(ngModel)]="character.achievementName"
+          placeholder="Nom du haut fait"
+        />
+      }
     </div>
 
     <div class="col-span-3 flex flex-col">
@@ -222,15 +238,26 @@
       >
         Section
       </label>
-      <select
-        [(ngModel)]="character.section"
-        class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap"
-      >
-        <option [ngValue]="undefined"></option>
-        @for (section of character.data.sections; track section.name) {
-          <option [ngValue]="section">{{ section.name }}</option>
-        }
-      </select>
+      <div class="flex flex-grow">
+        <select
+          [(ngModel)]="character.section"
+          class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap flex-grow"
+        >
+          <option [ngValue]="undefined"></option>
+          @for (section of character.data.sections; track section.name) {
+            <option [ngValue]="section">{{ section.name }}</option>
+          }
+        </select>
+        <button
+          class="size-[30px] min-w-[30px] flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
+          (click)="character.noSectionFlaw = !character.noSectionFlaw"
+        >
+          <app-icon
+            class="size-5 block"
+            [icon]="character.noSectionFlaw ? 'sun' : 'danger'"
+          ></app-icon>
+        </button>
+      </div>
     </div>
 
     <div class="col-span-3 flex flex-col">

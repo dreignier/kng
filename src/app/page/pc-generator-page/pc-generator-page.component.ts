@@ -179,11 +179,11 @@ export class PcGeneratorPageComponent {
 		}
 
 		if (c.achievement) {
-			result += `==Achievement :== ${ c.achievement.name }\n`
+			result += `==Haut fait :== ${ c.achievementLabel() }\n`
 		}
 
 		if (c.archetype) {
-			result += `==Archetype :== ${ c.archetype.name }\n`
+			result += `==Archetype :== ${ c.archetypeLabel() }\n`
 		}
 
 		if (c.crest) {
@@ -207,8 +207,8 @@ export class PcGeneratorPageComponent {
 			result += `==Capacités héroïques :== ${ c.heroicCapacities.filter(c => c).map(c => c!.name).join(' / ') }\n`
 		}
 
-		if (c.section?.flaw || c.flaw) {
-			result += `==Inconvénients :== ${ [c.section?.flaw, c.flaw].filter(f => f).join(' / ') }\n`
+		if ((c.section?.flaw && !c.noSectionFlaw) || c.flaw) {
+			result += `==Inconvénients :== ${ [(!c.noSectionFlaw ? c.section?.flaw : ''), c.flaw].filter(f => f).join(' / ') }\n`
 		}
 
 		if (c.armor) {

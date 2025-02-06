@@ -71,6 +71,9 @@ export class Character {
 	public heroicCapacities: (HeroicCapacity | undefined)[] = []
 	public minorMotivations = ''
 	public majorMotivation = ''
+	public archetypeName = ''
+	public achievementName = ''
+	public noSectionFlaw = false
 	public computed = new ComputedCharacter()
 	public data = new Data()
 
@@ -218,7 +221,10 @@ export class Character {
 			modules: this.modules.map(module => module?.name),
 			heroicCapacities: this.heroicCapacities.map(capacity => capacity?.name),
 			minorMotivations: this.minorMotivations,
-			majorMotivation: this.majorMotivation
+			majorMotivation: this.majorMotivation,
+			archetypeName: this.archetypeName,
+			achievementName: this.achievementName,
+			noSectionFlaw: this.noSectionFlaw
 		}
 
 		return result
@@ -250,6 +256,9 @@ export class Character {
 		this.heroicCapacities = data.heroicCapacities.map((name: string) => this.data.heroicCapacities.find(capacity => capacity.name === name))
 		this.minorMotivations = data.minorMotivations
 		this.majorMotivation = data.majorMotivation
+		this.archetypeName = data.archetypeName
+		this.achievementName = data.achievementName
+		this.noSectionFlaw = !!data.noSectionFlaw
 
 		this.computeAspects()
 		this.computePGWeaponModules()
@@ -260,6 +269,30 @@ export class Character {
 		this.computeDerived()
 
 		this.perks = data.perks.map((name: string) => this.data.perks.find(perk => perk.name === name))
+	}
+
+	achievementLabel() {
+		if (!this._achievement) {
+			return ''
+		}
+
+		if (this._achievement.name === 'Haut fait personnalisé' && this.achievementName.trim()) {
+			return this.achievementName
+		}
+
+		return this._achievement.name
+	}
+
+	archetypeLabel() {
+		if (!this._archetype) {
+			return ''
+		}
+
+		if (this._archetype.name === 'Archétype libre' && this.archetypeName.trim()) {
+			return this.archetypeName
+		}
+
+		return this._archetype.name
 	}
 
 	clone() {
