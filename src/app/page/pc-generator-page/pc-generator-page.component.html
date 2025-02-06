@@ -277,6 +277,21 @@
       </select>
     </div>
 
+    <div class="col-span-3 flex flex-col">
+      <label
+        class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
+      >
+        Points libres
+      </label>
+      <input
+        type="number"
+        min="0"
+        max="15"
+        [(ngModel)]="character.freePoints"
+        class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap"
+      />
+    </div>
+
     <div class="col-span-8 flex flex-col">
       <label
         class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
@@ -538,7 +553,7 @@
             @for (step of historic.steps; track step.target) {
               @if (step.value) {
                 {{ step.value }} point{{ step.value > 1 ? "s " : "" }}
-                en
+                dans
               }
               {{ step.target }}{{ step.xp ? " (" + step.xp + "XP)" : "" }}.
             }

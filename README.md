@@ -4,8 +4,6 @@
 
 - Changer le fonctionnement des points libres
 - Gérer correctement les modules tourelles
-- Permettre de nommer l'archétype et le haut fait personnalisé
-- Permettre d'ignorer l'inconvénient de section
 - Permettre d'utiliser l'équipement custom
 - Prendre en compte les slots des modules
 - Gérer les modules de prestige
