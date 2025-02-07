@@ -1,5 +1,20 @@
 import { last, sample } from 'lodash'
-import { ACHIEVEMENTS, ALL_CARACTERISTICS_LABELS, ARCANAS, ARCHETYPES, ARMORS, ASPECTS_LABELS, CARACTERISTICS_LABELS, CRESTS, HEROIC_CAPACITIES, MODULES, SECTIONS, WEAPON_UPGRADES, WEAPONS, XP_COST } from '../constants'
+import {
+	ACHIEVEMENTS,
+	ALL_CARACTERISTICS_LABELS,
+	ARCANAS,
+	ARCHETYPES,
+	ARMORS,
+	ASPECTS_LABELS,
+	CARACTERISTICS_LABELS,
+	CRESTS,
+	HEROIC_CAPACITIES,
+	MODULES,
+	SECTIONS,
+	WEAPON_UPGRADES,
+	WEAPONS,
+	XP_COST
+} from '../constants'
 import { fuc } from '../util'
 
 export class ComputedCharacter {
@@ -8,7 +23,7 @@ export class ComputedCharacter {
 	public forcefield = 0
 	public ps = 0
 	public hope = 50
-	public errors: { source: string, targets: string[]; value: number }[] = []
+	public errors: { source: string; targets: string[]; value: number }[] = []
 	public xp = 0
 	public pg = 0
 	public initiative = 0
@@ -17,11 +32,17 @@ export class ComputedCharacter {
 	public reaction = 0
 	public pgError = 0
 	public availableLevels: ('Standard' | 'Avancé' | 'Rare')[] = ['Standard']
-	public historic: { source: string; steps: { target: string; value: number; xp?: number }[] }[] = []
+	public historic: {
+		source: string
+		steps: { target: string; value: number; xp?: number }[]
+	}[] = []
 	public minimums = new Map<Value, number>()
+	public slots = [0, 0, 0, 0, 0, 0]
+	public slotsError: number[] = []
+	public freePoints = 0
 
 	addHistoric(source: string, target: string, value: number, xp?: number) {
-		let element = this.historic.find(element => element.source === source)
+		let element = this.historic.find((element) => element.source === source)
 
 		if (!element) {
 			element = { source, steps: [] }
@@ -48,7 +69,7 @@ export class Data {
 	public longbow!: Weapon
 
 	perk(name: string) {
-		return this.arcanas.map(a => a.perk).find(perk => perk.name === name)
+		return this.arcanas.map((a) => a.perk).find((perk) => perk.name === name)
 	}
 }
 
@@ -79,7 +100,7 @@ export class Character {
 	public data = new Data()
 
 	constructor() {
-		this.aspects = ASPECTS_LABELS.map(label => new Aspect(fuc(label)))
+		this.aspects = ASPECTS_LABELS.map((label) => new Aspect(fuc(label)))
 
 		this.aspects.forEach((aspect, index) => {
 			for (const label of CARACTERISTICS_LABELS[index]) {
@@ -89,10 +110,10 @@ export class Character {
 
 		this.data.crests = CRESTS
 
-		this.data.modules = MODULES.map(data => {
-			const [name, type, level, cost, ...slots] = data.split(' | ').map(value => value.trim())
+		this.data.modules = MODULES.map((data) => {
+			const [name, type, level, cost, ...slots] = data.split(' | ').map((value) => value.trim())
 
-			return new Module(name, type, Number(cost), fuc(level) as 'Standard' | 'Avancé' | 'Rare', slots.map(value => value.split(' ').map(value => Number(value))) || [])
+			return new Module(name, type, Number(cost), fuc(level) as 'Standard' | 'Avancé' | 'Rare', slots.map((value) => value.split(' ').map((value) => Number(value))) || [])
 		})
 
 		for (const module of this.data.modules) {
@@ -118,23 +139,24 @@ export class Character {
 
 		this.data.modules.sort((a, b) => a.name.localeCompare(b.name))
 
-		this.data.upgrades = WEAPON_UPGRADES.map(data => {
-			const [name, value, ornementale] = data.split(' | ').map(value => value.trim())
+		this.data.upgrades = WEAPON_UPGRADES.map((data) => {
+			const [name, value, ornementale] = data.split(' | ').map((value) => value.trim())
 
 			return new Upgrade(name, Number(value), !!ornementale)
 		})
 
 		this.data.upgrades.sort((a, b) => a.name.localeCompare(b.name))
 
-		this.data.weapons = WEAPONS.map(data => {
-			const [name, level, cost, type, weight, upgrades] = data.split(' | ').map(value => value.trim())
+		this.data.weapons = WEAPONS.map((data) => {
+			const [name, level, cost, type, weight, upgrades] = data.split(' | ').map((value) => value.trim())
 
 			const weapon = new Weapon(
 				name,
 				type.toLowerCase() as 'contact' | 'distance',
-				Number(cost), fuc(level) as 'Standard' | 'Avancé' | 'Rare',
+				Number(cost),
+				fuc(level) as 'Standard' | 'Avancé' | 'Rare',
 				['une main', 'deux mains', 'lourde'].indexOf(weight) + 1,
-				upgrades.split(', ').map(name => this.data.upgrades.find(upgrade => upgrade.name === name)!)
+				upgrades.split(', ').map((name) => this.data.upgrades.find((upgrade) => upgrade.name === name)!)
 			)
 
 			if (name === 'Fusil Longbow') {
@@ -148,44 +170,54 @@ export class Character {
 		this.data.weapons.splice(this.data.weapons.length - 1, 1)
 		this.data.weapons.sort((a, b) => a.name.localeCompare(b.name))
 
-		this.data.sections = SECTIONS.map(data => {
-			const [name, aspect, modules, flaw] = data.split(' | ').map(value => value.trim())
+		this.data.sections = SECTIONS.map((data) => {
+			const [name, aspect, modules, flaw] = data.split(' | ').map((value) => value.trim())
 
-			return new Section(name, this.aspect(aspect), modules?.trim() ? modules.split(', ').map(name => this.data.modules.find(module => module.name === name)!) : undefined, flaw)
+			return new Section(name, this.aspect(aspect), modules?.trim() ? modules.split(', ').map((name) => this.data.modules.find((module) => module.name === name)!) : undefined, flaw)
 		})
 
-		this.data.archetypes = ARCHETYPES.map(data => {
-			const [name, bonus] = data.split(' | ').map(value => value.trim())
+		this.data.archetypes = ARCHETYPES.map((data) => {
+			const [name, bonus] = data.split(' | ').map((value) => value.trim())
 
-			return new Archetype(name, bonus.split(', ').map(bonus => bonus.split(' OU ').map(value => this.characteristic(value)!)))
-		})
-
-		this.data.achievements = ACHIEVEMENTS.map(data => {
-			const [name, aspects, requirements, forbiddens] = data.split(' | ').map(value => value.trim())
-
-			return new Achievement(
+			return new Archetype(
 				name,
-				aspects.split(' OU ').map(name => this.aspect(name)!),
-				requirements?.trim() ? requirements.split(' OU ').map(value => (this.aspect(value) || this.characteristic(value))!) : [],
-				forbiddens?.trim() ? forbiddens.split(' ET ').map(name => this.data.archetypes.find(archetype => archetype.name === name)!) : []
+				bonus.split(', ').map((bonus) => bonus.split(' OU ').map((value) => this.characteristic(value)!))
 			)
 		})
 
-		this.data.armors = ARMORS.map(data => {
-			const [name, profile, slots, overdrives] = data.split(' | ').map(value => value.trim())
-			const [armor, energy, forcefield] = profile.split(' ').map(value => Number(value))
+		this.data.achievements = ACHIEVEMENTS.map((data) => {
+			const [name, aspects, requirements, forbiddens] = data.split(' | ').map((value) => value.trim())
 
-			return new Armor(name, armor, forcefield, energy, overdrives.split(' ').map(value => this.characteristic(value)!), slots.split(' ').map(value => Number(value)))
+			return new Achievement(
+				name,
+				aspects.split(' OU ').map((name) => this.aspect(name)!),
+				requirements?.trim() ? requirements.split(' OU ').map((value) => (this.aspect(value) || this.characteristic(value))!) : [],
+				forbiddens?.trim() ? forbiddens.split(' ET ').map((name) => this.data.archetypes.find((archetype) => archetype.name === name)!) : []
+			)
 		})
 
-		this.data.arcanas = ARCANAS.map(data => {
-			const [number, name, aspect, perk, flaw] = data.split(' | ').map(value => value.trim())
+		this.data.armors = ARMORS.map((data) => {
+			const [name, profile, slots, overdrives] = data.split(' | ').map((value) => value.trim())
+			const [armor, energy, forcefield] = profile.split(' ').map((value) => Number(value))
+
+			return new Armor(
+				name,
+				armor,
+				forcefield,
+				energy,
+				overdrives.split(' ').map((value) => this.characteristic(value)!),
+				slots.split(' ').map((value) => Number(value))
+			)
+		})
+
+		this.data.arcanas = ARCANAS.map((data) => {
+			const [number, name, aspect, perk, flaw] = data.split(' | ').map((value) => value.trim())
 
 			return new Arcana(name, number, this.aspect(aspect), new Perk(perk), flaw)
 		})
 
-		this.data.heroicCapacities = HEROIC_CAPACITIES.map(data => {
-			const [name, cost] = data.split(' | ').map(value => value.trim())
+		this.data.heroicCapacities = HEROIC_CAPACITIES.map((data) => {
+			const [name, cost] = data.split(' | ').map((value) => value.trim())
 
 			return new HeroicCapacity(name, Number(cost))
 		})
@@ -201,26 +233,26 @@ export class Character {
 			identity: this.identity,
 			name: this.name,
 			description: this.description,
-			aspects: this.aspects.map(aspect => ({
+			aspects: this.aspects.map((aspect) => ({
 				name: aspect.name,
 				value: aspect.value,
-				characteristics: aspect.characteristics.map(characteristic => ({
+				characteristics: aspect.characteristics.map((characteristic) => ({
 					name: characteristic.name,
 					value: characteristic.value
 				}))
 			})),
 			archetype: this._archetype?.name,
 			achievement: this._achievement?.name,
-			arcanas: this.arcanas.map(arcana => arcana?.name),
+			arcanas: this.arcanas.map((arcana) => arcana?.name),
 			crest: this.crest,
-			perks: this.perks.map(perk => perk?.name),
+			perks: this.perks.map((perk) => perk?.name),
 			flaw: this._flaw,
 			section: this._section?.name,
 			armor: this._armor?.name,
-			weapons: this.weapons.map(weapon => weapon?.name),
-			weaponUpgrades: this.weaponUpgrades.map(upgrades => upgrades.map(upgrade => upgrade?.name)),
-			modules: this.modules.map(module => module?.name),
-			heroicCapacities: this.heroicCapacities.map(capacity => capacity?.name),
+			weapons: this.weapons.map((weapon) => weapon?.name),
+			weaponUpgrades: this.weaponUpgrades.map((upgrades) => upgrades.map((upgrade) => upgrade?.name)),
+			modules: this.modules.map((module) => module?.name),
+			heroicCapacities: this.heroicCapacities.map((capacity) => capacity?.name),
 			minorMotivations: this.minorMotivations,
 			majorMotivation: this.majorMotivation,
 			archetypeName: this.archetypeName,
@@ -245,17 +277,17 @@ export class Character {
 			}
 		}
 
-		this._archetype = this.data.archetypes.find(archetype => archetype.name === data.archetype)
-		this._achievement = this.data.achievements.find(achievement => achievement.name === data.achievement)
-		this.arcanas = data.arcanas.map((name: string) => this.data.arcanas.find(arcana => arcana.name === name))
+		this._archetype = this.data.archetypes.find((archetype) => archetype.name === data.archetype)
+		this._achievement = this.data.achievements.find((achievement) => achievement.name === data.achievement)
+		this.arcanas = data.arcanas.map((name: string) => this.data.arcanas.find((arcana) => arcana.name === name))
 		this.crest = data.crest
 		this._flaw = data.flaw
-		this._section = this.data.sections.find(section => section.name === data.section)
-		this._armor = this.data.armors.find(armor => armor.name === data.armor)
-		this.weapons = data.weapons.map((name: string) => this.data.weapons.find(weapon => weapon.name === name))
-		this.weaponUpgrades = data.weaponUpgrades.map((upgrades: string[]) => upgrades.map((name: string) => this.data.upgrades.find(upgrade => upgrade.name === name)))
-		this.modules = data.modules.map((name: string) => this.data.modules.find(module => module.name === name))
-		this.heroicCapacities = data.heroicCapacities.map((name: string) => this.data.heroicCapacities.find(capacity => capacity.name === name))
+		this._section = this.data.sections.find((section) => section.name === data.section)
+		this._armor = this.data.armors.find((armor) => armor.name === data.armor)
+		this.weapons = data.weapons.map((name: string) => this.data.weapons.find((weapon) => weapon.name === name))
+		this.weaponUpgrades = data.weaponUpgrades.map((upgrades: string[]) => upgrades.map((name: string) => this.data.upgrades.find((upgrade) => upgrade.name === name)))
+		this.modules = data.modules.map((name: string) => this.data.modules.find((module) => module.name === name))
+		this.heroicCapacities = data.heroicCapacities.map((name: string) => this.data.heroicCapacities.find((capacity) => capacity.name === name))
 		this.minorMotivations = data.minorMotivations
 		this.majorMotivation = data.majorMotivation
 		this.archetypeName = data.archetypeName
@@ -271,7 +303,7 @@ export class Character {
 		this.filterFlaws()
 		this.computeDerived()
 
-		this.perks = data.perks.map((name: string) => this.data.perks.find(perk => perk.name === name))
+		this.perks = data.perks.map((name: string) => this.data.perks.find((perk) => perk.name === name))
 	}
 
 	achievementLabel() {
@@ -306,7 +338,7 @@ export class Character {
 	}
 
 	characteristics() {
-		return this.aspects.flatMap(aspect => aspect.characteristics)
+		return this.aspects.flatMap((aspect) => aspect.characteristics)
 	}
 
 	errorAspects() {
@@ -360,14 +392,14 @@ export class Character {
 	generate(options: GenerateOptions) {
 		// Archetype
 		if (!this._archetype) {
-			const archetypes = options.filterArchetypes(this.data.archetypes.filter(archetype => archetype.available && archetype.name !== 'Archétype libre'))
+			const archetypes = options.filterArchetypes(this.data.archetypes.filter((archetype) => archetype.available && archetype.name !== 'Archétype libre'))
 			this.archetype = sample(archetypes)!
 		}
 
 		// Arcanas
 		for (let i = 0; i < this.arcanas.length; i++) {
 			if (!this.arcanas[i]) {
-				const arcanas = this.data.arcanas.filter(arcana => arcana.available)
+				const arcanas = this.data.arcanas.filter((arcana) => arcana.available)
 				this.setArcana(i, sample(arcanas)!)
 			}
 		}
@@ -394,12 +426,12 @@ export class Character {
 
 		// Achievement
 		if (!this._achievement) {
-			const achievements = options.filterAchievements(this.data.achievements.filter(achievement => achievement.available && achievement.name !== 'Haut fait personnalisé'))
+			const achievements = options.filterAchievements(this.data.achievements.filter((achievement) => achievement.available && achievement.name !== 'Haut fait personnalisé'))
 
 			if (achievements.length) {
 				this.achievement = sample(achievements)!
 			} else {
-				this.achievement = this.data.achievements.find(achievement => achievement.name === 'Haut fait personnalisé')!
+				this.achievement = this.data.achievements.find((achievement) => achievement.name === 'Haut fait personnalisé')!
 			}
 		}
 
@@ -426,11 +458,15 @@ export class Character {
 
 		// Weapons, modules, upgrades
 		while (this.computed.pgError || this.computed.pg < options.pg) {
-			const availablePg = this.computed.pgError || (options.pg - this.computed.pg)
+			const availablePg = this.computed.pgError || options.pg - this.computed.pg
 
-			const weapons = options.filterWeapons(this.data.weapons.filter(w => w.available && w.cost <= availablePg))
-			const modules = options.filterModules(this.data.modules.filter(module => module.available && module.cost <= availablePg))
-			const upgrades: { weaponIndex: number; upgradeIndex: number; upgrade: Upgrade }[] = []
+			const weapons = options.filterWeapons(this.data.weapons.filter((w) => w.available && w.cost <= availablePg))
+			const modules = options.filterModules(this.data.modules.filter((module) => module.available && module.cost <= availablePg))
+			const upgrades: {
+				weaponIndex: number
+				upgradeIndex: number
+				upgrade: Upgrade
+			}[] = []
 
 			if (options.weaponUpgrades) {
 				for (let i = 0; i < this.weapons.length; ++i) {
@@ -495,12 +531,15 @@ export class Character {
 
 				for (const characteristic of aspect.characteristics) {
 					if (characteristic.value < aspect.value) {
-						possibilities.push({ target: characteristic, cost: characteristic.value * 2 })
+						possibilities.push({
+							target: characteristic,
+							cost: characteristic.value * 2
+						})
 					}
 				}
 			}
 
-			possibilities = possibilities.filter(p => p.cost <= availableXp)
+			possibilities = possibilities.filter((p) => p.cost <= availableXp)
 			while (possibilities.length) {
 				const target = options.chooseForXp(possibilities) || sample(possibilities)!
 
@@ -517,7 +556,7 @@ export class Character {
 						this.setCharacteristic(target.target as Characteristic, target.target.value - 1)
 					}
 
-					possibilities = possibilities.filter(p => p !== target)
+					possibilities = possibilities.filter((p) => p !== target)
 				} else {
 					break
 				}
@@ -542,7 +581,7 @@ export class Character {
 			return undefined
 		}
 
-		return this.aspects.find(aspect => aspect.name.toLowerCase() === name.toLowerCase())
+		return this.aspects.find((aspect) => aspect.name.toLowerCase() === name.toLowerCase())
 	}
 
 	characteristic(name: string) {
@@ -550,7 +589,7 @@ export class Character {
 			return undefined
 		}
 
-		return this.characteristics().find(characteristic => characteristic.name.toLowerCase() === name.toLowerCase())
+		return this.characteristics().find((characteristic) => characteristic.name.toLowerCase() === name.toLowerCase())
 	}
 
 	newWeapon() {
@@ -729,9 +768,9 @@ export class Character {
 	weaponLabel(weapon: Weapon) {
 		let result = weapon.name
 
-		const upgrades = this.weaponUpgrades[this.weapons.indexOf(weapon)].filter(u => u)
+		const upgrades = this.weaponUpgrades[this.weapons.indexOf(weapon)].filter((u) => u)
 		if (upgrades.length) {
-			result += ' (' + upgrades.map(u => u!.name).join(', ') + ')'
+			result += ' (' + upgrades.map((u) => u!.name).join(', ') + ')'
 		}
 
 		return result
@@ -745,7 +784,7 @@ export class Character {
 
 	filterAchievements() {
 		for (const achievement of this.data.achievements) {
-			achievement.available = (this._archetype ? !achievement.forbiddens.includes(this._archetype) : true) && (!achievement.requirements.length || achievement.requirements.some(r => r.value >= 4))
+			achievement.available = (this._archetype ? !achievement.forbiddens.includes(this._archetype) : true) && (!achievement.requirements.length || achievement.requirements.some((r) => r.value >= 4))
 		}
 	}
 
@@ -762,7 +801,7 @@ export class Character {
 	}
 
 	filterPerks() {
-		this.data.perks = this.arcanas.filter(arcana => arcana).map(arcana => arcana!.perk)
+		this.data.perks = this.arcanas.filter((arcana) => arcana).map((arcana) => arcana!.perk)
 
 		for (let i = 0; i <= 1; ++i) {
 			if (this.perks[i] && !this.data.perks.includes(this.perks[i]!)) {
@@ -772,7 +811,7 @@ export class Character {
 	}
 
 	filterFlaws() {
-		this.data.flaws = this.arcanas.filter(arcana => arcana).map(arcana => arcana!.flaw)
+		this.data.flaws = this.arcanas.filter((arcana) => arcana).map((arcana) => arcana!.flaw)
 
 		if (this._flaw && !this.data.flaws.includes(this._flaw)) {
 			this._flaw = undefined
@@ -815,11 +854,11 @@ export class Character {
 	filterModules() {
 		const baseModules: Module[] = []
 		if (this._section) {
-			baseModules.push(...this._section.modules || [])
+			baseModules.push(...(this._section.modules || []))
 		}
 
 		if (this._armor) {
-			const modules = this._armor.overdrives.map(overdrive => this.data.modules.find(module => module.overdrive === overdrive)!)
+			const modules = this._armor.overdrives.map((overdrive) => this.data.modules.find((module) => module.overdrive === overdrive)!)
 			for (const module of modules) {
 				baseModules.push(baseModules.includes(module) ? module.next! : module)
 			}
@@ -870,7 +909,13 @@ export class Character {
 		this.computed.historic = []
 		this.computed.xp = 0
 
-		const bonuses: { source: string; targets: Value[]; value: number, distinct?: boolean, maxValue?: number }[] = []
+		const bonuses: {
+			source: string
+			targets: Value[]
+			value: number
+			distinct?: boolean
+			maxValue?: number
+		}[] = []
 		const newBonus = (source: string, targets: Value[], value: number, distinct?: boolean, maxValue?: number) => bonuses.push({ source, targets, value, distinct, maxValue })
 
 		if (this._archetype) {
@@ -925,15 +970,34 @@ export class Character {
 		}
 		for (const characteristic of this.characteristics()) {
 			if (characteristic.value > characteristic.aspect.value) {
-				characteristic.value  = characteristic.aspect.value
+				characteristic.value = characteristic.aspect.value
 			}
 		}
 
 		const virtuals = new Map<Value, number>()
-		const bonusHistoric: { bonus: { source: string; targets: Value[]; value: number, distinct?: boolean, maxValue?: number }, targets: Value[] }[] = []
+		const bonusHistoric: {
+			bonus: {
+				source: string
+				targets: Value[]
+				value: number
+				distinct?: boolean
+				maxValue?: number
+			}
+			targets: Value[]
+		}[] = []
 
-		const addHistoric = (bonus: { source: string; targets: Value[]; value: number, distinct?: boolean, maxValue?: number }, target: Value, value: number) => {
-			let element = bonusHistoric.find(element => element.bonus === bonus)
+		const addHistoric = (
+			bonus: {
+				source: string
+				targets: Value[]
+				value: number
+				distinct?: boolean
+				maxValue?: number
+			},
+			target: Value,
+			value: number
+		) => {
+			let element = bonusHistoric.find((element) => element.bonus === bonus)
 
 			if (!element) {
 				element = { bonus, targets: [] }
@@ -1046,10 +1110,14 @@ export class Character {
 			}
 
 			if (value) {
-				const targets = bonus.distinct ? bonus.targets.filter(t => !last(bonusHistoric)?.targets.includes(t) && (!(t instanceof Characteristic) || (t.value < t.aspect.value)) ) : bonus.targets
+				const targets = bonus.distinct ? bonus.targets.filter((t) => !last(bonusHistoric)?.targets.includes(t) && (!(t instanceof Characteristic) || t.value < t.aspect.value)) : bonus.targets
 
 				if (targets.length) {
-					this.computed.errors.push({ source: bonus.source, targets: targets.map(t => t.name), value })
+					this.computed.errors.push({
+						source: bonus.source,
+						targets: targets.map((t) => t.name),
+						value
+					})
 				} else {
 					impossibles.push({ source: bonus.source, value })
 				}
@@ -1064,6 +1132,10 @@ export class Character {
 
 			for (const [target, value] of values) {
 				this.computed.addHistoric(historic.bonus.source, target.name, value)
+			}
+
+			if (historic.bonus.source === 'Points libres') {
+				this.computed.freePoints = historic.targets.length
 			}
 		}
 
@@ -1178,17 +1250,53 @@ export class Character {
 		this.filterModules()
 		this.filterWeapons()
 		this.computePG()
+		this.computeSlots()
 
 		while (pg !== this.computed.pg) {
 			pg = this.computed.pg
 			this.filterModules()
 			this.filterWeapons()
 			this.computePG()
+			this.computeSlots()
+		}
+	}
+
+	computeSlots() {
+		this.computed.slotsError = []
+		this.computed.slots = [0, 0, 0, 0, 0, 0]
+
+		if (!this._armor) {
+			return
+		}
+
+		for (const module of this.modules) {
+			if (!module?.slots.length) {
+				continue
+			}
+
+			let compatibles = module.slots.filter((slots) => slots.every((slot, index) => this.computed.slots[index] + slot <= this._armor!.slots[index]))
+			if (!compatibles.length) {
+				compatibles = [module.slots[0]]
+			}
+
+			for (let i = 0; i < 6; i++) {
+				this.computed.slots[i] += compatibles[0][i]
+			}
+		}
+
+		for (let i = 0; i < 6; i++) {
+			if (this.computed.slots[i] > this._armor.slots[i]) {
+				this.computed.slotsError.push(i)
+			}
 		}
 	}
 
 	computePG() {
-		let sub: Record<'Standard' | 'Avancé' | 'Rare', number> = { Standard: 0, Avancé: 0, Rare: 0 }
+		let sub: Record<'Standard' | 'Avancé' | 'Rare', number> = {
+			Standard: 0,
+			Avancé: 0,
+			Rare: 0
+		}
 		let total = 0
 
 		for (const weapon of this.weapons) {
@@ -1221,7 +1329,7 @@ export class Character {
 		if (sub.Standard >= 150) {
 			this.computed.availableLevels.push('Avancé')
 		}
-		if ((sub.Standard + sub.Avancé) >= 350) {
+		if (sub.Standard + sub.Avancé >= 350) {
 			this.computed.availableLevels.push('Rare')
 		}
 	}
@@ -1237,14 +1345,12 @@ export class Value {
 export class Aspect extends Value {
 	public characteristics: Characteristic[] = []
 
-	constructor(
-		name: string
-	) {
+	constructor(name: string) {
 		super(name, 2)
 	}
 
 	max(overdrive = true) {
-		return Math.max(...this.characteristics.map(characteristic => characteristic.value + (overdrive ? characteristic.overdrive : 0)))
+		return Math.max(...this.characteristics.map((characteristic) => characteristic.value + (overdrive ? characteristic.overdrive : 0)))
 	}
 }
 
@@ -1258,21 +1364,10 @@ export class GenerateOptions {
 	public contactWeapons = true
 	public distanceWeapons = true
 	public weaponUpgrades = true
-	public modules: string[] = [
-		'Utilitaire',
-		'Tactique',
-		'Défense',
-		'Déplacement',
-		'Contact',
-		'Distance',
-		'Amélioration',
-		'Visée',
-		'Overdrive',
-		'Automatisé'
-	]
+	public modules: string[] = ['Utilitaire', 'Tactique', 'Défense', 'Déplacement', 'Contact', 'Distance', 'Amélioration', 'Visée', 'Overdrive', 'Automatisé']
 
 	priority(amount: number = 3) {
-		return this.priorities.filter(p => !!p).slice(0, amount)
+		return this.priorities.filter((p) => !!p).slice(0, amount)
 	}
 
 	filterArchetypes(archetypes: Archetype[]) {
@@ -1284,7 +1379,7 @@ export class GenerateOptions {
 
 			for (const p of this.priority()) {
 				for (const bonus of archetype.bonus) {
-					if (bonus.some(c => c.aspect === p)) {
+					if (bonus.some((c) => c.aspect === p)) {
 						score += 1
 					}
 				}
@@ -1295,7 +1390,7 @@ export class GenerateOptions {
 		}
 
 		if (max) {
-			return archetypes.filter(archetype => scores.get(archetype) === max)
+			return archetypes.filter((archetype) => scores.get(archetype) === max)
 		}
 
 		return archetypes
@@ -1305,7 +1400,7 @@ export class GenerateOptions {
 		const p = this.priority(1)[0]
 
 		if (p) {
-			return achievements.filter(achievement => achievement.aspects.includes(p))
+			return achievements.filter((achievement) => achievement.aspects.includes(p))
 		}
 
 		return achievements
@@ -1315,7 +1410,7 @@ export class GenerateOptions {
 		const p = this.priority(1)[0]
 
 		if (p) {
-			return sections.filter(section => section.aspect === p)
+			return sections.filter((section) => section.aspect === p)
 		}
 
 		return sections
@@ -1326,7 +1421,7 @@ export class GenerateOptions {
 			return []
 		}
 
-		return weapons.filter(w => {
+		return weapons.filter((w) => {
 			if (this.contactWeapons !== this.distanceWeapons) {
 				if (this.contactWeapons && w.type !== 'contact') {
 					return false
@@ -1362,12 +1457,12 @@ export class GenerateOptions {
 			return []
 		}
 
-		const result = modules.filter(module => this.modules.includes(module.type))
+		const result = modules.filter((module) => this.modules.includes(module.type))
 
-		if (modules.some(m => m.overdrive)) {
+		if (modules.some((m) => m.overdrive)) {
 			for (const a of this.priority()) {
-				const filtered = result.filter(m => !m.overdrive || m.overdrive.aspect === a)
-				if (filtered.some(m => m.overdrive)) {
+				const filtered = result.filter((m) => !m.overdrive || m.overdrive.aspect === a)
+				if (filtered.some((m) => m.overdrive)) {
 					return filtered
 				}
 			}
@@ -1388,11 +1483,11 @@ export class GenerateOptions {
 
 	chooseCharacteristic(characteristics: Characteristic[]) {
 		for (const a of this.priority()) {
-			const filtered = characteristics.filter(c => c.aspect === a)
+			const filtered = characteristics.filter((c) => c.aspect === a)
 
 			if (filtered.length) {
 				// Return the higher characteristic than can be increased
-				return filtered.filter(c => c.value < c.aspect.value).reduce((a, b) => a.value > b.value ? a : b, filtered[0])
+				return filtered.filter((c) => c.value < c.aspect.value).reduce((a, b) => (a.value > b.value ? a : b), filtered[0])
 			}
 		}
 
@@ -1402,13 +1497,13 @@ export class GenerateOptions {
 	chooseForXp(possibilities: { target: Value; cost: number }[]) {
 		for (const a of this.priority()) {
 			// Look for a characteristic
-			let filtered = possibilities.filter(p => p.target instanceof Characteristic && p.target.aspect === a)
+			let filtered = possibilities.filter((p) => p.target instanceof Characteristic && p.target.aspect === a)
 			if (filtered.length) {
 				return sample(filtered)
 			}
 
 			// Look for the aspect itself
-			filtered = possibilities.filter(p => p.target === a)
+			filtered = possibilities.filter((p) => p.target === a)
 			if (filtered.length) {
 				return sample(filtered)
 			}
@@ -1513,7 +1608,7 @@ export class Module {
 
 	public requirement?: Module
 	public next?: Module
-	public upgrade?: { type: 'armor' | 'forcefield' | 'energy', value: number }
+	public upgrade?: { type: 'armor' | 'forcefield' | 'energy'; value: number }
 	public overdrive?: Characteristic
 
 	constructor(
@@ -1552,7 +1647,5 @@ export class Upgrade {
 }
 
 export class Perk {
-	constructor(
-		public name: string
-	) {}
+	constructor(public name: string) {}
 }

@@ -1,4 +1,10 @@
 {
+	"semi": false,
+	"trailingComma": "none",
+	"singleQuote": true,
+	"useTabs": true,
+	"printWidth": 200,
+	"bracketSameLine": true,
   "overrides": [
     {
       "files": "*.html",
