@@ -98,7 +98,7 @@ export class Character {
 	public _freePoints = 0
 	public bgImage = ''
 	public color = '#f25a1e'
-	public dark = false
+	public dark = true
 	public computed = new ComputedCharacter()
 	public data = new Data()
 
@@ -469,7 +469,20 @@ export class Character {
 		while (this.computed.pgError || this.computed.pg < options.pg) {
 			const availablePg = this.computed.pgError || options.pg - this.computed.pg
 
-			const weapons = options.filterWeapons(this.data.weapons.filter((w) => w.available && w.cost <= availablePg))
+			const weapons = options.filterWeapons(
+				this.data.weapons.filter((w) => {
+					if (!w.available || w.cost > availablePg) {
+						return false
+					}
+
+					if (this.weapons.filter((weapon) => weapon === w).length >= (w.slots === 1 ? 2 : 1)) {
+						return false
+					}
+
+					return true
+				})
+			)
+
 			const modules = options.filterModules(this.data.modules.filter((module) => module.available && module.cost <= availablePg))
 			const upgrades: {
 				weaponIndex: number
@@ -523,6 +536,8 @@ export class Character {
 
 			if (possibilities.length) {
 				sample(possibilities)!()
+			} else if (this.computed.pgError && options.pg) {
+				this.computed.pgError = 0
 			} else {
 				break
 			}
