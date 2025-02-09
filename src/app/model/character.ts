@@ -96,6 +96,9 @@ export class Character {
 	public achievementName = ''
 	public noSectionFlaw = false
 	public _freePoints = 0
+	public bgImage = ''
+	public color = '#f25a1e'
+	public dark = false
 	public computed = new ComputedCharacter()
 	public data = new Data()
 
@@ -258,7 +261,10 @@ export class Character {
 			archetypeName: this.archetypeName,
 			achievementName: this.achievementName,
 			noSectionFlaw: this.noSectionFlaw,
-			freePoints: this._freePoints || 0
+			freePoints: this._freePoints || 0,
+			bgImage: this.bgImage,
+			color: this.color,
+			dark: this.dark
 		}
 
 		return result
@@ -294,6 +300,9 @@ export class Character {
 		this.achievementName = data.achievementName
 		this.noSectionFlaw = !!data.noSectionFlaw
 		this._freePoints = data.freePoints || 0
+		this.bgImage = data.bgImage || ''
+		this.color = data.color || '#f25a1e'
+		this.dark = data.dark !== undefined ? !!data.dark : true
 
 		this.computeAspects()
 		this.computePGWeaponModules()
@@ -1123,6 +1132,8 @@ export class Character {
 				}
 			}
 		}
+
+		// TODO affinage pour minimiser l'expérience
 
 		for (const historic of bonusHistoric) {
 			const values = new Map<Value, number>()

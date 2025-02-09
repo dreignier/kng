@@ -15,6 +15,33 @@
 			<input type="text" [(ngModel)]="character.name" class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap" />
 		</div>
 
+		<div class="col-span-6 flex flex-col">
+			<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Couleur </label>
+			<div class="flex flex-row flex-wrap">
+				<button class="w-[100px] h-[30px] border border-white flex items-center justify-center" [(colorPicker)]="character.color" cpAlphaChannel="disabled" [style.background-color]="character.color">
+					<app-icon class="size-5 inline-block" icon="brush"></app-icon>
+				</button>
+
+				@for (color of db.colors; track color) {
+					<button class="w-[30px] h-[30px] border border-white ml-2" [style.background-color]="color" (click)="character.color = color"></button>
+				}
+			</div>
+		</div>
+
+		<button
+			class="h-7 p-1 col-span-6 mt-[30px] flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white hover:border-white"
+			(click)="character.dark = !character.dark">
+			<app-icon class="size-5 inline-block" [icon]="character.dark ? 'sun' : 'moon'"></app-icon>
+			<span class="ml-1">
+				{{ character.dark ? 'Mettre en thème clair' : 'Mettre en thème sombre' }}
+			</span>
+		</button>
+
+		<div class="col-span-12 flex flex-col">
+			<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Image de fond </label>
+			<input type="text" [(ngModel)]="character.bgImage" class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap" />
+		</div>
+
 		<div class="col-span-12 flex flex-col">
 			<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Description </label>
 			<textarea [(ngModel)]="character.description" class="bg-white text-[#2e2a31] h-[80px] pl-1"></textarea>
@@ -60,8 +87,7 @@
 					[ngModel]="aspect.value"
 					(ngModelChange)="character.setAspect(aspect, $event)"
 					[min]="character.computed.minimums.get(aspect)!"
-					class="bg-white text-[#2e2a31] h-[30px] pl-1"
-				/>
+					class="bg-white text-[#2e2a31] h-[30px] pl-1" />
 
 				<hr class="mx-1 my-2 border border-white" />
 
@@ -75,8 +101,7 @@
 						(ngModelChange)="character.setCharacteristic(characteristic, $event)"
 						[min]="character.computed.minimums.get(characteristic)!"
 						[max]="aspect.value"
-						class="bg-white text-[#2e2a31] h-[30px] pl-1"
-					/>
+						class="bg-white text-[#2e2a31] h-[30px] pl-1" />
 				}
 			</div>
 		}
@@ -147,8 +172,7 @@
 				</select>
 				<button
 					class="size-[30px] min-w-[30px] flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
-					(click)="character.noSectionFlaw = !character.noSectionFlaw"
-				>
+					(click)="character.noSectionFlaw = !character.noSectionFlaw">
 					<app-icon class="size-5 block" [icon]="character.noSectionFlaw ? 'sun' : 'danger'"></app-icon>
 				</button>
 			</div>
@@ -188,8 +212,7 @@
 						<select
 							[ngModel]="character.weapons[weaponIndex]"
 							(ngModelChange)="character.setWeapon(weaponIndex, $event)"
-							class="bg-white text-[#2e2a31] h-[30px] pl-1 flex-grow text-ellipsis overflow-hidden text-nowrap"
-						>
+							class="bg-white text-[#2e2a31] h-[30px] pl-1 flex-grow text-ellipsis overflow-hidden text-nowrap">
 							@if (weapon?.name === 'Fusil Longbow') {
 								<option [ngValue]="weapon">Fusil Longbow</option>
 							} @else {
@@ -206,8 +229,7 @@
 							<button
 								class="size-[30px] min-w-[30px] flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
 								(click)="character.removeWeapon(weaponIndex)"
-								tabindex="-1"
-							>
+								tabindex="-1">
 								<app-icon class="size-5 block" icon="X"></app-icon>
 							</button>
 						}
@@ -217,8 +239,7 @@
 						<select
 							[ngModel]="character.weaponUpgrades[weaponIndex][upgradeIndex]"
 							(ngModelChange)="character.setWeaponUpgrade(upgradeIndex, weaponIndex, $event)"
-							class="bg-white text-[#2e2a31] h-[30px] pl-1 flex-grow text-ellipsis overflow-hidden text-nowrap"
-						>
+							class="bg-white text-[#2e2a31] h-[30px] pl-1 flex-grow text-ellipsis overflow-hidden text-nowrap">
 							<option [ngValue]="undefined"></option>
 							@for (availableUpgrade of weapon!.upgrades; track availableUpgrade) {
 								@if (weapon!.isAvailable(availableUpgrade, upgrade, character.weaponUpgrades[weaponIndex])) {
@@ -244,8 +265,7 @@
 					<select
 						[ngModel]="character.modules[index]"
 						(ngModelChange)="character.setModule(index, $event)"
-						class="bg-white text-[#2e2a31] h-[30px] pl-1 flex-grow text-ellipsis overflow-hidden text-nowrap"
-					>
+						class="bg-white text-[#2e2a31] h-[30px] pl-1 flex-grow text-ellipsis overflow-hidden text-nowrap">
 						<option [ngValue]="undefined"></option>
 						@for (module of character.data.modules; track module) {
 							@if (module.available || module === character.modules[index]) {
@@ -257,8 +277,7 @@
 					<button
 						class="size-[30px] min-w-[30px] flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
 						(click)="character.removeModule(index)"
-						tabindex="-1"
-					>
+						tabindex="-1">
 						<app-icon class="size-5 block" icon="X"></app-icon>
 					</button>
 				</div>
@@ -278,8 +297,7 @@
 					<select
 						[ngModel]="character.heroicCapacities[index]"
 						(ngModelChange)="character.setHeroicCapacities(index, $event)"
-						class="bg-white text-[#2e2a31] h-[30px] pl-1 flex-grow text-ellipsis overflow-hidden text-nowrap"
-					>
+						class="bg-white text-[#2e2a31] h-[30px] pl-1 flex-grow text-ellipsis overflow-hidden text-nowrap">
 						<option [ngValue]="undefined"></option>
 						@for (heroicCapacity of character.data.heroicCapacities; track heroicCapacity.name) {
 							@if (heroicCapacity.available || heroicCapacity === character.heroicCapacities[index]) {
@@ -291,8 +309,7 @@
 					<button
 						class="size-[30px] min-w-[30px] flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
 						(click)="character.removeHeroicCapacity(index)"
-						tabindex="-1"
-					>
+						tabindex="-1">
 						<app-icon class="size-5 block" icon="X"></app-icon>
 					</button>
 				</div>
@@ -352,11 +369,16 @@
 		}
 	</div>
 	<div class="m-3 sm:flex sm:flex-col sm:items-center 2xl:block 2xl:flex-none print:m-0">
-		<div class="w-[21cm] h-[29.7cm] text-xs segoe-ui origin-top-left page dark" style="--color: #f25a1e" id="pc-page">
-			<div class="text-center text-white min-h-[60px] pt-5 pb-4 mb-5 uppercase text-lg tracking-[12px] page-title page-title-right">Personnage prétiré</div>
+		<div
+			class="w-[21cm] h-[29.7cm] text-xs segoe-ui origin-top-left page"
+			[class.dark]="character.dark"
+			[style.--color]="character.color"
+			[style.background-image]="'url(' + character.bgImage + ')'"
+			id="pc-page">
+			<div class="text-center text-white min-h-[60px] pt-5 pb-4 mb-5 uppercase text-lg tracking-[12px] page-title page-title-right">Personnage</div>
 
 			<div class="mx-[1.75cm]">
-				<app-codex-content [content]="markdown()" [width]="660" [dark]="true"></app-codex-content>
+				<app-codex-content [content]="markdown()" [width]="660" [dark]="character.dark"></app-codex-content>
 			</div>
 
 			<div class="corner corner-left"></div>
@@ -421,16 +443,14 @@
 					<button
 						class="size-7 min-w-7 ml-2 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
 						(click)="export(character)"
-						title="Exporter"
-					>
+						title="Exporter">
 						<app-icon class="size-5 block" icon="export"></app-icon>
 					</button>
 				</div>
 				<button
 					class="size-7 min-w-7 flex items-center justify-center border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white"
 					(click)="deleteCharacter(character)"
-					title="Supprimer"
-				>
+					title="Supprimer">
 					<app-icon class="size-5 block" icon="X"></app-icon>
 				</button>
 			</div>
@@ -494,8 +514,7 @@
 			<button
 				class="min-h-[30px] text-left flex items-center border border-white bg-white my-1 hover:bg-[#2e2a31]"
 				[style.color]="npc.color"
-				(click)="massExportNames.has(npc.name) ? massExportNames.delete(npc.name) : massExportNames.add(npc.name)"
-			>
+				(click)="massExportNames.has(npc.name) ? massExportNames.delete(npc.name) : massExportNames.add(npc.name)">
 				<span class="mr-2 size-5">
 					@if (massExportNames.has(npc.name)) {
 						<app-icon class="size-5 block" icon="check-circle"></app-icon>
@@ -555,8 +574,7 @@
 				</button>
 				<button
 					class="h-[28px] w-20 mt-2 ml-2 border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center col-span-2"
-					(click)="removeAllWeapons()"
-				>
+					(click)="removeAllWeapons()">
 					<app-icon class="size-5 block" icon="minus-circle"></app-icon>
 					<span class="ml-1">Aucun</span>
 				</button>
@@ -596,8 +614,7 @@
 				</button>
 				<button
 					class="h-[28px] w-20 mt-2 ml-2 border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center col-span-2"
-					(click)="options.modules = []"
-				>
+					(click)="options.modules = []">
 					<app-icon class="size-5 block" icon="minus-circle"></app-icon>
 					<span class="ml-1">Aucun</span>
 				</button>
@@ -609,8 +626,7 @@
 						class="mr-2"
 						[id]="filter"
 						[checked]="options.modules.includes(filter)"
-						(change)="options.modules.includes(filter) ? options.modules.splice(options.modules.indexOf(filter), 1) : options.modules.push(filter)"
-					/>
+						(change)="options.modules.includes(filter) ? options.modules.splice(options.modules.indexOf(filter), 1) : options.modules.push(filter)" />
 					<label [for]="filter" class="mb-0.5">{{ filter }}</label>
 				</div>
 			}

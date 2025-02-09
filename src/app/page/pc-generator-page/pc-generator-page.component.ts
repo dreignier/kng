@@ -1,5 +1,6 @@
 import { Component, ViewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { ColorPickerModule } from 'ngx-color-picker'
 import { CodexContentComponent } from '../../codex-content/codex-content.component'
 import { ASPECTS_LABELS, SLOTS_LABELS } from '../../constants'
 import { DatabaseService } from '../../database.service'
@@ -12,7 +13,7 @@ import { Character, GenerateOptions } from '../../model/character'
 @Component({
 	selector: 'app-pc-generator-page',
 	standalone: true,
-	imports: [IconComponent, FormsModule, CodexContentComponent, ModalComponent],
+	imports: [IconComponent, FormsModule, CodexContentComponent, ModalComponent, ColorPickerModule],
 	templateUrl: './pc-generator-page.component.html',
 	styleUrl: './pc-generator-page.component.scss'
 })

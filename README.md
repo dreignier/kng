@@ -2,8 +2,11 @@
 
 ## Générateur de PJ :
 
+- Empêcher le générateur de donner trop de fois la même arme
 - Gérer correctement les modules tourelles
-- Permettre d'utiliser l'équipement custom
-- Prendre en compte les slots des modules
 - Gérer les modules de prestige
-- Gérer une arme de prestige
+- Gérer les armes de prestige
+- Permettre d'insérer un personnage dans un codex
+
+- Affinage pour l'XP ?
+- Permettre d'utiliser l'équipement custom
