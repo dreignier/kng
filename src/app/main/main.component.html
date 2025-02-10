@@ -1,61 +1,27 @@
-<header
-  class="px-2 border-b border-b-white flex flex-row items-center justify-between bg-[#556abc]"
->
-  <div class="flex flex-row items-center">
-    <a routerLink="/">
-      <h1 class="black-ops-one text-xl mr-4">KNG</h1>
-    </a>
+<header class="px-2 border-b border-b-white flex flex-row items-center justify-between bg-[#556abc]">
+	<div class="flex flex-row items-center">
+		<a routerLink="/">
+			<h1 class="black-ops-one text-xl mr-4">KNG</h1>
+		</a>
 
-    <a
-      class="py-2 px-3 uppercase segoe-ui-bold-italic font-bold hover:bg-white hover:text-[#556abc]"
-      routerLink="/npc"
-      routerLinkActive="bg-white text-[#556abc]"
-    >
-      PNJ
-    </a>
+		<a class="py-2 px-3 uppercase segoe-ui-bold-italic font-bold hover:bg-white hover:text-[#556abc]" routerLink="/npc" routerLinkActive="bg-white text-[#556abc]"> PNJ </a>
 
-    <a
-      class="py-2 px-3 uppercase segoe-ui-bold-italic font-bold hover:bg-white hover:text-[#556abc]"
-      routerLink="/equipment"
-      routerLinkActive="bg-white text-[#556abc]"
-    >
-      Équipement
-    </a>
+		<a class="py-2 px-3 uppercase segoe-ui-bold-italic font-bold hover:bg-white hover:text-[#556abc]" routerLink="/pc" routerLinkActive="bg-white text-[#556abc]"> PJ </a>
 
-    <a
-      class="py-2 px-3 uppercase segoe-ui-bold-italic font-bold hover:bg-white hover:text-[#556abc]"
-      routerLink="/vehicle"
-      routerLinkActive="bg-white text-[#556abc]"
-    >
-      Véhicule
-    </a>
+		<a class="py-2 px-3 uppercase segoe-ui-bold-italic font-bold hover:bg-white hover:text-[#556abc]" routerLink="/equipment" routerLinkActive="bg-white text-[#556abc]"> Équipement </a>
 
-    <a
-      class="py-2 px-3 uppercase segoe-ui-bold-italic font-bold hover:bg-white hover:text-[#556abc]"
-      routerLink="/news"
-      routerLinkActive="bg-white text-[#556abc]"
-    >
-      News RA
-    </a>
+		<a class="py-2 px-3 uppercase segoe-ui-bold-italic font-bold hover:bg-white hover:text-[#556abc]" routerLink="/vehicle" routerLinkActive="bg-white text-[#556abc]"> Véhicule </a>
 
-    <a
-      class="py-2 px-3 uppercase segoe-ui-bold-italic font-bold hover:bg-white hover:text-[#556abc]"
-      routerLink="/codex"
-      routerLinkActive="bg-white text-[#556abc]"
-    >
-      Codex
-    </a>
-  </div>
+		<a class="py-2 px-3 uppercase segoe-ui-bold-italic font-bold hover:bg-white hover:text-[#556abc]" routerLink="/news" routerLinkActive="bg-white text-[#556abc]"> News RA </a>
 
-  <a
-    routerLink="/about"
-    class="rounded-full inline-block size-6 hover:bg-white hover:text-[#556abc]"
-    title="À propos"
-  >
-    <app-icon class="inline-block size-6" icon="information-circle"></app-icon>
-  </a>
+		<a class="py-2 px-3 uppercase segoe-ui-bold-italic font-bold hover:bg-white hover:text-[#556abc]" routerLink="/codex" routerLinkActive="bg-white text-[#556abc]"> Codex </a>
+	</div>
+
+	<a routerLink="/about" class="rounded-full inline-block size-6 hover:bg-white hover:text-[#556abc]" title="À propos">
+		<app-icon class="inline-block size-6" icon="information-circle"></app-icon>
+	</a>
 </header>
 
 <main>
-  <router-outlet></router-outlet>
+	<router-outlet></router-outlet>
 </main>
