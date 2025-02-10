@@ -1,3 +1,1 @@
 # TODO
-
-- Armes de tourelles

@@ -41,6 +41,8 @@ export class ComputedCharacter {
 	public slots = [0, 0, 0, 0, 0, 0]
 	public slotsError: number[] = []
 	public freePoints = 0
+	public hasAutomatedTurret = false
+	public hasShoulderTurret = false
 
 	addHistoric(source: string, target: string, value: number, xp?: number) {
 		let element = this.historic.find((element) => element.source === source)
@@ -88,6 +90,8 @@ export class Character {
 	public _section?: Section
 	public _armor?: Armor
 	public weapons: (Weapon | undefined)[] = []
+	public automatedTurret?: number
+	public shoulderTurret?: number
 	public prestigeWeapons: { name: string; cost: number }[] = []
 	public weaponUpgrades: (Upgrade | undefined)[][] = []
 	public modules: (Module | undefined)[] = []
@@ -283,7 +287,9 @@ export class Character {
 			portraitImage: this.portraitImage,
 			color: this.color,
 			dark: this.dark,
-			prestigeWeapons: this.prestigeWeapons
+			prestigeWeapons: this.prestigeWeapons,
+			automatedTurret: this.automatedTurret,
+			shouldedTurret: this.shoulderTurret
 		}
 
 		return result
@@ -324,6 +330,8 @@ export class Character {
 		this.color = data.color || '#f25a1e'
 		this.dark = data.dark !== undefined ? !!data.dark : true
 		this.prestigeWeapons = data.prestigeWeapons || []
+		this.automatedTurret = data.automatedTurret
+		this.shoulderTurret = data.shoulderTurret
 
 		this.computeAspects()
 		this.computePGWeaponModules()
@@ -384,6 +392,38 @@ export class Character {
 		}
 
 		return result
+	}
+
+	weaponTurretState(index: number) {
+		if (this.automatedTurret === index) {
+			return 1
+		}
+
+		if (this.shoulderTurret === index) {
+			return 2
+		}
+
+		return 0
+	}
+
+	setWeaponTurretState(index: number, state: number) {
+		if (state === 1) {
+			this.automatedTurret = index
+		}
+
+		if (state === 2) {
+			this.shoulderTurret = index
+		}
+
+		if (state === 0) {
+			if (this.automatedTurret === index) {
+				this.automatedTurret = undefined
+			}
+
+			if (this.shoulderTurret === index) {
+				this.shoulderTurret = undefined
+			}
+		}
 	}
 
 	errorCharacteristics() {
@@ -818,6 +858,12 @@ export class Character {
 		this.computePGWeaponModules()
 	}
 
+	removePrestigeWeapon(index: number) {
+		this.prestigeWeapons.splice(index, 1)
+
+		this.computePGWeaponModules()
+	}
+
 	removeModule(index: number) {
 		this.modules.splice(index, 1)
 
@@ -828,12 +874,34 @@ export class Character {
 		this.heroicCapacities.splice(index, 1)
 	}
 
-	weaponLabel(weapon: Weapon) {
+	weaponLabel(index: number, weapon?: Weapon) {
+		if (!weapon) {
+			return ''
+		}
+
 		let result = weapon.name
+
+		if (this.automatedTurret === index) {
+			result += ' en tourelle automatisée'
+		} else if (this.shoulderTurret === index) {
+			result += ' en tourelle épaule'
+		}
 
 		const upgrades = this.weaponUpgrades[this.weapons.indexOf(weapon)].filter((u) => u)
 		if (upgrades.length) {
 			result += ' (' + upgrades.map((u) => u!.name).join(', ') + ')'
+		}
+
+		return result
+	}
+
+	prestigeWeaponLabel(weapon: { name: string; cost: number }, index: number) {
+		let result = weapon.name
+
+		if (this.automatedTurret === index) {
+			result += ' (En tourelle automatisée)'
+		} else if (this.shoulderTurret === index) {
+			result += ' (En tourelle épaule)'
 		}
 
 		return result
@@ -1331,6 +1399,17 @@ export class Character {
 			this.computePG()
 			this.computeSlots()
 		}
+
+		this.computed.hasAutomatedTurret = this.modules.some((module) => module?.name === 'Tourelle automatisée')
+		this.computed.hasShoulderTurret = this.modules.some((module) => module?.name === "Tourelle d'épaule")
+
+		if (!this.computed.hasAutomatedTurret) {
+			this.automatedTurret = undefined
+		}
+
+		if (!this.computed.hasShoulderTurret) {
+			this.shoulderTurret = undefined
+		}
 	}
 
 	computeSlots() {
@@ -1593,14 +1672,14 @@ SLOTS
 			result +=
 				`==Armes achetées :== ` +
 				this.weapons
+					.map((w, index) => this.weaponLabel(index, w))
 					.filter((w) => w)
-					.map((w) => this.weaponLabel(w!))
 					.join(' / ') +
 				'\n'
 		}
 
 		if (this.prestigeWeapons?.length) {
-			result += `==Armes de prestige :== ` + this.prestigeWeapons.map((w) => w.name).join(' / ') + '\n'
+			result += `==Armes de prestige :== ` + this.prestigeWeapons.map((w, index) => this.prestigeWeaponLabel(w, 1000 + index)).join(' / ') + '\n'
 		}
 
 		if (this.computed.xp || this.computed.pg) {

@@ -265,6 +265,23 @@
 							}
 						</select>
 					}
+
+					@if (weapon && weapon.slots <= 2 && weapon.type === 'distance' && (character.computed.hasAutomatedTurret || character.computed.hasShoulderTurret)) {
+						<select
+							[ngModel]="character.weaponTurretState(weaponIndex)"
+							(ngModelChange)="character.setWeaponTurretState(weaponIndex, $event)"
+							class="bg-white text-[#2e2a31] h-[30px] pl-1 flex-grow text-ellipsis overflow-hidden text-nowrap">
+							<option [ngValue]="0">À la ceinture</option>
+
+							@if (character.computed.hasAutomatedTurret) {
+								<option [ngValue]="1">En tourelle automatisée</option>
+							}
+
+							@if (character.computed.hasShoulderTurret) {
+								<option [ngValue]="2">En tourelle d'épaule</option>
+							}
+						</select>
+					}
 				</div>
 			}
 
@@ -344,10 +361,18 @@
 
 				<div class="grid grid-cols-2 gap-2">
 					@for (weapon of character.prestigeWeapons; track weapon) {
-						<div class="grid grid-cols-4 gap-1">
+						<div class="grid grid-cols-6 gap-1">
 							<div class="col-span-3 flex flex-col">
 								<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Nom </label>
-								<input type="text" [(ngModel)]="weapon.name" class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap" />
+								<div class="flex">
+									<input type="text" [(ngModel)]="weapon.name" class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap flex-grow" />
+									<button
+										class="size-[30px] min-w-[30px] flex items-center justify-center border border-white bg-white text-[#2e2a31] ml-0.5 hover:bg-[#2e2a31] hover:text-white"
+										(click)="character.removePrestigeWeapon($index)"
+										tabindex="-1">
+										<app-icon class="size-5 block" icon="X"></app-icon>
+									</button>
+								</div>
 							</div>
 							<div class="col-span-1 flex flex-col">
 								<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Coût </label>
@@ -357,10 +382,27 @@
 									(ngModelChange)="character.setPrestigeWeaponCost(weapon, $event)"
 									class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap" />
 							</div>
+
+							@if (character.computed.hasAutomatedTurret || character.computed.hasShoulderTurret) {
+								<select
+									[ngModel]="character.weaponTurretState(1000 + $index)"
+									(ngModelChange)="character.setWeaponTurretState(1000 + $index, $event)"
+									class="bg-white text-[#2e2a31] h-[30px] pl-1 flex-grow text-ellipsis overflow-hidden text-nowrap col-span-2 mt-[30px]">
+									<option [ngValue]="0">À la ceinture</option>
+
+									@if (character.computed.hasAutomatedTurret) {
+										<option [ngValue]="1">En tourelle automatisée</option>
+									}
+
+									@if (character.computed.hasShoulderTurret) {
+										<option [ngValue]="2">En tourelle d'épaule</option>
+									}
+								</select>
+							}
 						</div>
 					}
 
-					<button class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center" (click)="character.newPrestigeWeapon()">
+					<button class="h-[30px] mt-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center" (click)="character.newPrestigeWeapon()">
 						<app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
 						<span class="ml-1">Ajouter une arme de prestige</span>
 					</button>
