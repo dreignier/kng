@@ -1,7 +1,4 @@
 # TODO
 
-## Générateur de PJ :
-
-- Gérer correctement les modules tourelles
-- Gérer les armes de prestige
-- Permettre d'insérer un personnage dans un codex
+- Armes de tourelles
+- Empêcher le générateur de prendre un module qui ne rentre pas

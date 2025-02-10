@@ -88,6 +88,7 @@ export class Character {
 	public _section?: Section
 	public _armor?: Armor
 	public weapons: (Weapon | undefined)[] = []
+	public prestigeWeapons: { name: string; cost: number }[] = []
 	public weaponUpgrades: (Upgrade | undefined)[][] = []
 	public modules: (Module | undefined)[] = []
 	public heroicCapacities: (HeroicCapacity | undefined)[] = []
@@ -98,6 +99,9 @@ export class Character {
 	public noSectionFlaw = false
 	public _freePoints = 0
 	public bgImage = ''
+	public portraitImage = ''
+	public portraitWidth = 0
+	public portraitHeight = 0
 	public color = '#f25a1e'
 	public dark = true
 	public computed = new ComputedCharacter()
@@ -276,8 +280,10 @@ export class Character {
 			noSectionFlaw: this.noSectionFlaw,
 			freePoints: this._freePoints || 0,
 			bgImage: this.bgImage,
+			portraitImage: this.portraitImage,
 			color: this.color,
-			dark: this.dark
+			dark: this.dark,
+			prestigeWeapons: this.prestigeWeapons
 		}
 
 		return result
@@ -314,8 +320,10 @@ export class Character {
 		this.noSectionFlaw = !!data.noSectionFlaw
 		this._freePoints = data.freePoints || 0
 		this.bgImage = data.bgImage || ''
+		this.portraitImage = data.portraitImage || ''
 		this.color = data.color || '#f25a1e'
 		this.dark = data.dark !== undefined ? !!data.dark : true
+		this.prestigeWeapons = data.prestigeWeapons || []
 
 		this.computeAspects()
 		this.computePGWeaponModules()
@@ -632,6 +640,16 @@ export class Character {
 	newWeapon() {
 		this.weapons.push(undefined)
 		this.weaponUpgrades.push([])
+	}
+
+	newPrestigeWeapon() {
+		this.prestigeWeapons.push({ name: '', cost: 0 })
+	}
+
+	setPrestigeWeaponCost(weapon: { name: string; cost: number }, cost: number) {
+		weapon.cost = cost
+
+		this.computePGWeaponModules()
 	}
 
 	newModule() {
@@ -1289,7 +1307,10 @@ export class Character {
 	}
 
 	computePGWeaponModules() {
-		let pg = this.computed.pg
+		this.computePG()
+
+		let pg = this.computed.pg || 0
+
 		this.filterModules()
 		this.filterWeapons()
 		this.computePG()
@@ -1391,9 +1412,6 @@ export class Character {
 			}
 		}
 
-		this.computed.pg = Math.max(0, total - Math.min(50, sub.Standard))
-		this.computed.pgError = Math.max(0, 50 - sub.Standard)
-
 		this.computed.availableLevels = ['Standard']
 		if (sub.Standard >= 150) {
 			this.computed.availableLevels.push('Avancé')
@@ -1403,11 +1421,25 @@ export class Character {
 		}
 		if (sub.Standard + sub.Avancé + sub.Rare >= 450) {
 			this.computed.availableLevels.push('Prestige')
+
+			for (const weapon of this.prestigeWeapons) {
+				if (weapon) {
+					sub.Prestige += weapon.cost
+					total += weapon.cost
+				}
+			}
 		}
+
+		this.computed.pg = Math.max(0, total - Math.min(50, sub.Standard))
+		this.computed.pgError = Math.max(0, 50 - sub.Standard)
 	}
 
 	markdown() {
 		let result = ''
+
+		if (this.portraitImage) {
+			result += `![](${this.portraitImage} =${this.portraitWidth || '*'}x${this.portraitHeight || '*'}) `
+		}
 
 		if (this.identity) {
 			result += `>>!!!${this.identity}!!!>>\n\n`
@@ -1539,14 +1571,14 @@ SLOTS
 			result += `==Équipement octroyés par la section ${this.section.name} :== ` + this.section.modules.map((e) => e.name.replace(/ niv\. [1-9]/, '')).join(' / ') + '\n'
 		}
 
-		if (this.modules?.length) {
-			result +=
-				`==Modules achetés :== ` +
-				this.modules
-					.filter((m) => m)
-					.map((m) => m!.name)
-					.join(' / ') +
-				'\n'
+		const normalModules = this.modules.filter((m) => m && m.level !== 'Prestige')
+		if (normalModules.length) {
+			result += `==Modules achetés :== ` + normalModules.map((m) => m!.name).join(' / ') + '\n'
+		}
+
+		const prestigeModules = this.modules.filter((m) => m && m.level === 'Prestige')
+		if (prestigeModules.length) {
+			result += `==Modules de prestige :== ` + prestigeModules.map((m) => m!.name).join(' / ') + '\n'
 		}
 
 		if (this.weapons?.length) {
@@ -1557,6 +1589,10 @@ SLOTS
 					.map((w) => this.weaponLabel(w!))
 					.join(' / ') +
 				'\n'
+		}
+
+		if (this.prestigeWeapons?.length) {
+			result += `==Armes de prestige :== ` + this.prestigeWeapons.map((w) => w.name).join(' / ') + '\n'
 		}
 
 		if (this.computed.xp || this.computed.pg) {

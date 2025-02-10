@@ -48,55 +48,57 @@ export function fixColor(color: string) {
 }
 
 export function showdownConverter(...showdownExtensions: ShowdownExtension[]) {
-	const extensions: ShowdownExtension[] = showdownExtensions.concat([
-		{
-			type: 'lang',
-			regex: />>([^<\n]+)<</g,
-			replace: '<center>$1</center>'
-		},
-		{
-			type: 'lang',
-			regex: />>([^>\n]+)>>/g,
-			replace: '<div class="text-right">$1</center>'
-		},
-		{
-			type: 'lang',
-			regex: /<<([^<\n]+)<</g,
-			replace: '<div class="text-left">$1</center>'
-		},
-		{
-			type: 'lang',
-			regex: /@@([^@\n]+)@@/g,
-			replace: '<span class="link">$1</span>'
-		},
-		{
-			type: 'lang',
-			regex: /~~([^~\n]+)~~/g,
-			replace: '<del>$1</del>'
-		},
-		{
-			type: 'lang',
-			regex: /\^\^([^\^\n]+)\^\^/g,
-			replace: '<sup>$1</sup>'
-		},
-		{
-			type: 'lang',
-			regex: /__([^_\n]+)__/g,
-			replace: '<ins>$1</ins>'
-		},
-		{
-			type: 'lang',
-			regex: /=(=+)([^=\n]+)(=+)=/g,
-			replace: (match: string, p1: string, p2: string) => `<big class="colorized bigger-${p1.length - 1}">${p2}</big>`
-		},
-		{
-			type: 'lang',
-			regex: /!(!+)([^!\n]+)(!+)!/g,
-			replace: (match: string, p1: string, p2: string) => `<big class="bigger-${p1.length - 1}">${p2}</big>`
-		}
-	])
+	const converter = new Converter({
+		extensions: showdownExtensions.concat([
+			{
+				type: 'lang',
+				regex: />>([^<\n]+)<</g,
+				replace: '<center>$1</center>'
+			},
+			{
+				type: 'lang',
+				regex: />>([^>\n]+)>>/g,
+				replace: (match: string, p1: string): string => `<div class="text-right">${converter.makeHtml(p1)}</div>`
+			},
+			{
+				type: 'lang',
+				regex: /<<([^<\n]+)<</g,
+				replace: (match: string, p1: string): string => `<div class="text-left">${converter.makeHtml(p1)}</div>`
+			},
+			{
+				type: 'lang',
+				regex: /@@([^@\n]+)@@/g,
+				replace: '<span class="link">$1</span>'
+			},
+			{
+				type: 'lang',
+				regex: /~~([^~\n]+)~~/g,
+				replace: '<del>$1</del>'
+			},
+			{
+				type: 'lang',
+				regex: /\^\^([^\^\n]+)\^\^/g,
+				replace: '<sup>$1</sup>'
+			},
+			{
+				type: 'lang',
+				regex: /__([^_\n]+)__/g,
+				replace: '<ins>$1</ins>'
+			},
+			{
+				type: 'lang',
+				regex: /=(=+)([^=\n]+)(=+)=/g,
+				replace: (match: string, p1: string, p2: string) => `<big class="colorized bigger-${p1.length - 1}">${p2}</big>`
+			},
+			{
+				type: 'lang',
+				regex: /!(!+)([^!\n]+)(!+)!/g,
+				replace: (match: string, p1: string, p2: string) => `<big class="bigger-${p1.length - 1}">${p2}</big>`
+			}
+		])
+	})
 
-	return new Converter({ extensions })
+	return converter
 }
 
 export function fuc(str: string) {

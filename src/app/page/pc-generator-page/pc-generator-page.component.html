@@ -37,7 +37,24 @@
 			</span>
 		</button>
 
-		<div class="col-span-12 flex flex-col">
+		<div class="col-span-6 flex flex-col">
+			<div class="grid grid-cols-5 gap-1">
+				<div class="col-span-3 flex flex-col">
+					<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Image de portrait </label>
+					<input type="text" [(ngModel)]="character.portraitImage" class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap" />
+				</div>
+				<div class="col-span-1 flex flex-col">
+					<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Largeur </label>
+					<input type="number" [(ngModel)]="character.portraitWidth" class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap" />
+				</div>
+				<div class="col-span-1 flex flex-col">
+					<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Hauteur </label>
+					<input type="number" [(ngModel)]="character.portraitHeight" class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap" />
+				</div>
+			</div>
+		</div>
+
+		<div class="col-span-6 flex flex-col">
 			<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Image de fond </label>
 			<input type="text" [(ngModel)]="character.bgImage" class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap" />
 		</div>
@@ -320,6 +337,36 @@
 				<span class="ml-1">Ajouter une capacité héroique</span>
 			</button>
 		</div>
+
+		@if (character.computed.availableLevels.includes('Prestige')) {
+			<div class="col-span-12">
+				<label class="w-full uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center mb-2"> Armes de prestige </label>
+
+				<div class="grid grid-cols-2 gap-2">
+					@for (weapon of character.prestigeWeapons; track weapon) {
+						<div class="grid grid-cols-4 gap-1">
+							<div class="col-span-3 flex flex-col">
+								<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Nom </label>
+								<input type="text" [(ngModel)]="weapon.name" class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap" />
+							</div>
+							<div class="col-span-1 flex flex-col">
+								<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Coût </label>
+								<input
+									type="number"
+									[ngModel]="weapon.cost"
+									(ngModelChange)="character.setPrestigeWeaponCost(weapon, $event)"
+									class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap" />
+							</div>
+						</div>
+					}
+
+					<button class="h-[30px] border border-white bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white flex items-center justify-center" (click)="character.newPrestigeWeapon()">
+						<app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+						<span class="ml-1">Ajouter une arme de prestige</span>
+					</button>
+				</div>
+			</div>
+		}
 
 		@if (character.computed.errors.length || character.computed.pgError || character.computed.slotsError.length) {
 			<div class="col-span-12 text-white bg-orange-500 border border-white mt-5 p-1 rounded flex flex-col gap-2">
