@@ -486,6 +486,8 @@ export class Character {
 			this.crest = sample(this.data.crests)!
 		}
 
+		const bannedModules: Module[] = []
+
 		// Weapons, modules, upgrades
 		while (this.computed.pgError || this.computed.pg < options.pg) {
 			const availablePg = this.computed.pgError || options.pg - this.computed.pg
@@ -504,7 +506,7 @@ export class Character {
 				})
 			)
 
-			const modules = options.filterModules(this.data.modules.filter((module) => module.available && module.cost <= availablePg))
+			const modules = options.filterModules(this.data.modules.filter((module) => module.available && module.cost <= availablePg && !bannedModules.includes(module)))
 			const upgrades: {
 				weaponIndex: number
 				upgradeIndex: number
@@ -561,6 +563,12 @@ export class Character {
 				this.computed.pgError = 0
 			} else {
 				break
+			}
+
+			if (this.computed.slotsError.length) {
+				// Last module can't fit. Remove it and ban it
+				bannedModules.push(this.modules[this.modules.length - 1]!)
+				this.removeModule(this.modules.length - 1)
 			}
 		}
 
@@ -1876,9 +1884,6 @@ export class Module {
 
 	public requirement?: Module
 	public next?: Module
-
-	// [P in keyof T as T[P] extends V? P: never]: any
-
 	public upgrade?: { type: keyof ComputedCharacter; value: number }
 	public overdrive?: Characteristic
 
