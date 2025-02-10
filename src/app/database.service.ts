@@ -16,12 +16,12 @@ export class DbCapacity extends Capacity {
 	index: string = ''
 
 	parse(data: string) {
-		const [name, tags, description] = data.split(' | ');
+		const [name, tags, description] = data.split(' | ')
 
-		this.name = name;
-		this.description = description;
-		this.tags = tags.split(' - ');
-		this.index = (this.name + ' ' + this.tags.join(' ')).toLowerCase();
+		this.name = name
+		this.description = description
+		this.tags = tags.split(' - ')
+		this.index = (this.name + ' ' + this.tags.join(' ')).toLowerCase()
 	}
 }
 
@@ -31,20 +31,19 @@ export class DbEffect extends Effect {
 	cost: number = 0
 
 	parse(data: string) {
-		const [name, tags, cost] = data.split(' | ');
+		const [name, tags, cost] = data.split(' | ')
 
-		this.name = name;
-		this.tags = tags.split(' - ');
-		this.cost = Number(cost);
-		this.index = (this.name + ' ' + this.tags.join(' ')).toLowerCase();
+		this.name = name
+		this.tags = tags.split(' - ')
+		this.cost = Number(cost)
+		this.index = (this.name + ' ' + this.tags.join(' ')).toLowerCase()
 	}
 }
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root'
 })
 export class DatabaseService {
-
 	npcs: Npc[] = []
 	equipments: Equipment[] = []
 	vehicles: Vehicle[] = []
@@ -70,10 +69,10 @@ export class DatabaseService {
 			if (e.tags.includes('bande')) {
 				const capacity = new DbCapacity()
 
-				capacity.name = e.name;
-				capacity.description = "Le PNJ bénéficie de l'équivalent de l'effet " + capacity.name + '.';
-				capacity.tags = ['effet', ...e.tags.filter(tag => ['bande', 'recrue', 'initié', 'héros', 'autre'].includes(tag))];
-				capacity.index = (capacity.name + ' ' + capacity.tags.join(' ')).toLocaleLowerCase();
+				capacity.name = e.name
+				capacity.description = "Le PNJ bénéficie de l'équivalent de l'effet " + capacity.name + '.'
+				capacity.tags = ['effet', ...e.tags.filter((tag) => ['bande', 'recrue', 'initié', 'héros', 'autre'].includes(tag))]
+				capacity.index = (capacity.name + ' ' + capacity.tags.join(' ')).toLocaleLowerCase()
 
 				this.capacities.push(capacity)
 			}
@@ -88,7 +87,7 @@ export class DatabaseService {
 		this.capacities.sort((a, b) => a.index.localeCompare(b.index))
 		this.effects.sort((a, b) => a.index.localeCompare(b.index))
 
-		window.addEventListener('storage', event => {
+		window.addEventListener('storage', (event) => {
 			if (event.key === 'list') {
 				this.loadNpcs()
 			} else if (event.key === 'equipmentList') {
@@ -97,10 +96,12 @@ export class DatabaseService {
 				this.loadVehicles()
 			} else if (event.key === 'newsList') {
 				this.loadNews()
+			} else if (event.key === 'characters') {
+				this.loadCharacters()
 			}
 
 			this.change.emit()
-		});
+		})
 	}
 
 	loadNpcs() {
@@ -175,23 +176,23 @@ export class DatabaseService {
 	}
 
 	findNpc(name: string) {
-		return this.npcs.find(e => e.name.toLowerCase().trim() === name.toLowerCase().trim())
+		return this.npcs.find((e) => e.name.toLowerCase().trim() === name.toLowerCase().trim())
 	}
 
 	findEquipment(name: string) {
-		return this.equipments.find(e => e.name.toLowerCase().trim() === name.toLowerCase().trim())
+		return this.equipments.find((e) => e.name.toLowerCase().trim() === name.toLowerCase().trim())
 	}
 
 	findVehicle(name: string) {
-		return this.vehicles.find(e => e.name.toLowerCase().trim() === name.toLowerCase().trim())
+		return this.vehicles.find((e) => e.name.toLowerCase().trim() === name.toLowerCase().trim())
 	}
 
 	findNews(name: string) {
-		return this.news.find(e => e.name.toLowerCase().trim() === name.toLowerCase().trim())
+		return this.news.find((e) => e.name.toLowerCase().trim() === name.toLowerCase().trim())
 	}
 
 	findCharacter(name: string) {
-		return this.characters.find(e => e.name.toLowerCase().trim() === name.toLowerCase().trim())
+		return this.characters.find((e) => e.name.toLowerCase().trim() === name.toLowerCase().trim())
 	}
 
 	updateColor(color: string) {
@@ -202,7 +203,7 @@ export class DatabaseService {
 
 	updateCapacities(capacities: Capacity[]) {
 		for (const capacity of capacities) {
-			if (!this.capacities.find(e => e.name === capacity.name)) {
+			if (!this.capacities.find((e) => e.name === capacity.name)) {
 				const c = new DbCapacity()
 				c.name = capacity.name
 				c.description = capacity.description
@@ -215,7 +216,7 @@ export class DatabaseService {
 
 	updateEffects(effects: Effect[]) {
 		for (const effect of effects) {
-			if (!this.effects.find(e => e.name === effect.name)) {
+			if (!this.effects.find((e) => e.name === effect.name)) {
 				const e = new DbEffect()
 				e.name = effect.name
 				e.tags = ['personnalisé']
@@ -246,7 +247,7 @@ export class DatabaseService {
 	saveNpc(npc: Npc) {
 		const data = new Npc(npc)
 
-		const index = this.npcs.findIndex(e => e.name.toLowerCase() === data.name.toLowerCase())
+		const index = this.npcs.findIndex((e) => e.name.toLowerCase() === data.name.toLowerCase())
 
 		if (index === -1) {
 			this.npcs.push(data)
@@ -266,7 +267,7 @@ export class DatabaseService {
 	saveCharacter(character: Character) {
 		const data = character.export()
 
-		const index = this.characters.findIndex(e => e.name.toLowerCase() === data.name.toLowerCase())
+		const index = this.characters.findIndex((e) => e.name.toLowerCase() === data.name.toLowerCase())
 
 		if (index === -1) {
 			this.characters.push(character)
@@ -280,7 +281,7 @@ export class DatabaseService {
 
 	saveEquipment(equipment: Equipment) {
 		const data = new Equipment(equipment)
-		const index = this.equipments.findIndex(e => e.name.toLowerCase() === data.name.toLowerCase())
+		const index = this.equipments.findIndex((e) => e.name.toLowerCase() === data.name.toLowerCase())
 
 		if (index === -1) {
 			this.equipments.push(data)
@@ -298,7 +299,7 @@ export class DatabaseService {
 
 	saveVehicle(vehicle: Vehicle) {
 		const data = new Vehicle(vehicle)
-		const index = this.vehicles.findIndex(e => e.name.toLowerCase() === data.name.toLowerCase())
+		const index = this.vehicles.findIndex((e) => e.name.toLowerCase() === data.name.toLowerCase())
 
 		if (index === -1) {
 			this.vehicles.push(data)
@@ -311,23 +312,23 @@ export class DatabaseService {
 	}
 
 	deleteNpc(npc: Npc) {
-		this.npcs = this.npcs.filter(e => e.name.toLowerCase() !== npc.name.toLowerCase())
+		this.npcs = this.npcs.filter((e) => e.name.toLowerCase() !== npc.name.toLowerCase())
 		this.saveNpcs()
 	}
 
 	deleteCharacter(character: Character) {
-		this.characters = this.characters.filter(e => e.name.toLowerCase() !== character.name.toLowerCase())
+		this.characters = this.characters.filter((e) => e.name.toLowerCase() !== character.name.toLowerCase())
 		this.saveCharacters()
 	}
 
 	deleteEquipment(equipment: Equipment) {
-		this.equipments = this.equipments.filter(e => e.name.toLowerCase() !== equipment.name.toLowerCase())
+		this.equipments = this.equipments.filter((e) => e.name.toLowerCase() !== equipment.name.toLowerCase())
 		this.saveEquipments()
 	}
 
 	deleteVehicle(vehicle: Vehicle) {
-		this.vehicles = this.vehicles.filter(e => e.name.toLowerCase() !== vehicle.name.toLowerCase())
-		this.saveVehicles();
+		this.vehicles = this.vehicles.filter((e) => e.name.toLowerCase() !== vehicle.name.toLowerCase())
+		this.saveVehicles()
 	}
 
 	saveVehicles() {
@@ -345,7 +346,7 @@ export class DatabaseService {
 
 			if (colorA !== colorB) {
 				if (colorA !== -1 && colorB !== -1) {
-        	return colorA - colorB
+					return colorA - colorB
 				}
 
 				if (colorA !== -1) {
@@ -357,14 +358,14 @@ export class DatabaseService {
 				}
 
 				return parseInt(a.color.replace('#', ''), 16) - parseInt(b.color.replace('#', ''), 16)
-      }
+			}
 
 			const typeA = TYPE_ORDER.indexOf(a.type)
 			const typeB = TYPE_ORDER.indexOf(b.type)
 
 			if (typeA !== typeB) {
-        if (typeA !== -1 && typeB !== -1) {
-        	return typeA - typeB
+				if (typeA !== -1 && typeB !== -1) {
+					return typeA - typeB
 				}
 
 				if (typeA !== -1) {
@@ -376,7 +377,7 @@ export class DatabaseService {
 				}
 
 				return a.type.localeCompare(b.type)
-      }
+			}
 
 			return a.name.localeCompare(b.name)
 		})
@@ -400,8 +401,8 @@ export class DatabaseService {
 			const levelB = LEVEL_ORDER.indexOf(b.type)
 
 			if (levelA !== levelB) {
-        if (levelA !== -1 && levelB !== -1) {
-        	return levelA - levelB
+				if (levelA !== -1 && levelB !== -1) {
+					return levelA - levelB
 				}
 
 				if (levelA !== -1) {
@@ -413,14 +414,14 @@ export class DatabaseService {
 				}
 
 				return a.type.localeCompare(b.type)
-      }
+			}
 
 			return a.name.localeCompare(b.name)
 		})
 	}
 
 	saveNpcs() {
-		localStorage.setItem('list', JSON.stringify(this.npcs.map(e => e.export())))
+		localStorage.setItem('list', JSON.stringify(this.npcs.map((e) => e.export())))
 	}
 
 	sortCharacters() {
@@ -428,7 +429,7 @@ export class DatabaseService {
 	}
 
 	saveCharacters() {
-		localStorage.setItem('characters', JSON.stringify(this.characters.map(e => e.export())))
+		localStorage.setItem('characters', JSON.stringify(this.characters.map((e) => e.export())))
 	}
 
 	saveEquipments() {
@@ -443,7 +444,7 @@ export class DatabaseService {
 				}
 			}
 		} else if (strategy === 'ignore') {
-			npcs = npcs.filter(e => !this.findNpc(e.name))
+			npcs = npcs.filter((e) => !this.findNpc(e.name))
 		}
 
 		this.npcs = this.npcs.concat(npcs)
@@ -467,7 +468,7 @@ export class DatabaseService {
 				}
 			}
 		} else if (strategy === 'ignore') {
-			characters = characters.filter(e => !this.findCharacter(e.name))
+			characters = characters.filter((e) => !this.findCharacter(e.name))
 		}
 
 		this.characters = this.characters.concat(characters)
@@ -477,22 +478,22 @@ export class DatabaseService {
 	}
 
 	exportNpcs(names: Set<string>) {
-		const npcs = this.npcs.filter(e => names.has(e.name)).map(e => e.export())
+		const npcs = this.npcs.filter((e) => names.has(e.name)).map((e) => e.export())
 		return JSON.stringify(npcs)
 	}
 
 	exportCharacters(names: Set<string>) {
-		const characters = this.characters.filter(e => names.has(e.name)).map(e => e.export())
+		const characters = this.characters.filter((e) => names.has(e.name)).map((e) => e.export())
 		return JSON.stringify(characters)
 	}
 
 	exportEquipments(names: Set<string>) {
-		const equipments = this.equipments.filter(e => names.has(e.name))
+		const equipments = this.equipments.filter((e) => names.has(e.name))
 		return JSON.stringify(equipments)
 	}
 
 	exportVehicles(names: Set<string>) {
-		const vehicles = this.vehicles.filter(e => names.has(e.name))
+		const vehicles = this.vehicles.filter((e) => names.has(e.name))
 		return JSON.stringify(vehicles)
 	}
 
@@ -504,7 +505,7 @@ export class DatabaseService {
 				}
 			}
 		} else if (strategy === 'ignore') {
-			equipments = equipments.filter(e => !this.findEquipment(e.name))
+			equipments = equipments.filter((e) => !this.findEquipment(e.name))
 		}
 
 		this.equipments = this.equipments.concat(equipments)
@@ -527,7 +528,7 @@ export class DatabaseService {
 				}
 			}
 		} else if (strategy === 'ignore') {
-			vehicles = vehicles.filter(e => !this.findVehicle(e.name))
+			vehicles = vehicles.filter((e) => !this.findVehicle(e.name))
 		}
 
 		this.vehicles = this.vehicles.concat(vehicles)
@@ -538,7 +539,7 @@ export class DatabaseService {
 
 	saveNews(news: News) {
 		const data = new News(news)
-		const index = this.news.findIndex(e => e.name.toLowerCase() === data.name.toLowerCase())
+		const index = this.news.findIndex((e) => e.name.toLowerCase() === data.name.toLowerCase())
 
 		if (index === -1) {
 			this.news.push(data)
@@ -559,7 +560,7 @@ export class DatabaseService {
 	}
 
 	exportNews(names: Set<string>) {
-		const news = this.news.filter(e => names.has(e.name))
+		const news = this.news.filter((e) => names.has(e.name))
 		return JSON.stringify(news)
 	}
 
@@ -571,7 +572,7 @@ export class DatabaseService {
 				}
 			}
 		} else if (strategy === 'ignore') {
-			allNews = allNews.filter(e => !this.findNews(e.name))
+			allNews = allNews.filter((e) => !this.findNews(e.name))
 		}
 
 		this.news = this.news.concat(allNews)
@@ -581,7 +582,7 @@ export class DatabaseService {
 	}
 
 	deleteNews(news: News) {
-		this.news = this.news.filter(e => e.name.toLowerCase() !== news.name.toLowerCase())
+		this.news = this.news.filter((e) => e.name.toLowerCase() !== news.name.toLowerCase())
 		this.saveAllNews()
 	}
 }

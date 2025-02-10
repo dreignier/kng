@@ -11,6 +11,7 @@ import {
 	HEROIC_CAPACITIES,
 	MODULES,
 	SECTIONS,
+	SLOTS_LABELS,
 	WEAPON_UPGRADES,
 	WEAPONS,
 	XP_COST
@@ -1403,6 +1404,166 @@ export class Character {
 		if (sub.Standard + sub.Avancé + sub.Rare >= 450) {
 			this.computed.availableLevels.push('Prestige')
 		}
+	}
+
+	markdown() {
+		let result = ''
+
+		if (this.identity) {
+			result += `>>!!!${this.identity}!!!>>\n\n`
+		}
+
+		if (this.name) {
+			result += `>>=======«&nbsp;${this.name}&nbsp;»=======>>\n\n`
+		}
+
+		if (this.description) {
+			result += `${this.description}\n\n`
+		}
+
+		result += '\n\n____\n\n'
+
+		if (this.armor) {
+			result += `<<==Armure :== ${this.armor.name}<<\n`
+		}
+
+		if (this.section) {
+			result += `<<==Section :== ${this.section.name}<<\n`
+		}
+
+		if (this.achievement) {
+			result += `<<==Haut fait :== ${this.achievementLabel()}<<\n`
+		}
+
+		if (this.archetype) {
+			result += `<<==Archetype :== ${this.archetypeLabel()}<<\n`
+		}
+
+		if (this.crest) {
+			result += `<<==Blason :== ${this.crest}<<\n`
+		}
+
+		if (this.minorMotivations) {
+			result += `<<==Motivations mineurs :== ${this.minorMotivations}<<\n`
+		}
+
+		if (this.majorMotivation) {
+			result += `<<==Motivation majeure :== ${this.majorMotivation}<<\n`
+		}
+
+		const perks = this.perks.filter((p) => p).map((p) => p!.name)
+		if (perks.length) {
+			result += `<<==Avantages :== ${this.perks
+				.filter((p) => p)
+				.map((p) => p!.name)
+				.join(' / ')}<<\n`
+		}
+
+		if (this.heroicCapacities?.length) {
+			result += `<<==Capacités héroïques :== ${this.heroicCapacities
+				.filter((c) => c)
+				.map((c) => c!.name)
+				.join(' / ')}<<\n`
+		}
+
+		if ((this.section?.flaw && !this.noSectionFlaw) || this.flaw) {
+			result += `<<==Inconvénients :== ${[!this.noSectionFlaw ? this.section?.flaw : '', this.flaw].filter((f) => f).join(' / ')}<<\n`
+		}
+
+		if (this.computed.freePoints) {
+			result += `<<==Points libres :== ${this.computed.freePoints}<<\n`
+		}
+
+		if (this.armor) {
+			result += `
+
+||||
+
+[[[=
+>>ARMURE ${this.armor.name.toUpperCase()}<<
+---
+>>Armure>> ||: >>${this.computed.armor}<<
+---
+>>Champs de force>> ||: >>${this.computed.forcefield}<<
+---
+>>Énergie>> ||: >>${this.computed.energy}<<
+]]]
+
+____
+
+`
+		}
+
+		result += `[[[=\nCARACTÉRISTIQUES\n---\n`
+		result += ASPECTS_LABELS.map((label) => `4| >>**${label.toUpperCase()}**<<`).join(' ||') + '\n---\n'
+		result += this.aspects.map((a) => `4|: >>**${a.value}**<<`).join(' ||') + '\n---\n'
+
+		for (let i = 0; i < 3; ++i) {
+			result += this.aspects.map((a) => `3| >>${a.characteristics[i].name}<< ||1| >>OD<<`).join(' ||') + '\n---\n'
+			result += this.aspects.map((a) => `3|: >>${a.characteristics[i].value}<< ||1|: >>${a.characteristics[i].overdrive || '-'}<<`).join(' ||')
+
+			if (i !== 2) {
+				result += '\n---\n'
+			}
+		}
+
+		result += ']]]\n\n'
+
+		result += `
+[[[=
+VALEURS DÉRIVÉES
+---
+>>**POINTS DE SANTÉ**<< || >>**DÉFENSE**<< || >>**RÉACTION**<< || >>**INITIATIVE**<< || >>**POINTS DE CONTACT**<< || >>**POINTS D'ESPOIR**<<
+---
+: >>${this.computed.ps}<< ||: >>${this.computed.defense}<< ||: >>${this.computed.reaction}<< ||: >>${this.computed.initiative} + ${this.computed.initiativeDices}d6<< ||: >>${this.aspects[3].value}<< ||: >>${this.computed.hope}<<
+]]]\n\n
+`
+
+		if (this.armor) {
+			result += `
+[[[=
+SLOTS
+---
+	|| >>**${SLOTS_LABELS.join('**<< || >>**')}**<<
+---
+>>**Slots**>> ||: >>${this.armor.slots.join('<< ||: >>')}<<
+---
+>>**Utilisés**>> ||: >>${this.computed.slots.join('<< ||: >>')}<<
+]]]\n\n
+`
+		}
+
+		result += "==Équipement de base :== 3 nods de soin / 3 nods d'énergie / 3 nods d'armure / 5 grenades intelligentes / Marteau-épieu / Pistolet de service\n"
+
+		if (this.section && this.section.modules?.length) {
+			result += `==Équipement octroyés par la section ${this.section.name} :== ` + this.section.modules.map((e) => e.name.replace(/ niv\. [1-9]/, '')).join(' / ') + '\n'
+		}
+
+		if (this.modules?.length) {
+			result +=
+				`==Modules achetés :== ` +
+				this.modules
+					.filter((m) => m)
+					.map((m) => m!.name)
+					.join(' / ') +
+				'\n'
+		}
+
+		if (this.weapons?.length) {
+			result +=
+				`==Armes achetées :== ` +
+				this.weapons
+					.filter((w) => w)
+					.map((w) => this.weaponLabel(w!))
+					.join(' / ') +
+				'\n'
+		}
+
+		if (this.computed.xp || this.computed.pg) {
+			result += `==Total de points d'expérience et de gloire :== ${this.computed.xp}XP et ${this.computed.pg}PG\n`
+		}
+
+		return result
 	}
 }
 

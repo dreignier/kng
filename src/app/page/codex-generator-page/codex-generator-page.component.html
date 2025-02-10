@@ -1,808 +1,541 @@
 <div class="flex gap-[20px] m-5 print:hidden">
-  <button
-    class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-    (click)="togglePrintMode()"
-  >
-    <app-icon
-      class="size-5 inline-block"
-      [icon]="printMode ? 'pencil' : 'printer'"
-    ></app-icon>
-    <span class="ml-1">
-      Version {{ printMode ? "éditable" : "imprimable" }}
-    </span>
-  </button>
+	<button class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white" (click)="togglePrintMode()">
+		<app-icon class="size-5 inline-block" [icon]="printMode ? 'pencil' : 'printer'"></app-icon>
+		<span class="ml-1"> Version {{ printMode ? 'éditable' : 'imprimable' }} </span>
+	</button>
 
-  <button
-    class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-    (click)="download()"
-  >
-    <app-icon class="size-5 inline-block" icon="save"></app-icon>
-    <span class="ml-1">Sauvegarder</span>
-  </button>
+	<button class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white" (click)="download()">
+		<app-icon class="size-5 inline-block" icon="save"></app-icon>
+		<span class="ml-1">Sauvegarder</span>
+	</button>
 
-  <input #file type="file" (change)="upload($event)" class="hidden" />
-  <button
-    class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-    (click)="file.click()"
-  >
-    <app-icon class="size-5 inline-block" icon="folder-open"></app-icon>
-    <span class="ml-1">Ouvrir</span>
-  </button>
+	<input #file type="file" (change)="upload($event)" class="hidden" />
+	<button class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white" (click)="file.click()">
+		<app-icon class="size-5 inline-block" icon="folder-open"></app-icon>
+		<span class="ml-1">Ouvrir</span>
+	</button>
 
-  <button
-    class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-    (click)="reset()"
-  >
-    <app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
-    <span class="ml-1">Nouveau codex</span>
-  </button>
+	<button class="h-7 p-1 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white" (click)="reset()">
+		<app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+		<span class="ml-1">Nouveau codex</span>
+	</button>
 </div>
 
-<hr
-  class="print:hidden mx-20 my-10 border border-white [box-shadow:_-0_-0_10px_5px_white]"
-/>
+<hr class="print:hidden mx-20 my-10 border border-white [box-shadow:_-0_-0_10px_5px_white]" />
 
 @if (printMode) {
-  <div class="ml-4 my-3 flex items-center print:hidden">
-    <app-icon
-      class="size-6 inline-block mr-2"
-      icon="information-circle"
-    ></app-icon>
-    <span class="text-sm">
-      Pour convertir votre codex en PDF, vous devez utiliser la fonction
-      "Imprimer en PDF" de votre navigateur. Utilisez l'orientation "Portrait",
-      le format "A4", aucune marge et imprimez les arrières-plans.
-    </span>
-  </div>
+	<div class="ml-4 my-3 flex items-center print:hidden">
+		<app-icon class="size-6 inline-block mr-2" icon="information-circle"></app-icon>
+		<span class="text-sm">
+			Pour convertir votre codex en PDF, vous devez utiliser la fonction "Imprimer en PDF" de votre navigateur. Utilisez l'orientation "Portrait", le format "A4", aucune marge et imprimez les
+			arrières-plans.
+		</span>
+	</div>
 }
 
 <div id="vs-start" [style.height]="vsBefore + 'px'" class="print:hidden"></div>
 
 @for (page of displayedPages; track page.id) {
-  <div
-    class="flex mx-4 print:mx-0 {{
-      printMode ? 'justify-center' : 'justify-between'
-    }}"
-  >
-    @if (!printMode) {
-      <div
-        class="print:hidden text-white h-[29.7cm] flex flex-col gap-1 bg-[#2e2a31] p-2 pb-10 flex-grow mr-4 relative mb-[30px]"
-      >
-        @if (isCoverPage(page)) {
-          <div class="flex flex-col">
-            <label
-              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-            >
-              Titre de la page
-            </label>
-            <input
-              class="text-[#2e2a31] h-[30px] pl-1"
-              type="text"
-              placeholder="Titre de la page"
-              [(ngModel)]="page.title"
-              (ngModelChange)="page.onChange()"
-            />
+	<div class="flex mx-4 print:mx-0 {{ printMode ? 'justify-center' : 'justify-between' }}">
+		@if (!printMode) {
+			<div class="print:hidden text-white h-[29.7cm] flex flex-col gap-1 bg-[#2e2a31] p-2 pb-10 flex-grow mr-4 relative mb-[30px]">
+				@if (isCoverPage(page)) {
+					<div class="flex flex-col">
+						<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Titre de la page </label>
+						<input class="text-[#2e2a31] h-[30px] pl-1" type="text" placeholder="Titre de la page" [(ngModel)]="page.title" (ngModelChange)="page.onChange()" />
 
-            <label
-              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-            >
-              Couleur
-            </label>
-            <div class="flex flex-row flex-wrap">
-              <button
-                class="w-[100px] h-[30px] border border-white flex items-center justify-center"
-                [(colorPicker)]="page.color"
-                cpAlphaChannel="disabled"
-                [style.background-color]="page.color"
-              >
-                <app-icon class="size-5 inline-block" icon="brush"></app-icon>
-              </button>
+						<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Couleur </label>
+						<div class="flex flex-row flex-wrap">
+							<button class="w-[100px] h-[30px] border border-white flex items-center justify-center" [(colorPicker)]="page.color" cpAlphaChannel="disabled" [style.background-color]="page.color">
+								<app-icon class="size-5 inline-block" icon="brush"></app-icon>
+							</button>
 
-              @for (color of db.colors; track color) {
-                <button
-                  class="w-[30px] h-[30px] border border-white ml-2"
-                  [style.background-color]="color"
-                  (click)="page.color = color"
-                ></button>
-              }
-            </div>
+							@for (color of db.colors; track color) {
+								<button class="w-[30px] h-[30px] border border-white ml-2" [style.background-color]="color" (click)="page.color = color"></button>
+							}
+						</div>
 
-            <label
-              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-            >
-              Auteur
-            </label>
-            <input
-              class="text-[#2e2a31] h-[30px] pl-1"
-              type="text"
-              placeholder="Nom"
-              [(ngModel)]="page.author"
-              (ngModelChange)="page.onChange()"
-            />
+						<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Auteur </label>
+						<input class="text-[#2e2a31] h-[30px] pl-1" type="text" placeholder="Nom" [(ngModel)]="page.author" (ngModelChange)="page.onChange()" />
 
-            <label
-              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-            >
-              Image de fond
-            </label>
-            <input
-              class="text-[#2e2a31] h-[30px] pl-1"
-              type="text"
-              placeholder="Nom"
-              [(ngModel)]="page.background"
-              (ngModelChange)="page.onChange()"
-            />
-          </div>
-        }
+						<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Image de fond </label>
+						<input class="text-[#2e2a31] h-[30px] pl-1" type="text" placeholder="Nom" [(ngModel)]="page.background" (ngModelChange)="page.onChange()" />
+					</div>
+				}
 
-        @if (isSummaryPage(page)) {
-          <div class="grid grid-cols-12 gap-2">
-            <div class="col-span-12 mb-2">
-              <label
-                class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-              >
-                Couleur
-              </label>
-              <div class="flex flex-row flex-wrap">
-                <button
-                  class="w-[100px] h-[30px] border border-white flex items-center justify-center"
-                  [(colorPicker)]="summaryColor"
-                  cpAlphaChannel="disabled"
-                  [style.background-color]="summaryColor"
-                >
-                  <app-icon class="size-5 inline-block" icon="brush"></app-icon>
-                </button>
+				@if (isSummaryPage(page)) {
+					<div class="grid grid-cols-12 gap-2">
+						<div class="col-span-12 mb-2">
+							<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Couleur </label>
+							<div class="flex flex-row flex-wrap">
+								<button
+									class="w-[100px] h-[30px] border border-white flex items-center justify-center"
+									[(colorPicker)]="summaryColor"
+									cpAlphaChannel="disabled"
+									[style.background-color]="summaryColor">
+									<app-icon class="size-5 inline-block" icon="brush"></app-icon>
+								</button>
 
-                @for (color of db.colors; track color) {
-                  <button
-                    class="w-[30px] h-[30px] border border-white ml-2"
-                    [style.background-color]="color"
-                    (click)="summaryColor = color"
-                  ></button>
-                }
-              </div>
-            </div>
+								@for (color of db.colors; track color) {
+									<button class="w-[30px] h-[30px] border border-white ml-2" [style.background-color]="color" (click)="summaryColor = color"></button>
+								}
+							</div>
+						</div>
 
-            <button
-              class="h-7 p-1 col-span-12 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white hover:border-white"
-              (click)="page.toggleDarkMode()"
-            >
-              <app-icon
-                class="size-5 inline-block"
-                [icon]="page.dark ? 'sun' : 'moon'"
-              ></app-icon>
-              <span class="ml-1">
-                {{
-                  page.dark ? "Mettre en thème clair" : "Mettre en thème sombre"
-                }}
-              </span>
-            </button>
+						<button
+							class="h-7 p-1 col-span-12 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white hover:border-white"
+							(click)="page.toggleDarkMode()">
+							<app-icon class="size-5 inline-block" [icon]="page.dark ? 'sun' : 'moon'"></app-icon>
+							<span class="ml-1">
+								{{ page.dark ? 'Mettre en thème clair' : 'Mettre en thème sombre' }}
+							</span>
+						</button>
 
-            <button
-              class="h-7 p-1 col-span-12 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white hover:border-white"
-              (click)="toggleSummaryNpc()"
-            >
-              <app-icon
-                class="size-5 inline-block"
-                [icon]="page.includeNpc ? 'minus-circle' : 'plus-circle'"
-              ></app-icon>
-              <span class="ml-1">
-                {{
-                  page.includeNpc
-                    ? "Ne pas inclure le bestiaire"
-                    : "Inclure le bestiaire"
-                }}
-              </span>
-            </button>
+						<button
+							class="h-7 p-1 col-span-12 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white hover:border-white"
+							(click)="toggleSummaryNpc()">
+							<app-icon class="size-5 inline-block" [icon]="page.includeNpc ? 'minus-circle' : 'plus-circle'"></app-icon>
+							<span class="ml-1">
+								{{ page.includeNpc ? 'Ne pas inclure le bestiaire' : 'Inclure le bestiaire' }}
+							</span>
+						</button>
 
-            <button
-              class="h-7 p-1 col-span-12 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white hover:border-white"
-              (click)="toggleSecondLevel()"
-            >
-              <app-icon
-                class="size-5 inline-block"
-                [icon]="
-                  page.includeSecondLevel ? 'minus-circle' : 'plus-circle'
-                "
-              ></app-icon>
-              <span class="ml-1">
-                {{
-                  page.includeSecondLevel
-                    ? "Ne pas inclure les titre de 2ème niveau"
-                    : "Inclure les titres de 2ème niveau"
-                }}
-              </span>
-            </button>
+						<button
+							class="h-7 p-1 col-span-12 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white hover:border-white"
+							(click)="toggleSecondLevel()">
+							<app-icon class="size-5 inline-block" [icon]="page.includeSecondLevel ? 'minus-circle' : 'plus-circle'"></app-icon>
+							<span class="ml-1">
+								{{ page.includeSecondLevel ? 'Ne pas inclure les titre de 2ème niveau' : 'Inclure les titres de 2ème niveau' }}
+							</span>
+						</button>
 
-            <label
-              class="col-span-12 uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-            >
-              Image de fond
-            </label>
-            <input
-              class="text-[#2e2a31] h-[30px] pl-1 col-span-12"
-              type="text"
-              placeholder="Nom"
-              [(ngModel)]="page.background"
-              (ngModelChange)="page.onChange()"
-            />
-          </div>
-        }
+						<label class="col-span-12 uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Image de fond </label>
+						<input class="text-[#2e2a31] h-[30px] pl-1 col-span-12" type="text" placeholder="Nom" [(ngModel)]="page.background" (ngModelChange)="page.onChange()" />
+					</div>
+				}
 
-        @if (isStandardPage(page)) {
-          <label
-            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-          >
-            Titre de la page
-          </label>
-          <input
-            class="text-[#2e2a31] h-[30px] pl-1"
-            type="text"
-            placeholder="Titre de la page"
-            [(ngModel)]="page.title"
-            (ngModelChange)="page.onChange()"
-          />
+				@if (isStandardPage(page)) {
+					<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Titre de la page </label>
+					<input class="text-[#2e2a31] h-[30px] pl-1" type="text" placeholder="Titre de la page" [(ngModel)]="page.title" (ngModelChange)="page.onChange()" />
 
-          <div class="grid grid-cols-2 gap-2">
-            <button
-              class="h-[30px] p-1 w-full mt-[30px] flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white hover:border-white"
-              (click)="page.toggleDarkMode()"
-            >
-              <app-icon
-                class="size-5 inline-block"
-                [icon]="page.dark ? 'sun' : 'moon'"
-              ></app-icon>
-              <span class="ml-1">
-                {{
-                  page.dark ? "Mettre en thème clair" : "Mettre en thème sombre"
-                }}
-              </span>
-            </button>
+					<div class="grid grid-cols-2 gap-2">
+						<button
+							class="h-[30px] p-1 w-full mt-[30px] flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white hover:border-white"
+							(click)="page.toggleDarkMode()">
+							<app-icon class="size-5 inline-block" [icon]="page.dark ? 'sun' : 'moon'"></app-icon>
+							<span class="ml-1">
+								{{ page.dark ? 'Mettre en thème clair' : 'Mettre en thème sombre' }}
+							</span>
+						</button>
 
-            <div class="flex flex-col">
-              <label
-                class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-              >
-                Image de fond
-              </label>
-              <input
-                class="text-[#2e2a31] h-[30px] pl-1"
-                type="text"
-                placeholder="Nom"
-                [(ngModel)]="page.background"
-                (ngModelChange)="page.onChange()"
-              />
-            </div>
-          </div>
+						<div class="flex flex-col">
+							<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Image de fond </label>
+							<input class="text-[#2e2a31] h-[30px] pl-1" type="text" placeholder="Nom" [(ngModel)]="page.background" (ngModelChange)="page.onChange()" />
+						</div>
+					</div>
 
-          <label
-            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-          >
-            Couleur
-          </label>
-          <div class="flex flex-row flex-wrap">
-            <button
-              class="w-[100px] h-[30px] border border-white flex items-center justify-center"
-              [(colorPicker)]="page.color"
-              cpAlphaChannel="disabled"
-              [cpPositionRelativeToArrow]="true"
-              [style.background-color]="page.color"
-            >
-              <app-icon class="size-5 inline-block" icon="brush"></app-icon>
-            </button>
+					<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Couleur </label>
+					<div class="flex flex-row flex-wrap">
+						<button
+							class="w-[100px] h-[30px] border border-white flex items-center justify-center"
+							[(colorPicker)]="page.color"
+							cpAlphaChannel="disabled"
+							[cpPositionRelativeToArrow]="true"
+							[style.background-color]="page.color">
+							<app-icon class="size-5 inline-block" icon="brush"></app-icon>
+						</button>
 
-            @for (color of db.colors; track color) {
-              <button
-                class="w-[30px] h-[30px] border border-white ml-2"
-                [style.background-color]="color"
-                (click)="page.color = color"
-              ></button>
-            }
-          </div>
+						@for (color of db.colors; track color) {
+							<button class="w-[30px] h-[30px] border border-white ml-2" [style.background-color]="color" (click)="page.color = color"></button>
+						}
+					</div>
 
-          <label
-            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-          >
-            Contenu de la page
-          </label>
-          <div class="flex flex-grow">
-            <div
-              class="flex flex-col flex-wrap gap-[1.75px] w-[22px] h-[840px] flex-shrink-0"
-            >
-              @for (help of helpers; track help.help) {
-                <button
-                  [title]="help.title || help.default"
-                  class="size-[21px] flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white hover:border-white"
-                  (click)="helper(standardContent, help)"
-                >
-                  <app-icon class="size-[21px]" [icon]="help.icon"></app-icon>
-                </button>
-              }
-            </div>
-            <textarea
-              #standardContent
-              class="text-[#2e2a31] pl-1 flex-grow"
-              placeholder="Entête de la page"
-              [(ngModel)]="page.text"
-              (ngModelChange)="page.onChange()"
-            ></textarea>
-          </div>
-        }
+					<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Contenu de la page </label>
+					<div class="flex flex-grow">
+						<div class="flex flex-col flex-wrap gap-[1.75px] w-[22px] h-[840px] flex-shrink-0">
+							@for (help of helpers; track help.help) {
+								<button
+									[title]="help.title || help.default"
+									class="size-[21px] flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white hover:border-white"
+									(click)="helper(standardContent, help)">
+									<app-icon class="size-[21px]" [icon]="help.icon"></app-icon>
+								</button>
+							}
+						</div>
+						<textarea #standardContent class="text-[#2e2a31] pl-1 flex-grow" placeholder="Entête de la page" [(ngModel)]="page.text" (ngModelChange)="page.onChange()"></textarea>
+					</div>
+				}
 
-        @if (isTitlePage(page)) {
-          <div class="flex flex-col">
-            <label
-              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-            >
-              Titre de la page
-            </label>
-            <input
-              class="text-[#2e2a31] h-[30px] pl-1"
-              type="text"
-              placeholder="Titre de la page"
-              [(ngModel)]="page.title"
-              (ngModelChange)="page.onChange()"
-            />
+				@if (isTitlePage(page)) {
+					<div class="flex flex-col">
+						<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Titre de la page </label>
+						<input class="text-[#2e2a31] h-[30px] pl-1" type="text" placeholder="Titre de la page" [(ngModel)]="page.title" (ngModelChange)="page.onChange()" />
 
-            <label
-              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-            >
-              Couleur
-            </label>
-            <div class="flex flex-row flex-wrap">
-              <button
-                class="w-[100px] h-[30px] border border-white flex items-center justify-center"
-                [(colorPicker)]="page.color"
-                cpAlphaChannel="disabled"
-                [cpPositionRelativeToArrow]="true"
-                [style.background-color]="page.color"
-              >
-                <app-icon class="size-5 inline-block" icon="brush"></app-icon>
-              </button>
+						<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Couleur </label>
+						<div class="flex flex-row flex-wrap">
+							<button
+								class="w-[100px] h-[30px] border border-white flex items-center justify-center"
+								[(colorPicker)]="page.color"
+								cpAlphaChannel="disabled"
+								[cpPositionRelativeToArrow]="true"
+								[style.background-color]="page.color">
+								<app-icon class="size-5 inline-block" icon="brush"></app-icon>
+							</button>
 
-              @for (color of db.colors; track color) {
-                <button
-                  class="w-[30px] h-[30px] border border-white ml-2"
-                  [style.background-color]="color"
-                  (click)="page.color = color"
-                ></button>
-              }
-            </div>
+							@for (color of db.colors; track color) {
+								<button class="w-[30px] h-[30px] border border-white ml-2" [style.background-color]="color" (click)="page.color = color"></button>
+							}
+						</div>
 
-            <label
-              class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-            >
-              Image de fond
-            </label>
-            <input
-              class="text-[#2e2a31] h-[30px] pl-1"
-              type="text"
-              placeholder="Nom"
-              [(ngModel)]="page.background"
-              (ngModelChange)="page.onChange()"
-            />
-          </div>
-        }
+						<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Image de fond </label>
+						<input class="text-[#2e2a31] h-[30px] pl-1" type="text" placeholder="Nom" [(ngModel)]="page.background" (ngModelChange)="page.onChange()" />
+					</div>
+				}
 
-        @if (isBestiaryPage(page)) {
-          <label
-            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-          >
-            Titre de la page
-          </label>
-          <input
-            class="text-[#2e2a31] h-[30px] pl-1"
-            type="text"
-            placeholder="Titre de la page"
-            [(ngModel)]="page.title"
-            (ngModelChange)="page.onChange()"
-          />
+				@if (isCharacterPage(page)) {
+					<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Titre de la page </label>
+					<input class="text-[#2e2a31] h-[30px] pl-1" type="text" placeholder="Titre de la page" [(ngModel)]="page.title" (ngModelChange)="page.onChange()" />
 
-          <button
-            class="h-7 p-1 w-full mt-2 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white hover:border-white"
-            (click)="page.toggleDarkMode()"
-          >
-            <app-icon
-              class="size-5 inline-block"
-              [icon]="page.dark ? 'sun' : 'moon'"
-            ></app-icon>
-            <span class="ml-1">
-              {{
-                page.dark ? "Mettre en thème clair" : "Mettre en thème sombre"
-              }}
-            </span>
-          </button>
+					<div class="grid grid-cols-2 gap-2">
+						<div class="flex flex-col">
+							<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Nom du personnage </label>
+							<div class="flex">
+								<ng-autocomplete
+									class="autocomplete flex-grow"
+									[data]="db.characters"
+									searchKeyword="name"
+									[initialValue]="page.characterName"
+									[customFilter]="characterFilter"
+									[itemTemplate]="characterTemplate"
+									(inputChanged)="page.onCharacterNameChange($event)"
+									(selected)="page.onCharacterSelected($event)"
+									[focusFirst]="true"
+									placeholder="Nom du PNJ"></ng-autocomplete>
+							</div>
+						</div>
+					</div>
+				}
 
-          <div class="grid grid-cols-2 gap-2">
-            <div class="flex flex-col">
-              <label
-                class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-              >
-                Nom du PNJ
-              </label>
-              <div class="flex">
-                <ng-autocomplete
-                  class="autocomplete flex-grow"
-                  [data]="db.npcs"
-                  searchKeyword="name"
-                  [initialValue]="page.npcName"
-                  [customFilter]="npcFilter"
-                  [itemTemplate]="npcTemplate"
-                  (inputChanged)="page.onNpcNameChange($event)"
-                  (selected)="page.onNpcSelected($event)"
-                  [focusFirst]="true"
-                  placeholder="Nom du PNJ"
-                ></ng-autocomplete>
-                <button
-                  class="size-[30px] min-w-[30] flex items-center justify-center border border-white bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white"
-                  (click)="page.elite = !page.elite"
-                >
-                  <app-icon
-                    class="size-5"
-                    [icon]="page.elite ? 'bolt' : 'bolt-slash'"
-                  ></app-icon>
-                </button>
+				@if (isBestiaryPage(page)) {
+					<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Titre de la page </label>
+					<input class="text-[#2e2a31] h-[30px] pl-1" type="text" placeholder="Titre de la page" [(ngModel)]="page.title" (ngModelChange)="page.onChange()" />
 
-                <button
-                  class="size-[30px] min-w-[30] flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
-                  (click)="page.incarnation = !page.incarnation"
-                >
-                  <app-icon
-                    class="size-5"
-                    [icon]="page.incarnation ? 'sparkles' : 'star'"
-                  ></app-icon>
-                </button>
+					<button
+						class="h-7 p-1 w-full mt-2 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] hover:bg-[#2e2a31] hover:text-white hover:border-white"
+						(click)="page.toggleDarkMode()">
+						<app-icon class="size-5 inline-block" [icon]="page.dark ? 'sun' : 'moon'"></app-icon>
+						<span class="ml-1">
+							{{ page.dark ? 'Mettre en thème clair' : 'Mettre en thème sombre' }}
+						</span>
+					</button>
 
-                <button
-                  class="size-[30px] min-w-[30] flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
-                  (click)="page.changeTwoColumns()"
-                >
-                  <app-icon
-                    class="size-5"
-                    [icon]="page.twoColumns ? 'zoom-in' : 'zoom-out'"
-                  ></app-icon>
-                </button>
-              </div>
-            </div>
-            <div class="flex flex-col">
-              <label
-                class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-              >
-                Image de fond
-              </label>
-              <input
-                class="text-[#2e2a31] h-[30px] pl-1"
-                type="text"
-                placeholder="Nom"
-                [(ngModel)]="page.background"
-                (ngModelChange)="page.onChange()"
-              />
-            </div>
-          </div>
+					<div class="grid grid-cols-2 gap-2">
+						<div class="flex flex-col">
+							<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Nom du PNJ </label>
+							<div class="flex">
+								<ng-autocomplete
+									class="autocomplete flex-grow"
+									[data]="db.npcs"
+									searchKeyword="name"
+									[initialValue]="page.npcName"
+									[customFilter]="npcFilter"
+									[itemTemplate]="npcTemplate"
+									(inputChanged)="page.onNpcNameChange($event)"
+									(selected)="page.onNpcSelected($event)"
+									[focusFirst]="true"
+									placeholder="Nom du PNJ"></ng-autocomplete>
+								<button
+									class="size-[30px] min-w-[30] flex items-center justify-center border border-white bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white"
+									(click)="page.elite = !page.elite">
+									<app-icon class="size-5" [icon]="page.elite ? 'bolt' : 'bolt-slash'"></app-icon>
+								</button>
 
-          <label
-            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-          >
-            Description
-          </label>
-          <textarea
-            class="text-[#2e2a31] pl-1 flex-grow"
-            placeholder="Description"
-            [(ngModel)]="page.description"
-            (ngModelChange)="page.onChange()"
-          ></textarea>
+								<button
+									class="size-[30px] min-w-[30] flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
+									(click)="page.incarnation = !page.incarnation">
+									<app-icon class="size-5" [icon]="page.incarnation ? 'sparkles' : 'star'"></app-icon>
+								</button>
 
-          <label
-            class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"
-          >
-            Citation
-          </label>
-          <textarea
-            class="text-[#2e2a31] pl-1 h-[85px]"
-            placeholder="Description"
-            [(ngModel)]="page.quote"
-            (ngModelChange)="page.onChange()"
-          ></textarea>
-        }
+								<button
+									class="size-[30px] min-w-[30] flex items-center justify-center border border-white bg-white text-[#2e2a31] mr-0.5 hover:bg-[#2e2a31] hover:text-white"
+									(click)="page.changeTwoColumns()">
+									<app-icon class="size-5" [icon]="page.twoColumns ? 'zoom-in' : 'zoom-out'"></app-icon>
+								</button>
+							</div>
+						</div>
+						<div class="flex flex-col">
+							<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Image de fond </label>
+							<input class="text-[#2e2a31] h-[30px] pl-1" type="text" placeholder="Nom" [(ngModel)]="page.background" (ngModelChange)="page.onChange()" />
+						</div>
+					</div>
 
-        @if (page.movable() || page.deletable()) {
-          <div class="absolute top-1 left-1 right-1 flex justify-between">
-            @if (page.movable()) {
-              <div class="flex gap-1">
-                <button
-                  class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-                  (click)="pageUp(page)"
-                >
-                  <app-icon class="size-7" icon="arrow-up"></app-icon>
-                </button>
-                <button
-                  class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-                  (click)="pageDown(page)"
-                >
-                  <app-icon class="size-7" icon="arrow-down"></app-icon>
-                </button>
-              </div>
-            }
+					<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Description </label>
+					<textarea class="text-[#2e2a31] pl-1 flex-grow" placeholder="Description" [(ngModel)]="page.description" (ngModelChange)="page.onChange()"></textarea>
 
-            @if (page.deletable()) {
-              <button
-                class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-                (click)="pageRemove(page)"
-              >
-                <app-icon class="size-7" icon="X"></app-icon>
-              </button>
-            }
-          </div>
-        }
+					<label class="uppercase segoe-ui-bold-italic font-bold text-xs h-[30px] flex flex-col justify-center content-center text-center"> Citation </label>
+					<textarea class="text-[#2e2a31] pl-1 h-[85px]" placeholder="Description" [(ngModel)]="page.quote" (ngModelChange)="page.onChange()"></textarea>
+				}
 
-        @if (page.canInsertAfter()) {
-          <div class="absolute bottom-1 left-1 right-1 grid grid-cols-12 gap-2">
-            <button
-              class="h-7 p-1 col-span-4 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-              (click)="addTitlePage(page.index)"
-            >
-              <app-icon
-                class="size-5 inline-block"
-                icon="plus-circle"
-              ></app-icon>
-              <span class="ml-1">Titre</span>
-            </button>
+				@if (page.movable() || page.deletable()) {
+					<div class="absolute top-1 left-1 right-1 flex justify-between">
+						@if (page.movable()) {
+							<div class="flex gap-1">
+								<button
+									class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+									(click)="pageUp(page)">
+									<app-icon class="size-7" icon="arrow-up"></app-icon>
+								</button>
+								<button
+									class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+									(click)="pageDown(page)">
+									<app-icon class="size-7" icon="arrow-down"></app-icon>
+								</button>
+							</div>
+						}
 
-            <button
-              class="h-7 p-1 col-span-4 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-              (click)="addStandardPage(page.index)"
-            >
-              <app-icon
-                class="size-5 inline-block"
-                icon="plus-circle"
-              ></app-icon>
-              <span class="ml-1">Standard</span>
-            </button>
+						@if (page.deletable()) {
+							<button
+								class="size-7 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+								(click)="pageRemove(page)">
+								<app-icon class="size-7" icon="X"></app-icon>
+							</button>
+						}
+					</div>
+				}
 
-            <button
-              class="h-7 p-1 col-span-4 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
-              (click)="addBestiaryPage(page.index)"
-            >
-              <app-icon
-                class="size-5 inline-block"
-                icon="plus-circle"
-              ></app-icon>
-              <span class="ml-1">Bestiaire</span>
-            </button>
-          </div>
-        }
-      </div>
-    }
-    <div
-      [id]="page.id"
-      class="page"
-      [class.dark]="page.dark || isTitlePage(page) || isCoverPage(page)"
-      [style.--color]="page.color"
-      [style.background-image]="'url(' + page.background + ')'"
-    >
-      <div [id]="'content-' + page.id">
-        @if (isTitlePage(page)) {
-          <div class="h-[29.7cm]">
-            <div class="cover-title cover-title-smaller">{{ page.title }}</div>
-          </div>
-        }
+				@if (page.canInsertAfter()) {
+					<div class="absolute bottom-1 left-1 right-1 grid grid-cols-12 gap-2">
+						<button
+							class="h-7 p-1 col-span-3 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+							(click)="addTitlePage(page.index)">
+							<app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+							<span class="ml-1">Titre</span>
+						</button>
 
-        @if (isCoverPage(page)) {
-          <div class="h-[29.7cm]">
-            <div class="cover-title">{{ page.title }}</div>
+						<button
+							class="h-7 p-1 col-span-3 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+							(click)="addStandardPage(page.index)">
+							<app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+							<span class="ml-1">Standard</span>
+						</button>
 
-            <div
-              class="cover-author absolute left-0 right-0 bottom-[80px] uppercase text-xl h-[30px] text-center tracking-[2px] segoe-ui-bold"
-            >
-              {{ page.author }}
-            </div>
+						<button
+							class="h-7 p-1 col-span-3 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+							(click)="addBestiaryPage(page.index)">
+							<app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+							<span class="ml-1">Bestiaire</span>
+						</button>
 
-            <div
-              class="absolute bottom-0 left-0 right-0 text-justify text-white text-xs p-2"
-            >
-              Ce codex a été généré en utilisant l'outil de
-              <a class="underline" href="https://kng.magusgeek.com/">KNG</a>
-              disponible à l'adresse
-              <a class="underline" href="https://kng.magusgeek.com/codex"
-                >https://kng.magusgeek.com/codex</a
-              >. Le contenu des capacités standards est soumis aux droits
-              d'auteur de ©Antre-Monde Editions
-            </div>
-          </div>
-        }
+						<button
+							class="h-7 p-1 col-span-3 flex items-center justify-center border border-[#2e2a31] bg-white text-[#2e2a31] mx-0.5 hover:bg-[#2e2a31] hover:text-white hover:border-white"
+							(click)="addCharacterPage(page.index)">
+							<app-icon class="size-5 inline-block" icon="plus-circle"></app-icon>
+							<span class="ml-1">Personnage</span>
+						</button>
+					</div>
+				}
+			</div>
+		}
+		<div [id]="page.id" class="page" [class.dark]="page.dark || isTitlePage(page) || isCoverPage(page)" [style.--color]="page.color" [style.background-image]="'url(' + page.background + ')'">
+			<div [id]="'content-' + page.id">
+				@if (isTitlePage(page)) {
+					<div class="h-[29.7cm]">
+						<div class="cover-title cover-title-smaller">{{ page.title }}</div>
+					</div>
+				}
 
-        @if (isSummaryPage(page) || isSummarySecondaryPage(page)) {
-          <div
-            class="text-center text-white min-h-[60px] pt-5 pb-4 uppercase text-lg tracking-[12px] page-title"
-            [class.page-title-left]="page.index % 2"
-            [class.page-title-right]="page.index % 2 === 0"
-          >
-            {{ page.title }}
-          </div>
+				@if (isCoverPage(page)) {
+					<div class="h-[29.7cm]">
+						<div class="cover-title">{{ page.title }}</div>
 
-          <div class="mx-[1.75cm] h-[990px] flex gap-5">
-            @for (column of page.elements; track $index) {
-              <div class="text-xs">
-                @for (
-                  element of column;
-                  track element.title + "-" + element.level + "-" + element.page
-                ) {
-                  <div
-                    class="my-1 h-[25px] flex justify-stretch summary-line w-[320px]"
-                    [style.padding-left]="5 + element.level * 20 + 'px'"
-                    [style.width]="page.columnWidth + 'px'"
-                    [style.--color]="element.color"
-                  >
-                    <span
-                      class="text-ellipsis text-nowrap overflow-hidden h-[25px]"
-                    >
-                      {{ element.title }}
-                    </span>
-                    <span
-                      class="flex-grow border-b border-solid relative bottom-[12px] mx-1"
-                      [style.border-color]="page.dark ? 'white' : 'black'"
-                    >
-                      &nbsp;
-                    </span>
-                    <span class="font-bold h-[25px] pl-1">
-                      {{ element.page }}
-                    </span>
-                  </div>
-                }
-              </div>
-            }
-          </div>
-        }
+						<div class="cover-author absolute left-0 right-0 bottom-[80px] uppercase text-xl h-[30px] text-center tracking-[2px] segoe-ui-bold">
+							{{ page.author }}
+						</div>
 
-        @if (isStandardPage(page)) {
-          @if (page.title) {
-            <div
-              class="text-center text-white min-h-[60px] pt-5 pb-4 mb-5 uppercase text-lg tracking-[12px] page-title"
-              [class.page-title-left]="page.index % 2"
-              [class.page-title-right]="page.index % 2 === 0"
-            >
-              {{ page.title }}
-            </div>
-          }
+						<div class="absolute bottom-0 left-0 right-0 text-justify text-white text-xs p-2">
+							Ce codex a été généré en utilisant l'outil de
+							<a class="underline" href="https://kng.magusgeek.com/">KNG</a>
+							disponible à l'adresse
+							<a class="underline" href="https://kng.magusgeek.com/codex">https://kng.magusgeek.com/codex</a>. Le contenu des capacités standards est soumis aux droits d'auteur de ©Antre-Monde
+							Editions
+						</div>
+					</div>
+				}
 
-          <div class="mx-[1.75cm]">
-            <app-codex-content
-              [content]="page.text"
-              [width]="660"
-              [dark]="page.dark"
-            ></app-codex-content>
-          </div>
+				@if (isSummaryPage(page) || isSummarySecondaryPage(page)) {
+					<div
+						class="text-center text-white min-h-[60px] pt-5 pb-4 uppercase text-lg tracking-[12px] page-title"
+						[class.page-title-left]="page.index % 2"
+						[class.page-title-right]="page.index % 2 === 0">
+						{{ page.title }}
+					</div>
 
-          @if (page.title) {
-            @if (page.index % 2) {
-              <div class="corner corner-right"></div>
-            } @else {
-              <div class="corner corner-left"></div>
-            }
-          }
+					<div class="mx-[1.75cm] h-[990px] flex gap-5">
+						@for (column of page.elements; track $index) {
+							<div class="text-xs">
+								@for (element of column; track element.title + '-' + element.level + '-' + element.page) {
+									<div
+										class="my-1 h-[25px] flex justify-stretch summary-line w-[320px]"
+										[style.padding-left]="5 + element.level * 20 + 'px'"
+										[style.width]="page.columnWidth + 'px'"
+										[style.--color]="element.color">
+										<span class="text-ellipsis text-nowrap overflow-hidden h-[25px]">
+											{{ element.title }}
+										</span>
+										<span class="flex-grow border-b border-solid relative bottom-[12px] mx-1" [style.border-color]="page.dark ? 'white' : 'black'"> &nbsp; </span>
+										<span class="font-bold h-[25px] pl-1">
+											{{ element.page }}
+										</span>
+									</div>
+								}
+							</div>
+						}
+					</div>
+				}
 
-          <div
-            class="absolute bottom-0 left-[8cm] right-[8cm] py-1 h-[32px] bg-[#2e2a31] text-center text-white page-number"
-          >
-            - {{ page.index + 1 }} -
-          </div>
-        }
+				@if (isStandardPage(page)) {
+					@if (page.title) {
+						<div
+							class="text-center text-white min-h-[60px] pt-5 pb-4 mb-5 uppercase text-lg tracking-[12px] page-title"
+							[class.page-title-left]="page.index % 2"
+							[class.page-title-right]="page.index % 2 === 0">
+							{{ page.title }}
+						</div>
+					}
 
-        @if (isBestiaryPage(page)) {
-          @if (page.title) {
-            <div
-              class="text-center text-white min-h-[60px] pt-5 pb-4 uppercase text-lg tracking-[12px] page-title"
-              [class.page-title-left]="page.index % 2"
-              [class.page-title-right]="page.index % 2 === 0"
-            >
-              {{ page.title }}
-            </div>
-          }
+					<div class="mx-[1.75cm]">
+						<app-codex-content [content]="page.text" [width]="660" [dark]="page.dark"></app-codex-content>
+					</div>
 
-          <div class="mx-[1.75cm]">
-            <div
-              class="flex justify-between text-white bg-[#2e2a31] min-h-[80px] p-5 mt-10 mb-2 page-sub-title"
-              [class.elite]="page.elite"
-              [class.incarnation]="page.incarnation"
-            >
-              <span
-                class="flex-grow text-center uppercase text-4xl segoe-ui-bold font-bold npc-name"
-              >
-                {{ page.npc?.name }}
-              </span>
+					@if (page.title) {
+						@if (page.index % 2) {
+							<div class="corner corner-right"></div>
+						} @else {
+							<div class="corner corner-left"></div>
+						}
+					}
 
-              @if (page.elite) {
-                <div class="npc-elite">
-                  <span class="segoe-ui-bold uppercase">Élite</span>
-                </div>
-              }
+					<div class="absolute bottom-0 left-[8cm] right-[8cm] py-1 h-[32px] bg-[#2e2a31] text-center text-white page-number">- {{ page.index + 1 }} -</div>
+				}
 
-              @if (page.incarnation) {
-                <div class="npc-incarnation">
-                  <span class="segoe-ui-bold uppercase">Incarnation</span>
-                </div>
-              }
-            </div>
+				@if (isCharacterPage(page)) {
+					@if (page.title) {
+						<div
+							class="text-center text-white min-h-[60px] pt-5 pb-4 uppercase text-lg tracking-[12px] page-title"
+							[class.page-title-left]="page.index % 2"
+							[class.page-title-right]="page.index % 2 === 0">
+							{{ page.title }}
+						</div>
+					}
 
-            @if (page.twoColumns) {
-              <div class="flex items-start">
-                <app-codex-content
-                  [id]="'description-' + page.id"
-                  class="article-content w-[200px] flex-shrink-0 mr-2"
-                  [content]="page.description"
-                  [width]="200"
-                  [dark]="page.dark"
-                ></app-codex-content>
+					<div class="mx-[1.75cm]">
+						@if (page.character) {
+							<app-codex-content [content]="page.character.markdown()" [width]="660" [dark]="page.character.dark"></app-codex-content>
+						}
+					</div>
 
-                @if (page.npc) {
-                  <app-npc
-                    [id]="'npc-' + page.id"
-                    [npc]="page.npc"
-                    [style.transform]="'scale(' + page.npcScale + ')'"
-                    [style.margin-bottom]="page.npcMarginBottom + 'px'"
-                    class="origin-top-left"
-                  ></app-npc>
-                }
-              </div>
-            } @else {
-              <app-codex-content
-                [id]="'description-' + page.id"
-                [content]="page.description"
-                [width]="661"
-                [dark]="page.dark"
-              ></app-codex-content>
+					@if (page.title) {
+						@if (page.index % 2) {
+							<div class="corner corner-right"></div>
+						} @else {
+							<div class="corner corner-left"></div>
+						}
+					}
 
-              @if (page.npc) {
-                <div class="npc flex items-center justify-center my-5">
-                  <app-npc
-                    [id]="'npc-' + page.id"
-                    [npc]="page.npc"
-                    [style.transform]="'scale(' + page.npcScale + ')'"
-                    [style.margin-bottom]="page.npcMarginBottom + 'px'"
-                    class="origin-top"
-                  ></app-npc>
-                </div>
-              }
-            }
+					<div class="absolute bottom-0 left-[8cm] right-[8cm] py-1 h-[32px] bg-[#2e2a31] text-center text-white page-number">- {{ page.index + 1 }} -</div>
+				}
 
-            @if (page.quote) {
-              <app-codex-content
-                [id]="'description-' + page.id"
-                [content]="page.quote"
-                [width]="661"
-                [dark]="page.dark"
-              ></app-codex-content>
-            }
+				@if (isBestiaryPage(page)) {
+					@if (page.title) {
+						<div
+							class="text-center text-white min-h-[60px] pt-5 pb-4 uppercase text-lg tracking-[12px] page-title"
+							[class.page-title-left]="page.index % 2"
+							[class.page-title-right]="page.index % 2 === 0">
+							{{ page.title }}
+						</div>
+					}
 
-            @if (page.title) {
-              @if (page.index % 2) {
-                <div class="corner corner-right"></div>
-              } @else {
-                <div class="corner corner-left"></div>
-              }
-            }
+					<div class="mx-[1.75cm]">
+						<div class="flex justify-between text-white bg-[#2e2a31] min-h-[80px] p-5 mt-10 mb-2 page-sub-title" [class.elite]="page.elite" [class.incarnation]="page.incarnation">
+							<span class="flex-grow text-center uppercase text-4xl segoe-ui-bold font-bold npc-name">
+								{{ page.npc?.name }}
+							</span>
 
-            <div
-              class="absolute bottom-0 left-[8cm] right-[8cm] py-1 h-[32px] bg-[#2e2a31] text-center text-white page-number"
-            >
-              - {{ page.index + 1 }} -
-            </div>
-          </div>
-        }
-      </div>
-    </div>
-  </div>
+							@if (page.elite) {
+								<div class="npc-elite">
+									<span class="segoe-ui-bold uppercase">Élite</span>
+								</div>
+							}
+
+							@if (page.incarnation) {
+								<div class="npc-incarnation">
+									<span class="segoe-ui-bold uppercase">Incarnation</span>
+								</div>
+							}
+						</div>
+
+						@if (page.twoColumns) {
+							<div class="flex items-start">
+								<app-codex-content
+									[id]="'description-' + page.id"
+									class="article-content w-[200px] flex-shrink-0 mr-2"
+									[content]="page.description"
+									[width]="200"
+									[dark]="page.dark"></app-codex-content>
+
+								@if (page.npc) {
+									<app-npc
+										[id]="'npc-' + page.id"
+										[npc]="page.npc"
+										[style.transform]="'scale(' + page.npcScale + ')'"
+										[style.margin-bottom]="page.npcMarginBottom + 'px'"
+										class="origin-top-left"></app-npc>
+								}
+							</div>
+						} @else {
+							<app-codex-content [id]="'description-' + page.id" [content]="page.description" [width]="661" [dark]="page.dark"></app-codex-content>
+
+							@if (page.npc) {
+								<div class="npc flex items-center justify-center my-5">
+									<app-npc [id]="'npc-' + page.id" [npc]="page.npc" [style.transform]="'scale(' + page.npcScale + ')'" [style.margin-bottom]="page.npcMarginBottom + 'px'" class="origin-top"></app-npc>
+								</div>
+							}
+						}
+
+						@if (page.quote) {
+							<app-codex-content [id]="'description-' + page.id" [content]="page.quote" [width]="661" [dark]="page.dark"></app-codex-content>
+						}
+
+						@if (page.title) {
+							@if (page.index % 2) {
+								<div class="corner corner-right"></div>
+							} @else {
+								<div class="corner corner-left"></div>
+							}
+						}
+
+						<div class="absolute bottom-0 left-[8cm] right-[8cm] py-1 h-[32px] bg-[#2e2a31] text-center text-white page-number">- {{ page.index + 1 }} -</div>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
 }
 
 <div [style.height]="vsAfter + 'px'" class="print:hidden"></div>
 
 <ng-template #npcTemplate let-item>
-  <a>
-    <div
-      class="inline-block size-4 rounded-full mr-1 relative top-[2px]"
-      [style.background-color]="item.color"
-    ></div>
-    <strong [innerHTML]="item.name"></strong><br />
-    <small class="capitalize">{{ item.type }} ({{ item.level }})</small>
-  </a>
+	<a>
+		<div class="inline-block size-4 rounded-full mr-1 relative top-[2px]" [style.background-color]="item.color"></div>
+		<strong [innerHTML]="item.name"></strong><br />
+		<small class="capitalize">{{ item.type }} ({{ item.level }})</small>
+	</a>
+</ng-template>
+
+<ng-template #characterTemplate let-item>
+	<a>
+		<div class="inline-block size-4 rounded-full mr-1 relative top-[2px]" [style.background-color]="item.color"></div>
+		<strong [innerHTML]="item.name"></strong><br />
+		<small class="capitalize">{{ item.idendity ? item.idendity + '.' : '' }} {{ item._armor?.name ? 'Armure ' + item._armor?.name : '' }}</small>
+	</a>
 </ng-template>

@@ -8,15 +8,16 @@ import { CodexContentComponent } from '../../codex-content/codex-content.compone
 import { DatabaseService } from '../../database.service'
 import { DialogService } from '../../dialog/dialog.service'
 import { IconComponent } from '../../icon/icon.component'
+import { Character } from '../../model/character'
 import Npc from '../../model/npc'
 import { NpcComponent } from '../../npc/npc.component'
 import { arrayDown, arrayUp } from '../../util'
 
 @Component({
-  selector: 'app-codex-generator-page',
-  standalone: true,
-  templateUrl: './codex-generator-page.component.html',
-  styleUrls: ['./codex-generator-page.component.scss'],
+	selector: 'app-codex-generator-page',
+	standalone: true,
+	templateUrl: './codex-generator-page.component.html',
+	styleUrls: ['./codex-generator-page.component.scss'],
 	imports: [IconComponent, NpcComponent, FormsModule, ColorPickerModule, AutocompleteLibModule, CodexContentComponent]
 })
 export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
@@ -53,10 +54,10 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 		{ icon: 'column', help: '\n\n||||\n\n', default: 'Nouvelle colonne' },
 		{ icon: 'section', help: '\n\n____\n\n', default: 'Nouvelle section' },
 		{ icon: 'section', help: '\n\n____vvv\n\n', default: 'Nouvelle section en pieds de page' },
-		{ icon: 'panel', help: '\n\n{{{\n\n##Titre\n\n{0}\n}}}\n\n', default: 'Contenu de l\'encadré' },
-		{ icon: 'panel', help: '\n\n{{{{\n\n##Titre\n\n{0}\n}}}}\n\n', default: 'Contenu de l\'encadré' },
-		{ icon: 'margin-left', help :'<<<{0}<<<', default: 'LdB – p. XX', title: 'Émargement gauche' },
-		{ icon: 'margin-right', help :'>>>{0}>>>', default: 'LdB – p. XX', title: 'Émargement droite' },
+		{ icon: 'panel', help: '\n\n{{{\n\n##Titre\n\n{0}\n}}}\n\n', default: "Contenu de l'encadré" },
+		{ icon: 'panel', help: '\n\n{{{{\n\n##Titre\n\n{0}\n}}}}\n\n', default: "Contenu de l'encadré" },
+		{ icon: 'margin-left', help: '<<<{0}<<<', default: 'LdB – p. XX', title: 'Émargement gauche' },
+		{ icon: 'margin-right', help: '>>>{0}>>>', default: 'LdB – p. XX', title: 'Émargement droite' },
 		{ icon: 'badge', help: '((({0})))', default: '100', title: 'Badge' },
 		{ icon: 'badge', help: '(((({0}))))', default: '100', title: 'Gros badge' },
 		{ icon: 'table', help: '\n\n[[[\nLigne 1 ||: Valeur 1\n---\nLigne 2 ||: Valeur 2\n---\nLigne 3 ||: Valeur 3\n]]]\n\n', default: 'Tableau' },
@@ -66,7 +67,7 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 		{ icon: 'img', help: '![{0}](https://kng.magusgeek.com/assets/favicon-32x32.png)', default: 'Image' },
 		{ icon: 'equipment', help: '[equ:{0}]', default: 'Équipement', title: 'Équipement' },
 		{ icon: 'vehicle', help: '[veh:{0}]', default: 'Véhicule', title: 'Véhicule' },
-		{ icon: 'npc', help: '[pnj:{0}]', default: 'PNJ', title: 'PNJ' },
+		{ icon: 'npc', help: '[pnj:{0}]', default: 'PNJ', title: 'PNJ' }
 	]
 
 	constructor(
@@ -74,15 +75,15 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 		private dialog: DialogService
 	) {
 		if (this.db.npcs?.length) {
-			this.helpers.find(h => h.icon === 'npc')!.help = `[pnj:${this.db.npcs[0].name}]`
+			this.helpers.find((h) => h.icon === 'npc')!.help = `[pnj:${this.db.npcs[0].name}]`
 		}
 
 		if (this.db.equipments?.length) {
-			this.helpers.find(h => h.icon === 'equipment')!.help = `[equ:${this.db.equipments[0].name}]`
+			this.helpers.find((h) => h.icon === 'equipment')!.help = `[equ:${this.db.equipments[0].name}]`
 		}
 
 		if (this.db.vehicles?.length) {
-			this.helpers.find(h => h.icon === 'vehicle')!.help = `[veh:${this.db.vehicles[0].name}]`
+			this.helpers.find((h) => h.icon === 'vehicle')!.help = `[veh:${this.db.vehicles[0].name}]`
 		}
 
 		this.load()
@@ -112,7 +113,7 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 	}
 
 	save() {
-		this.db.saveCodex(this.pages.map(p => p.toPlain()))
+		this.db.saveCodex(this.pages.map((p) => p.toPlain()))
 	}
 
 	load(data?: any) {
@@ -121,7 +122,7 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 			if (json) {
 				const plain = JSON.parse(json)
 				this.pages = plain.map((p: any) => this.fromPlain(p))
-				this.summary = <SummaryPage> this.pages[1]
+				this.summary = <SummaryPage>this.pages[1]
 			}
 		} catch (e) {
 			console.error(e)
@@ -129,7 +130,7 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 	}
 
 	download() {
-		const json = JSON.stringify(this.pages.map(p => p.toPlain()))
+		const json = JSON.stringify(this.pages.map((p) => p.toPlain()))
 		const blob = new Blob([json], { type: 'application/json' })
 		const url = URL.createObjectURL(blob)
 		const a = document.createElement('a')
@@ -140,7 +141,7 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 	}
 
 	upload(event: Event) {
-		const input = <HTMLInputElement> event.target
+		const input = <HTMLInputElement>event.target
 		const file = input.files?.[0]
 
 		if (!file) {
@@ -174,7 +175,7 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 		input.value = ''
 	}
 
-	helper(element: HTMLTextAreaElement, help: { icon: string, help: string, default: string }) {
+	helper(element: HTMLTextAreaElement, help: { icon: string; help: string; default: string }) {
 		const start = element.selectionStart
 		const end = element.selectionEnd
 		const text = element.value
@@ -217,7 +218,7 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 	}
 
 	generateSummary() {
-		this.pages = this.pages.filter(p => !(p instanceof SummarySecondaryPage))
+		this.pages = this.pages.filter((p) => !(p instanceof SummarySecondaryPage))
 		const secondarySummaryPages = this.summary.generate(this.pages)
 		this.pages.splice(2, 0, ...secondarySummaryPages)
 		this.fixIndex()
@@ -307,7 +308,6 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 			this.vsTotal = this.pages.length * CONTAINER_HEIGHT
 			this.fixIndex()
 			this.onScroll()
-
 		})
 	}
 
@@ -317,7 +317,7 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 		}
 
 		this.dialog.confirm(`Voulez vous vraiment supprimer cette page ?`).subscribe(() => {
-			this.pages = this.pages.filter(p => p !== page)
+			this.pages = this.pages.filter((p) => p !== page)
 			this.vsTotal = this.pages.length * CONTAINER_HEIGHT
 			this.generateSummary()
 			this.fixIndex()
@@ -326,11 +326,19 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 	}
 
 	npcFilter(items: Npc[], query: string) {
-    return items.filter(e => e.name.toLowerCase().includes(query.toLowerCase()))
-  }
+		return items.filter((e) => e.name.toLowerCase().includes(query.toLowerCase()))
+	}
+
+	characterFilter(items: Character[], query: string) {
+		return items.filter((e) => e.name.toLowerCase().includes(query.toLowerCase()))
+	}
 
 	addBestiaryPage(index: number) {
 		this.addPage(index, new BestiaryPage(this.db))
+	}
+
+	addCharacterPage(index: number) {
+		this.addPage(index, new CharacterPage(this.db))
 	}
 
 	addTitlePage(index: number) {
@@ -356,6 +364,10 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 		return page instanceof BestiaryPage
 	}
 
+	isCharacterPage(page: Page) {
+		return page instanceof CharacterPage
+	}
+
 	isCoverPage(page: Page) {
 		return page instanceof CoverPage
 	}
@@ -377,13 +389,13 @@ export class CodexGeneratorPageComponent implements OnInit, OnDestroy {
 	}
 
 	fromPlain(plain: any) {
-		const klass = <keyof typeof constructors> plain.klass
+		const klass = <keyof typeof constructors>plain.klass
 
 		if (!constructors[klass]) {
 			throw new Error(`Unknown class ${klass}`)
 		}
 
-		const page = new (constructors[klass])(this.db)
+		const page = new constructors[klass](this.db)
 		page.fromPlain(omit(plain, 'klass'))
 
 		return page
@@ -435,7 +447,7 @@ class Page {
 	}
 
 	toPlain(): any {
-		const result = <any> { ...this, klass: this.klassName }
+		const result = <any>{ ...this, klass: this.klassName }
 
 		delete result.id
 		delete result.index
@@ -475,7 +487,7 @@ class CoverPage extends Page {
 
 class SummaryPage extends Page {
 	override klassName = 'SummaryPage'
-	elements: { title: string, level: number, page: number, color: string }[][] = []
+	elements: { title: string; level: number; page: number; color: string }[][] = []
 	includeNpc = false
 	includeSecondLevel = false
 	columnWidth = 660
@@ -499,7 +511,7 @@ class SummaryPage extends Page {
 	}
 
 	generate(pages: Page[]) {
-		const elements: { title: string, level: number, page: number, color: string }[] = []
+		const elements: { title: string; level: number; page: number; color: string }[] = []
 
 		for (const page of pages) {
 			if (page instanceof TitlePage) {
@@ -519,9 +531,8 @@ class SummaryPage extends Page {
 			}
 		}
 
-
 		if (elements.length) {
-			const minLevel = Math.min(...elements.map(e => e.level))
+			const minLevel = Math.min(...elements.map((e) => e.level))
 			if (minLevel !== 0) {
 				for (const element of elements) {
 					element.level -= minLevel
@@ -547,12 +558,12 @@ class SummaryPage extends Page {
 			page.elements = this.elements.slice(i, i + 2)
 			page.color = this.color
 			page.dark = this.dark
-			page.columnWidth = (660 - (20 * (page.elements.length - 1))) / page.elements.length
+			page.columnWidth = (660 - 20 * (page.elements.length - 1)) / page.elements.length
 			secondaryPages.push(page)
 		}
 		this.elements = this.elements.slice(0, 2)
 
-		this.columnWidth = (660 - (20 * (this.elements.length - 1))) / this.elements.length
+		this.columnWidth = (660 - 20 * (this.elements.length - 1)) / this.elements.length
 
 		this.secondaryPages = secondaryPages.length
 
@@ -595,7 +606,7 @@ class SummaryPage extends Page {
 
 class SummarySecondaryPage extends Page {
 	override klassName = 'SummarySecondaryPage'
-	elements: { title: string, level: number, page: number, color: string }[][] = []
+	elements: { title: string; level: number; page: number; color: string }[][] = []
 	columnWidth = 660
 	last = false
 
@@ -678,25 +689,25 @@ Il est possible de faire plusieurs colonnes en utilisant :
 
 Le texte situé après sera dans une autre colonne.`
 
-	const equipment = db.equipments[0]
-	if (equipment) {
-		this.text += `Vous pouvez insérer un équipement dans votre page en faisant ceci :
+		const equipment = db.equipments[0]
+		if (equipment) {
+			this.text += `Vous pouvez insérer un équipement dans votre page en faisant ceci :
 
 [equ:${db.equipments[0].name}]
 
 `
-	}
+		}
 
-	const vehicle = db.vehicles[0]
-	if (vehicle) {
-		this.text += `Et vous pouvez insérez un véhicule dans votre texte comme ceci :
+		const vehicle = db.vehicles[0]
+		if (vehicle) {
+			this.text += `Et vous pouvez insérez un véhicule dans votre texte comme ceci :
 
 [veh:${db.vehicles[0].name}]
 
 `
-	}
+		}
 
-	this.text += `Cet exemple ne montre pas toutes les possibilités, n'hésitez pas à demander de l'aide sur le Discord de Knight.`
+		this.text += `Cet exemple ne montre pas toutes les possibilités, n'hésitez pas à demander de l'aide sur le Discord de Knight.`
 	}
 }
 
@@ -712,9 +723,7 @@ class BestiaryPage extends Page {
 	twoColumns = false
 	npc?: Npc
 
-	constructor(
-		readonly db: DatabaseService
-	) {
+	constructor(readonly db: DatabaseService) {
 		super()
 
 		this.title = 'Bestiaire'
@@ -810,7 +819,7 @@ class BestiaryPage extends Page {
 
 			const npcComponentHeight = npcComponent.clientHeight
 			this.npcScale -= overflow / npcComponentHeight
-			this.npcScale = Math.round(((this.npcScale) + Number.EPSILON) * 100) / 100
+			this.npcScale = Math.round((this.npcScale + Number.EPSILON) * 100) / 100
 
 			if (this.twoColumns) {
 				const descriptionComponentHeight = this.descriptionComponent().clientHeight
@@ -836,11 +845,70 @@ class BestiaryPage extends Page {
 	}
 }
 
+class CharacterPage extends Page {
+	override klassName = 'CharacterPage'
+	characterName: string = ''
+	character?: Character
+
+	constructor(readonly db: DatabaseService) {
+		super()
+
+		this.title = 'Personnage'
+	}
+
+	override toPlain() {
+		const result = super.toPlain()
+
+		delete result.db
+		delete result.character
+
+		return result
+	}
+
+	override fromPlain(plain: any) {
+		this.title = ''
+		this.character = undefined
+		this.characterName = ''
+
+		super.fromPlain(plain)
+		this.setCharacterName(this.characterName)
+	}
+
+	setCharacterName(name: string) {
+		this.characterName = name
+		this.setCharacter(this.db.findCharacter(name))
+	}
+
+	setCharacter(character?: Character) {
+		if (character !== this.character) {
+			this.character = character
+			this.color = this.character?.color || '#40bd97'
+			this.background = this.character?.bgImage || ''
+			this.dark = this.character?.dark !== undefined ? this.character.dark : true
+			this.layout()
+		}
+	}
+
+	onCharacterNameChange(name: string) {
+		this.setCharacter(this.db.findCharacter(name))
+	}
+
+	onCharacterSelected(character: Character | string) {
+		if (isString(character)) {
+			this.setCharacterName(character)
+		} else {
+			this.characterName = character.name
+			this.setCharacter(character)
+		}
+	}
+}
+
 const constructors = {
 	CoverPage,
 	SummaryPage,
 	TitlePage,
 	StandardPage,
 	BestiaryPage,
-	SummarySecondaryPage
+	SummarySecondaryPage,
+	CharacterPage
 }
