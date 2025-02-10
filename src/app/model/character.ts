@@ -31,7 +31,7 @@ export class ComputedCharacter {
 	public defense = 0
 	public reaction = 0
 	public pgError = 0
-	public availableLevels: ('Standard' | 'Avancé' | 'Rare')[] = ['Standard']
+	public availableLevels: ('Standard' | 'Avancé' | 'Rare' | 'Prestige')[] = ['Standard']
 	public historic: {
 		source: string
 		steps: { target: string; value: number; xp?: number }[]
@@ -116,7 +116,7 @@ export class Character {
 		this.data.modules = MODULES.map((data) => {
 			const [name, type, level, cost, ...slots] = data.split(' | ').map((value) => value.trim())
 
-			return new Module(name, type, Number(cost), fuc(level) as 'Standard' | 'Avancé' | 'Rare', slots.map((value) => value.split(' ').map((value) => Number(value))) || [])
+			return new Module(name, type, Number(cost), fuc(level) as 'Standard' | 'Avancé' | 'Rare' | 'Prestige', slots.map((value) => value.split(' ').map((value) => Number(value))) || [])
 		})
 
 		for (const module of this.data.modules) {
@@ -134,6 +134,18 @@ export class Character {
 				module.upgrade = { type: 'forcefield', value: 3 }
 			} else if (module.name.startsWith('Énergie améliorée')) {
 				module.upgrade = { type: 'energy', value: 10 }
+			} else if (module.name === "Vivacité de l'aigle") {
+				module.upgrade = { type: 'reaction', value: 4 }
+			} else if (module.name === 'Splendeur du cerf') {
+				module.upgrade = { type: 'defense', value: 3 }
+			} else if (module.name === 'Longévité du corbeau') {
+				module.upgrade = { type: 'energy', value: 20 }
+			} else if (module.name === 'Aura du dragon') {
+				module.upgrade = { type: 'forcefield', value: 3 }
+			} else if (module.name === 'Grandeur du dragon') {
+				module.upgrade = { type: 'armor', value: 10 }
+			} else if (module.name === 'Réflexes du serpent') {
+				module.upgrade = { type: 'initiative', value: 10 }
 			} else if (module.name.startsWith('Overdrive')) {
 				const [, name] = module.name.split(' ')
 				module.overdrive = this.characteristic(name)
@@ -157,7 +169,7 @@ export class Character {
 				name,
 				type.toLowerCase() as 'contact' | 'distance',
 				Number(cost),
-				fuc(level) as 'Standard' | 'Avancé' | 'Rare',
+				fuc(level) as 'Standard' | 'Avancé' | 'Rare' | 'Prestige',
 				['une main', 'deux mains', 'lourde'].indexOf(weight) + 1,
 				upgrades.split(', ').map((name) => this.data.upgrades.find((upgrade) => upgrade.name === name)!)
 			)
@@ -1236,7 +1248,7 @@ export class Character {
 
 			for (const module of this.modules) {
 				if (module && module.upgrade) {
-					this.computed[module.upgrade.type] += module.upgrade.value
+					;(this.computed[module.upgrade.type as keyof ComputedCharacter] as number) += module.upgrade.value
 				}
 			}
 		}
@@ -1269,6 +1281,10 @@ export class Character {
 		if (this.hasOverdrive('Dextérité', 5)) {
 			this.computed.reaction = Math.max(this.computed.reaction, this.computed.defense)
 		}
+
+		if (this.modules.find((module) => module?.name === 'Vigueur du taureau')) {
+			this.computed.ps *= 1.5
+		}
 	}
 
 	computePGWeaponModules() {
@@ -1295,16 +1311,41 @@ export class Character {
 			return
 		}
 
+		const historic: { module: Module; slots: number[] }[] = []
+
 		for (const module of this.modules) {
 			if (!module?.slots.length) {
 				continue
 			}
 
 			let compatibles = module.slots.filter((slots) => slots.every((slot, index) => this.computed.slots[index] + slot <= this._armor!.slots[index]))
+
+			if (!compatibles.length) {
+				for (const slots of module.slots) {
+					for (const h of historic) {
+						if (h.module.slots.length <= 1) {
+							continue
+						}
+
+						for (const hSlots of h.module.slots) {
+							if (slots.every((slot, index) => this.computed.slots[index] + slot - h.slots[index] + hSlots[index] <= this._armor!.slots[index])) {
+								for (let i = 0; i < 6; i++) {
+									this.computed.slots[i] += hSlots[i] - h.slots[i]
+								}
+
+								h.slots = hSlots
+								compatibles = [slots]
+							}
+						}
+					}
+				}
+			}
+
 			if (!compatibles.length) {
 				compatibles = [module.slots[0]]
 			}
 
+			historic.push({ module, slots: compatibles[0] })
 			for (let i = 0; i < 6; i++) {
 				this.computed.slots[i] += compatibles[0][i]
 			}
@@ -1318,10 +1359,11 @@ export class Character {
 	}
 
 	computePG() {
-		let sub: Record<'Standard' | 'Avancé' | 'Rare', number> = {
+		let sub: Record<'Standard' | 'Avancé' | 'Rare' | 'Prestige', number> = {
 			Standard: 0,
 			Avancé: 0,
-			Rare: 0
+			Rare: 0,
+			Prestige: 0
 		}
 		let total = 0
 
@@ -1357,6 +1399,9 @@ export class Character {
 		}
 		if (sub.Standard + sub.Avancé >= 350) {
 			this.computed.availableLevels.push('Rare')
+		}
+		if (sub.Standard + sub.Avancé + sub.Rare >= 450) {
+			this.computed.availableLevels.push('Prestige')
 		}
 	}
 }
@@ -1600,7 +1645,7 @@ export class Weapon {
 		public name: string,
 		public type: 'contact' | 'distance',
 		public cost: number,
-		public level: 'Standard' | 'Avancé' | 'Rare',
+		public level: 'Standard' | 'Avancé' | 'Rare' | 'Prestige',
 		public slots: number,
 		public upgrades: Upgrade[] = []
 	) {}
@@ -1634,14 +1679,17 @@ export class Module {
 
 	public requirement?: Module
 	public next?: Module
-	public upgrade?: { type: 'armor' | 'forcefield' | 'energy'; value: number }
+
+	// [P in keyof T as T[P] extends V? P: never]: any
+
+	public upgrade?: { type: keyof ComputedCharacter; value: number }
 	public overdrive?: Characteristic
 
 	constructor(
 		public name: string,
 		public type: string,
 		public cost: number,
-		public level: 'Standard' | 'Avancé' | 'Rare',
+		public level: 'Standard' | 'Avancé' | 'Rare' | 'Prestige',
 		public slots: number[][] = []
 	) {}
 }

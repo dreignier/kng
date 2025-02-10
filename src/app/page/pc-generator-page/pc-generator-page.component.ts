@@ -40,7 +40,7 @@ export class PcGeneratorPageComponent {
 		this.reset()
 
 		for (const module of this.character.data.modules) {
-			if (!this.moduleFilters.includes(module.type)) {
+			if (!this.moduleFilters.includes(module.type) && module.type !== 'Prestige') {
 				this.moduleFilters.push(module.type)
 			}
 		}
