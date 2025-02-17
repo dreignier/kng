@@ -108,6 +108,7 @@ export class Character {
 	public portraitHeight = 0
 	public color = '#f25a1e'
 	public dark = true
+	public _unlockedLevel?: 'Avancé' | 'Rare' | 'Prestige'
 	public computed = new ComputedCharacter()
 	public data = new Data()
 
@@ -289,7 +290,8 @@ export class Character {
 			dark: this.dark,
 			prestigeWeapons: this.prestigeWeapons,
 			automatedTurret: this.automatedTurret,
-			shouldedTurret: this.shoulderTurret
+			shouldedTurret: this.shoulderTurret,
+			unlockedLevel: this._unlockedLevel
 		}
 
 		return result
@@ -332,6 +334,7 @@ export class Character {
 		this.prestigeWeapons = data.prestigeWeapons || []
 		this.automatedTurret = data.automatedTurret
 		this.shoulderTurret = data.shoulderTurret
+		this._unlockedLevel = data.unlockedLevel
 
 		this.computeAspects()
 		this.computePGWeaponModules()
@@ -708,6 +711,16 @@ export class Character {
 		this.heroicCapacities.push(undefined)
 	}
 
+	set unlockedLevel(level: undefined | 'Avancé' | 'Rare' | 'Prestige') {
+		this._unlockedLevel = level
+
+		this.computePGWeaponModules()
+	}
+
+	get unlockedLevel() {
+		return this._unlockedLevel
+	}
+
 	set freePoints(points: number) {
 		points = Math.min(15, Math.max(0, points))
 
@@ -975,7 +988,7 @@ export class Character {
 			return false
 		}
 
-		if (this._armor?.name === 'Paladin' && this.computed.pg < 250 && /(saut |course |Déplacement silencieux )/i.test(module.name)) {
+		if (this._armor?.name === 'Paladin' && this.computed.pg < 250 && /(saut |course |déplacement silencieux )/i.test(module.name)) {
 			return false
 		}
 
@@ -1500,15 +1513,34 @@ export class Character {
 		}
 
 		this.computed.availableLevels = ['Standard']
+
 		if (sub.Standard >= 150) {
 			this.computed.availableLevels.push('Avancé')
 		}
+
 		if (sub.Standard + sub.Avancé >= 350) {
 			this.computed.availableLevels.push('Rare')
 		}
+
 		if (sub.Standard + sub.Avancé + sub.Rare >= 450) {
 			this.computed.availableLevels.push('Prestige')
+		}
 
+		if (this._unlockedLevel) {
+			if (this.computed.availableLevels.includes(this._unlockedLevel)) {
+				this._unlockedLevel = undefined
+			} else {
+				for (const level of (['Avancé', 'Rare', 'Prestige'] as ('Avancé' | 'Rare' | 'Prestige')[]).filter((l) => !this.computed.availableLevels.includes(l))) {
+					this.computed.availableLevels.push(level)
+
+					if (this._unlockedLevel === level) {
+						break
+					}
+				}
+			}
+		}
+
+		if (this.computed.availableLevels.includes('Prestige')) {
 			for (const weapon of this.prestigeWeapons) {
 				if (weapon) {
 					sub.Prestige += weapon.cost

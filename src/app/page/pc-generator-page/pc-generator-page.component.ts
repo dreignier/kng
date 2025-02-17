@@ -56,6 +56,7 @@ export class PcGeneratorPageComponent {
 		this.options.oneHandWeapons = true
 		this.options.contactWeapons = true
 		this.options.distanceWeapons = true
+		this.options.weaponUpgrades = true
 	}
 
 	removeAllWeapons() {
@@ -64,6 +65,7 @@ export class PcGeneratorPageComponent {
 		this.options.oneHandWeapons = false
 		this.options.contactWeapons = false
 		this.options.distanceWeapons = false
+		this.options.weaponUpgrades = false
 	}
 
 	reset() {
