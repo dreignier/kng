@@ -163,7 +163,7 @@
 					}
 				}
 			</select>
-			@if (character._achievement?.name === 'Haut fait personnalisé') {
+			@if (character._achievement?.isCustom()) {
 				<input type="text" class="bg-white text-[#2e2a31] h-[30px] pl-1 text-ellipsis overflow-hidden text-nowrap mt-1" [(ngModel)]="character.achievementName" placeholder="Nom du haut fait" />
 			}
 		</div>

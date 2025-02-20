@@ -1458,16 +1458,23 @@ export const ACHIEVEMENTS = [
 	'Construction de la première arche | Machine | Technique OU Savoir | Rebut ET Agent du Nodachi',
 	'Création du Knight | Dame | Aura OU Combat',
 	"Découverte d'une tache dissimulée | Masque | Perception OU Instinct",
-	"Défenseur de l'art | Bête OU Dame | Hargne OU Sang-Froid",
+	"Défenseur de l'art (Bête) | Bête | Hargne OU Sang-Froid",
+	"Défenseur de l'art (Dame) | Dame | Hargne OU Sang-Froid",
 	'En territoire ennemi | Bête | Bête',
 	'Guide | Dame | Parole OU Perception',
-	'Héros de guerre | Bête OU Machine | Combat OU Tir',
+	'Héros de guerre (Bête) | Bête | Combat OU Tir',
+	'Héros de guerre (Machine) | Machine | Combat OU Tir',
 	"Le renouveau de l'espoir | Bête | Hargne OU Sang-Froid",
-	'Sauveur | Masque OU Dame | Perception OU Sang-Froid',
+	'Sauveur (Masque) | Masque | Perception OU Sang-Froid',
+	'Sauveur (Dame) | Dame | Perception OU Sang-Froid',
 	'Survivant de la peste rouge | Chair | Endurance OU Hargne',
 	'Torturé dans les ténèbres | Chair | Endurance OU Force',
 	'Tueur de ténèbres | Masque | Discrétion OU Perception',
-	'Haut fait personnalisé | Chair OU Bête OU Machine OU Masque OU Dame'
+	'Haut fait personnalisé (Chair) | Chair',
+	'Haut fait personnalisé (Bête) | Bête',
+	'Haut fait personnalisé (Dame) | Dame',
+	'Haut fait personnalisé (Machine) | Machine',
+	'Haut fait personnalisé (Masque) | Masque'
 ]
 
 export const WEAPONS = [

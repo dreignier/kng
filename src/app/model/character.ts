@@ -211,11 +211,11 @@ export class Character {
 		})
 
 		this.data.achievements = ACHIEVEMENTS.map((data) => {
-			const [name, aspects, requirements, forbiddens] = data.split(' | ').map((value) => value.trim())
+			const [name, aspect, requirements, forbiddens] = data.split(' | ').map((value) => value.trim())
 
 			return new Achievement(
 				name,
-				aspects.split(' OU ').map((name) => this.aspect(name)!),
+				this.aspect(aspect)!,
 				requirements?.trim() ? requirements.split(' OU ').map((value) => (this.aspect(value) || this.characteristic(value))!) : [],
 				forbiddens?.trim() ? forbiddens.split(' ET ').map((name) => this.data.archetypes.find((archetype) => archetype.name === name)!) : []
 			)
@@ -352,7 +352,7 @@ export class Character {
 			return ''
 		}
 
-		if (this._achievement.name === 'Haut fait personnalisé' && this.achievementName.trim()) {
+		if (this._achievement.isCustom() && this.achievementName.trim()) {
 			return this.achievementName
 		}
 
@@ -499,12 +499,12 @@ export class Character {
 
 		// Achievement
 		if (!this._achievement) {
-			const achievements = options.filterAchievements(this.data.achievements.filter((achievement) => achievement.available && achievement.name !== 'Haut fait personnalisé'))
+			const achievements = options.filterAchievements(this.data.achievements.filter((achievement) => achievement.available && !achievement.isCustom()))
 
 			if (achievements.length) {
 				this.achievement = sample(achievements)!
 			} else {
-				this.achievement = this.data.achievements.find((achievement) => achievement.name === 'Haut fait personnalisé')!
+				this.achievement = this.data.achievements.find((achievement) => achievement.isCustom())!
 			}
 		}
 
@@ -1086,12 +1086,16 @@ export class Character {
 		}
 
 		if (this._achievement) {
-			newBonus(this._achievement.name, this._achievement.aspects, 1)
+			newBonus(this._achievement.name, [this._achievement.aspect], 1)
+			newBonus(this._achievement.name, this._achievement.aspect.characteristics, 2)
 		}
 
 		if (this._section?.aspect) {
 			if (this._section.aspect) {
 				newBonus(this._section.name, [this._section.aspect], 1)
+				for (const characteristic of this._section.aspect.characteristics) {
+					newBonus(this._section.name, [characteristic], 1)
+				}
 			}
 		}
 
@@ -1787,7 +1791,7 @@ export class GenerateOptions {
 		const p = this.priority(1)[0]
 
 		if (p) {
-			return achievements.filter((achievement) => achievement.aspects.includes(p))
+			return achievements.filter((achievement) => achievement.aspect === p)
 		}
 
 		return achievements
@@ -1937,10 +1941,14 @@ export class Achievement {
 
 	constructor(
 		public name: string,
-		public aspects: Aspect[],
+		public aspect: Aspect,
 		public requirements: (Aspect | Characteristic)[],
 		public forbiddens: Archetype[]
 	) {}
+
+	isCustom() {
+		return this.name.includes('Haut fait personnalisé')
+	}
 }
 
 export class Armor {
