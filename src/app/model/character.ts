@@ -1518,15 +1518,15 @@ export class Character {
 
 		this.computed.availableLevels = ['Standard']
 
-		if (sub.Standard >= 150) {
+		if (sub.Standard >= 160) {
 			this.computed.availableLevels.push('Avancé')
 		}
 
-		if (sub.Standard + sub.Avancé >= 350) {
+		if (sub.Standard + sub.Avancé >= 360) {
 			this.computed.availableLevels.push('Rare')
 		}
 
-		if (sub.Standard + sub.Avancé + sub.Rare >= 450) {
+		if (sub.Standard + sub.Avancé + sub.Rare >= 460) {
 			this.computed.availableLevels.push('Prestige')
 		}
 
@@ -1553,8 +1553,8 @@ export class Character {
 			}
 		}
 
-		this.computed.pg = Math.max(0, total - Math.min(50, sub.Standard))
-		this.computed.pgError = Math.max(0, 50 - sub.Standard)
+		this.computed.pg = Math.max(0, total - Math.min(60, sub.Standard))
+		this.computed.pgError = Math.max(0, 60 - sub.Standard)
 	}
 
 	markdown() {
