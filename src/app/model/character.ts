@@ -180,7 +180,7 @@ export class Character {
 				type.toLowerCase() as 'contact' | 'distance',
 				Number(cost),
 				fuc(level) as 'Standard' | 'Avancé' | 'Rare' | 'Prestige',
-				['une main', 'deux mains', 'lourde'].indexOf(weight) + 1,
+				this.computeWeaponSlots(weight, type),
 				upgrades.split(', ').map((name) => this.data.upgrades.find((upgrade) => upgrade.name === name)!)
 			)
 
@@ -251,6 +251,14 @@ export class Character {
 		this.computeDerived()
 		this.computePGWeaponModules()
 		this.filterAchievements()
+	}
+
+	computeWeaponSlots(weight: string, type: string) {
+		if (type.toLowerCase() === 'distance') {
+			return ['une main', 'deux mains', 'lourde'].indexOf(weight) + 1
+		}
+
+		return weight === 'une main' ? 2 : 3
 	}
 
 	export() {
