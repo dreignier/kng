@@ -1607,7 +1607,7 @@ export class Character {
 		}
 
 		if (this.minorMotivations) {
-			result += `<<==Motivations mineurs :== ${this.minorMotivations}<<\n`
+			result += `<<==Motivations mineures :== ${this.minorMotivations}<<\n`
 		}
 
 		if (this.majorMotivation) {
