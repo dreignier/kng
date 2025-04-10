@@ -93,7 +93,7 @@ export default class News extends Entity {
 			return
 		}
 
-		const width = (WIDTH - (GAP * this.columns.length)) / (this.columns.length + 1)
+		const width = (WIDTH - GAP * this.columns.length) / (this.columns.length + 1)
 
 		for (const column of this.columns) {
 			column.width = Math.max(MIN_WIDTH, Math.ceil(column.width - (width + GAP) / this.columns.length))
@@ -139,7 +139,7 @@ export default class News extends Entity {
 }
 
 export class NewsColumn {
-	width: number = Math.ceil((WIDTH - GAP *2) / 3)
+	width: number = Math.ceil((WIDTH - GAP * 2) / 3)
 	elements: NewsElement[] = []
 
 	constructor(data?: any) {
@@ -157,7 +157,7 @@ export class NewsColumn {
 	}
 
 	remove(element: NewsElement) {
-		this.elements = this.elements.filter(e => e !== element)
+		this.elements = this.elements.filter((e) => e !== element)
 	}
 
 	addTitle() {
@@ -178,20 +178,22 @@ export class NewsColumn {
 
 	import(data: any) {
 		this.width = Number.isInteger(data.width) ? data.width : 360
-		this.elements = Array.isArray(data.elements) ? data.elements.map((data: any) => {
-			if (data.title !== undefined) {
-				return new Title(data)
-			} else if (data.header !== undefined) {
-				return new Header(data)
-			} else if (data.align !== undefined) {
-				return new Separator(data)
-			} else if (data.content !== undefined) {
-				return new Article(data)
-			}
+		this.elements = Array.isArray(data.elements)
+			? data.elements.map((data: any) => {
+					if (data.title !== undefined) {
+						return new Title(data)
+					} else if (data.header !== undefined) {
+						return new Header(data)
+					} else if (data.align !== undefined) {
+						return new Separator(data)
+					} else if (data.content !== undefined) {
+						return new Article(data)
+					}
 
-			console.error(data)
-			throw new Error('Unknown news element')
-		}) : []
+					console.error(data)
+					throw new Error('Unknown news element')
+				})
+			: []
 	}
 }
 
@@ -229,7 +231,7 @@ export class Title extends NewsElement {
 	titleHtml(sanitizer: DomSanitizer) {
 		let result = this.title.replace(/[\n\r]+/g, '___BR___')
 
-		result = sanitizer.sanitize(SecurityContext.HTML,result) || ''
+		result = sanitizer.sanitize(SecurityContext.HTML, result) || ''
 
 		result = result.replace(/([\d]+)([^\d\s.,_;!\n\r:?]+)/g, '$1<sup>$2</sup>')
 
@@ -339,7 +341,7 @@ Les listes peuvent aussi être numérotées :
 		this.corners = Array.isArray(data.corners) ? data.corners.map((c: any) => c === true) : [false, true, false, true]
 		this.shadowX = data.shadowX === true
 		this.shadowY = data.shadowY === true
-		this.background = Number.isInteger(data.background) ? data.background : 0
+		this.background = Number(data.background) ? data.background : 0
 		this.color = isString(data.color) ? data.color : '#00ffcc'
 		this.bgColor = isString(data.bgColor) ? data.bgColor : '#00ffcc'
 		this.content = isString(data.content) ? data.content : ''
