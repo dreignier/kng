@@ -38,9 +38,8 @@ export class CodexSectionComponent {
 
 				if (rows[0]?.length === 1) {
 					caption += '<caption class="table-header">' + this.converter.makeHtml(rows[0][0]) + '</caption>'
+					rows.shift()
 				}
-
-				rows.shift()
 
 				for (const row of rows) {
 					result += '<tr>'
