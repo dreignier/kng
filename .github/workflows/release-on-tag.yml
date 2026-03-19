@@ -24,7 +24,7 @@ jobs:
         run: npm run build
 
       - name: Create build archive
-        run: tar -cvf kng.tar -C kng/dist/kng/browser .
+        run: tar -cvf kng.tar -C kng/dist/project/browser .
 
       - name: Upload artifact via SCP
         uses: appleboy/scp-action@v0.1.7
