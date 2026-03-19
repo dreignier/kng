@@ -1,0 +1,44 @@
+name: Release on Tag
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci --force
+
+      - name: Build
+        run: npm run build
+
+      - name: Create build archive
+        run: tar -cvf kng.tar -C kng/dist/kng/browser .
+
+      - name: Upload artifact via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: magusgeek.com
+          username: github
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: 'kng.tar'
+          target: '/home/github/'
+
+      - name: Execute remote deploy script
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: magusgeek.com
+          username: github
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: bash /home/github/deploy-kng.sh
