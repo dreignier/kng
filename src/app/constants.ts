@@ -1433,7 +1433,7 @@ export const ARCANAS = [
 
 export const ARCHETYPES = [
 	'Agent du Nodachi | Dextérité, Combat OU Tir',
-	'Archétype libre | ' + CARACTERISTICS_LABELS.flatMap((labels) => labels).join(' OU '),
+	'Archétype libre | ' + CARACTERISTICS_LABELS.flatMap((labels) => labels).join(' OU ') + ', ' + CARACTERISTICS_LABELS.flatMap((labels) => labels).join(' OU '),
 	'Artiste | Hargne, Aura',
 	'Célébrité | Aura, Parole',
 	'Citoyen | Technique, Discrétion',
